@@ -1,6 +1,10 @@
 #include "getters.h"
 
+#include <cstdint>
+
 #include "big_number.hpp"
+
+const int32_t ZERO = 0;
 
 const Error& get_error( const BigNumber& number ) { return number.error; }
 
@@ -15,7 +19,7 @@ size_t get_size( const BigNumber& number ) {
 chunk get_chunk( const BigNumber& number, int32_t index ) {
     int32_t chunk_index = index - get_exponent( number );
 
-    if ( chunk_index < 0 || chunk_index >= get_size( number ) ) return 0;
+    if ( chunk_index < ZERO || chunk_index >= get_size( number ) ) return ZERO;
 
     return get_chunks( number )[chunk_index];
 }
@@ -24,6 +28,6 @@ chunk get_chunk_direct( const BigNumber& number, int32_t index ) {
     return get_chunks( number )[index];
 }
 
-bool is_negative( const BigNumber& number );
+bool is_negative( const BigNumber& number ) { return number.is_negative; }
 
-bool is_zero( const BigNumber& number );
+bool is_zero( const BigNumber& number ) { return get_size( number ) == ZERO; }
