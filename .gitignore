@@ -1,32 +1,32 @@
-# Prerequisites
-*.d
+# CMake
+CMakeLists.txt.user
+CMakeCache.txt
+CMakeFiles
+CMakeScripts
+Testing
+Makefile
+cmake_install.cmake
+install_manifest.txt
+compile_commands.json
+CTestTestfile.cmake
+_deps
+**/.cache/**
 
-# Compiled Object files
-*.slo
-*.lo
-*.o
-*.obj
+# build
+/build/
 
-# Precompiled Headers
-*.gch
-*.pch
+# IDE
+/.idea/
+/.vs/
+/.vscode/
+/python
 
-# Compiled Dynamic libraries
-*.so
-*.dylib
-*.dll
+# macOS
+.DS_Store
+.AppleDouble
 
-# Fortran module files
-*.mod
-*.smod
+/.cache
 
-# Compiled Static libraries
-*.lai
-*.la
-*.a
-*.lib
+/test_results.xml
 
-# Executables
-*.exe
-*.out
-*.app
+compose-dev.yaml
