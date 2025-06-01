@@ -3,7 +3,12 @@
 # date: 2025
 # description: library for long arithmetic
 
-file (GLOB_RECURSE SOURCES "src/*.cpp")
+cmake_minimum_required(VERSION 4.0)
+
+set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
+file (GLOB_RECURSE SOURCES "source/*.cpp")
 add_library(long_arithmetic SHARED ${SOURCES})
 
 target_include_directories(long_arithmetic PUBLIC include)
