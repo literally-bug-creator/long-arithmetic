@@ -34,8 +34,6 @@ bool is_equal( const BigNumber& left, const BigNumber& right ) {
     return true;
 }
 
-bool is_lower_than( const BigNumber& left, const BigNumber& right );
-
 int32_t choose_max_exp( const BigNumber& a, const BigNumber& b ) {
     int32_t a_exp = get_exponent( a ) + get_size( a );
     int32_t b_exp = get_exponent( b ) + get_size( b );
@@ -44,6 +42,29 @@ int32_t choose_max_exp( const BigNumber& a, const BigNumber& b ) {
 
 int32_t choose_min_exp( const BigNumber& a, const BigNumber& b ) {
     return std::min( get_exponent( a ), get_exponent( b ) );
+}
+
+bool is_lower_than( const BigNumber& left, const BigNumber& right ) {
+    if ( is_negative( left ) != is_negative( right ) )
+        return is_negative( left ) > is_negative( right );
+
+    int32_t left_max_exp = get_exponent( left ) + get_size( left );
+    int32_t right_max_exp = get_exponent( right ) + get_size( right );
+
+    if ( left_max_exp < right_max_exp ) return !is_negative( left );
+    if ( left_max_exp > right_max_exp ) return is_negative( left );
+
+    int32_t min_exp = choose_min_exp( left, right );
+
+    for ( int32_t index = left_max_exp; index >= min_exp; index-- ) {
+        chunk left_chunk = get_chunk( left, index );
+        chunk right_chunk = get_chunk( right, index );
+
+        if ( left_chunk < right_chunk ) return !is_negative( left );
+        if ( left_chunk > right_chunk ) return is_negative( left );
+    }
+
+    return false;
 }
 
 BigNumber compute_add( const BigNumber& augend, const BigNumber& addend ) {
