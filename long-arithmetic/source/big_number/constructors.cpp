@@ -34,9 +34,7 @@ BigNumber from_iterator( std::vector<chunk>::const_iterator begin,
     }
     if ( size > 0 ) { chunks = std::vector<chunk>( begin, end ); }
 
-    Error error = make_error( OK, "" );
-
-    return from_scratch( chunks, exponent, false, error );
+    return from_scratch( chunks, exponent, false, make_error( OK, "" ) );
 }
 
 BigNumber make_zero() { return BigNumber( {}, 0, 0, make_error( OK, "" ) ); }

@@ -30,12 +30,11 @@ BigNumber simple_mul( const BigNumber& multiplicand,
         chunks[i + get_size( multiplier )] = carry;
     }
 
-    Error error = get_error( multiplicand );
     return from_scratch(
         chunks,
         get_exponent( multiplicand ) + get_exponent( multiplier ),
         is_negative( multiplicand ) != is_negative( multiplier ),
-        error );
+        get_error( multiplicand ) );
 }
 
 BigNumber mul( const BigNumber& multiplicand, const BigNumber& multiplier ) {
@@ -51,12 +50,10 @@ BigNumber mul( const BigNumber& multiplicand, const BigNumber& multiplier ) {
 
     if ( m >= get_size( multiplicand ) ) {
         BigNumber a_0 = make_zero();
-        std::vector<chunk> chunks = get_chunks( multiplicand );
-        Error error = get_error( multiplicand );
-        BigNumber a_1 = from_scratch( chunks,
+        BigNumber a_1 = from_scratch( get_chunks( multiplicand ),
                                       get_exponent( multiplicand ),
                                       is_negative( multiplicand ),
-                                      error );
+                                      get_error( multiplicand ) );
     } else {
         BigNumber a_0 = from_iterator( get_chunks( multiplicand ).begin() + m,
                                        get_chunks( multiplicand ).end() );
@@ -66,12 +63,10 @@ BigNumber mul( const BigNumber& multiplicand, const BigNumber& multiplier ) {
 
     if ( m >= get_size( multiplier ) ) {
         BigNumber b_0 = make_zero();
-        std::vector<chunk> chunks = get_chunks( multiplicand );
-        Error error = get_error( multiplicand );
-        BigNumber b_1 = from_scratch( chunks,
+        BigNumber b_1 = from_scratch( get_chunks( multiplicand ),
                                       get_exponent( multiplicand ),
                                       is_negative( multiplicand ),
-                                      error );
+                                      get_error( multiplicand ) );
     } else {
         BigNumber b_0 = from_iterator( get_chunks( multiplier ).begin() + m,
                                        get_chunks( multiplier ).end() );
@@ -87,9 +82,8 @@ BigNumber mul( const BigNumber& multiplicand, const BigNumber& multiplier ) {
     BigNumber z1_shifted = shift( sub( sub( z1, z0 ), z2 ), m );
 
     BigNumber result = add( add( z0_shifted, z1_shifted ), z2 );
-    std::vector<chunk> chunks = get_chunks( result );
     bool is_neg = is_negative( multiplicand ) != is_negative( multiplier );
     int32_t exp = get_exponent( multiplicand ) + get_exponent( multiplier );
-    Error error = get_error( result );
-    return from_scratch( chunks, is_neg, exp, error );
+    return from_scratch(
+        get_chunks( result ), is_neg, exp, get_error( result ) );
 }
