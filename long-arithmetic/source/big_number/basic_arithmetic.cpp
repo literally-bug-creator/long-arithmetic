@@ -134,8 +134,8 @@ BigNumber sub( const BigNumber& minuend, const BigNumber& subtrahend ) {
 }
 
 BigNumber shift( const BigNumber& operand, int32_t exp ) {
-    std::vector<chunk> chunks = get_chunks( operand );
-    Error error = get_error( operand );
-    int32_t new_exp = get_exponent( operand ) + exp;
-    return from_scratch( chunks, new_exp, is_negative( operand ), error );
+    return from_scratch( get_chunks( operand ),
+                         get_exponent( operand ) + exp,
+                         is_negative( operand ),
+                         get_error( operand ) );
 }
