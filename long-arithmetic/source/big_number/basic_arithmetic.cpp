@@ -7,9 +7,10 @@
 #include "getters.hpp"
 
 BigNumber abs( const BigNumber& operand ) {
-    Error error = make_error( OK, "1" ); // TODO: Change
-    std::vector<chunk> chunk = get_chunks( operand );
-    return from_scratch( chunk, get_exponent( operand ), false, error );
+    return from_scratch( get_chunks( operand ),
+                         get_exponent( operand ),
+                         false,
+                         get_error( operand ) );
 }
 
 BigNumber neg( const BigNumber& operand ) {
