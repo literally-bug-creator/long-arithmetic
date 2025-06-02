@@ -4,7 +4,7 @@
 #include "big_number.hpp"
 #include "constructors.hpp"
 #include "error.hpp"
-#include "getters.h"
+#include "getters.hpp"
 
 BigNumber abs( const BigNumber& operand ) {
     Error error = make_error( OK, "1" ); // TODO: Change
@@ -130,4 +130,11 @@ BigNumber sub( const BigNumber& minuend, const BigNumber& subtrahend ) {
         return neg( sub( subtrahend, minuend ) );
 
     return compute_sub( minuend, subtrahend );
+}
+
+BigNumber shift( const BigNumber& operand, int32_t exp ) {
+    std::vector<chunk> chunks = get_chunks( operand );
+    Error error = get_error( operand );
+    int32_t new_exp = get_exponent( operand ) + exp;
+    return from_scratch( chunks, new_exp, is_negative( operand ), error )
 }
