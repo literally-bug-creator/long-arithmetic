@@ -6,10 +6,10 @@
 
 BigNumber make_big_number( const std::string& str );
 
-BigNumber from_scratch( std::vector<chunk>& chunks,
+BigNumber from_scratch( const std::vector<chunk>& chunks,
                         int32_t exponent,
                         bool is_negative,
-                        Error& error ) {
+                        const Error& error ) {
     return BigNumber{ .chunks = chunks,
                       .exponent = exponent,
                       .is_negative = is_negative,

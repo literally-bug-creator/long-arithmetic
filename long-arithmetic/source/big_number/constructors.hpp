@@ -2,10 +2,10 @@
 
 BigNumber make_big_number( const std::string& str );
 
-BigNumber from_scratch( std::vector<chunk>& chunks,
+BigNumber from_scratch( const std::vector<chunk>& chunks,
                         int32_t exponent,
                         bool is_negative,
-                        Error& error );
+                        const Error& error );
 
 BigNumber from_iterator( std::vector<chunk>::const_iterator begin,
                          std::vector<chunk>::const_iterator end );
