@@ -14,10 +14,10 @@ BigNumber abs( const BigNumber& operand ) {
 }
 
 BigNumber neg( const BigNumber& operand ) {
-    Error error = make_error( OK, "1" ); // TODO: Change
-    std::vector<chunk> chunk = get_chunks( operand );
-    return from_scratch(
-        chunk, get_exponent( operand ), !is_negative( operand ), error );
+    return from_scratch( get_chunks( operand ),
+                         get_exponent( operand ),
+                         !is_negative( operand ),
+                         get_error( operand ) );
 }
 
 bool is_equal( const BigNumber& left, const BigNumber& right ) {
