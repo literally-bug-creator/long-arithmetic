@@ -8,6 +8,8 @@ bool is_equal( const BigNumber& left, const BigNumber& right );
 
 bool is_lower_than( const BigNumber& left, const BigNumber& right );
 
+bool is_greater( const BigNumber& left, const BigNumber& right );
+
 BigNumber add( const BigNumber& augend, const BigNumber& addend );
 
 BigNumber sub( const BigNumber& minuend, const BigNumber& subtrahend );
