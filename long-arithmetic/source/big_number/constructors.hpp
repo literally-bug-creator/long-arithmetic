@@ -7,4 +7,9 @@ BigNumber from_scratch( std::vector<chunk>& chunks,
                         bool is_negative,
                         Error& error );
 
+BigNumber from_iterator( std::vector<chunk>::const_iterator begin,
+                         std::vector<chunk>::const_iterator end );
+
+BigNumber make_zero();
+
 std::string to_string( const BigNumber& number );
