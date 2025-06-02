@@ -7,6 +7,7 @@
 
 #include "error.hpp"
 
+typedef __uint128_t mul_chunk;
 typedef uint64_t chunk;
 
 #define CHUNK_DIGITS 18
