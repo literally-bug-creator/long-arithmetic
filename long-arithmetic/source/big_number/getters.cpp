@@ -10,7 +10,9 @@ const Error& get_error( const BigNumber& number ) { return number.error; }
 
 int32_t get_exponent( const BigNumber& number ) { return number.exponent; }
 
-const std::vector<chunk>& get_chunks( const BigNumber& number );
+const std::vector<chunk>& get_chunks( const BigNumber& number ) {
+    return number.chunks;
+}
 
 size_t get_size( const BigNumber& number ) {
     return get_chunks( number ).size();
