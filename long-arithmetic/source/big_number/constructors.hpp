@@ -12,4 +12,14 @@ BigNumber from_iterator( std::vector<chunk>::const_iterator begin,
 
 BigNumber make_zero();
 
+BigNumber from_int(int v);
+
+BigNumber from_long(long v);
+
+BigNumber from_long_long(long long v);
+
+BigNumber from_float(float v);
+
+BigNumber from_double(double v);
+
 std::string to_string( const BigNumber& number );

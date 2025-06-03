@@ -133,6 +133,26 @@ BigNumber make_zero() {
     return from_scratch( {}, 0, false, make_error( OK, "" ) );
 }
 
+BigNumber from_int(int v) {
+    return make_big_number(std::to_string(v));
+}
+
+BigNumber from_long(long v) {
+    return make_big_number(std::to_string(v));
+}
+
+BigNumber from_long_long(long long v) {
+    return make_big_number(std::to_string(v));
+}
+
+BigNumber from_float(float v) {
+    return make_big_number(std::to_string(v));
+}
+
+BigNumber from_double(double v) {
+    return make_big_number(std::to_string(v));
+}
+
 std::string sign_to_string( const BigNumber& number ) {
     return is_negative( number ) ? "-" : "";
 }
