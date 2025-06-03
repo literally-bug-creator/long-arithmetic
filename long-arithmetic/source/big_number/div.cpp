@@ -96,7 +96,7 @@ BigNumber div(const BigNumber& x, const BigNumber& y) {
     int32_t result_exp = a_max_exp - b_max_exp + 1 - static_cast<int32_t>(result_chunks.size());
 
     std::vector<chunk> chunks_rev(result_chunks.rbegin(), result_chunks.rend());
-    std::vector<chunk> result_chunks (chunks_rev.begin(), chunks_rev.end());
-    BigNumber result = from_scratch(result_chunks,result_exp, x.is_negative != y.is_negative, make_error(OK, ""));
+    std::vector<chunk> final_chunks (chunks_rev.begin(), chunks_rev.end());
+    BigNumber result = from_scratch(final_chunks,result_exp, x.is_negative != y.is_negative, make_error(OK, ""));
     return result;
 }
