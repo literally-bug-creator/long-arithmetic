@@ -9,8 +9,7 @@ project(long_arithmetic)
 set(CMAKE_CXX_STANDARD 20)
 
 add_subdirectory(long_arithmetic)
-
-# add_subdirectory(benchmark)
+add_subdirectory(benchmark)
 
 enable_testing()
 add_subdirectory(tests)
