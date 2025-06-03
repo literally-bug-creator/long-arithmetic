@@ -140,6 +140,6 @@ BigNumber shift( const BigNumber& operand, int32_t exp ) {
                          get_error( operand ) );
 }
 
-bool is_greater( const BigNumber& left, const BigNumber& right ) {
+bool is_greater_than( const BigNumber& left, const BigNumber& right ) {
     return !is_equal( left, right ) && !is_lower_than( left, right );
 }

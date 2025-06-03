@@ -59,18 +59,18 @@ BigNumber div( const BigNumber& x, const BigNumber& y ) {
             BigNumber prod = mul( b, c_bn );
 
             int attempts = 0;
-            while ( attempts++ < 3 && is_greater( prod, a ) ) {
+            while ( attempts++ < 3 && is_greater_than( prod, a ) ) {
                 --c;
                 prod = sub( prod, b );
             }
 
-            if ( is_greater( prod, a ) ) {
+            if ( is_greater_than( prod, a ) ) {
                 chunk left = 0, right = c;
                 while ( left < right ) {
                     chunk mid = ( left + right ) / 2;
                     BigNumber mid_bn = from_long_long( mid );
                     BigNumber pm = mul( b, mid_bn );
-                    if ( is_greater( pm, a ) ) {
+                    if ( is_greater_than( pm, a ) ) {
                         right = mid;
                     } else {
                         left = mid + 1;
