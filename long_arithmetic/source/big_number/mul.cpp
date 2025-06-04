@@ -13,15 +13,15 @@ BigNumber simple_mul( const BigNumber& multiplicand,
         get_size( multiplicand ) + get_size( multiplier ), 0 );
     chunk carry = 0;
 
-    for ( int32_t i = 0; i < get_size( multiplicand ); i++ ) {
+    for ( int32_t i = 0; i < get_size( multiplicand ); ++i ) {
         carry = 0;
 
-        for ( int32_t j = 0; j < get_size( multiplier ); j++ ) {
+        for ( int32_t j = 0; j < get_size( multiplier ); ++j ) {
             mul_chunk l_chunk = (mul_chunk)get_chunk_direct( multiplicand, i );
             mul_chunk r_chunk = (mul_chunk)get_chunk_direct( multiplier, j );
             mul_chunk product = l_chunk * r_chunk + chunks[i + j] + carry;
             carry = product / CHUNK_BASE;
-            chunks[i + j] = product & CHUNK_BASE;
+            chunks[i + j] = product % CHUNK_BASE;
         }
 
         chunks[i + get_size( multiplier )] = carry;
