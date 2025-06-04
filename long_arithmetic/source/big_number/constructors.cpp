@@ -142,32 +142,54 @@ BigNumber from_double( double v ) {
 }
 
 std::string to_string( const BigNumber& number ) { // TODO: reimplement
-    if ( number.chunks.empty() ) return "0";
-    std::string res;
-    for ( size_t i = number.chunks.size(); i > 0; --i ) {
-        std::string chunk_str = std::to_string( number.chunks[i - 1] );
-        if ( i != number.chunks.size() )
-            chunk_str = std::string( CHUNK_DIGITS - chunk_str.length(), '0' ) +
-                        chunk_str;
-        res += chunk_str;
-    }
-    if ( number.exponent < 0 ) {
-        int frac_digits = -number.exponent * CHUNK_DIGITS;
-        if ( frac_digits < (int)res.size() ) {
-            res.insert( res.size() - frac_digits, 1, '.' );
-        } else {
-            res = "0." + std::string( frac_digits - res.size(), '0' ) + res;
-        }
-    }
-    if ( number.is_negative && res != "0" ) res = "-" + res;
-    auto dot_pos = res.find( '.' );
-    if ( dot_pos != std::string::npos ) {
-        size_t last_nonzero = res.find_last_not_of( '0' );
-        if ( last_nonzero != std::string::npos && last_nonzero > dot_pos ) {
-            res.erase( last_nonzero + 1 );
-        }
-        if ( res.back() == '.' && !res.empty() ) { res.pop_back(); }
+    if (number.chunks.empty() || (number.chunks.size() == 1 && number.chunks[0] == 0))
+        return "0";
+
+    std::string result;
+    if (number.is_negative) {
+        result.push_back('-');
     }
 
-    return res;
+    size_t chunks = number.chunks.size();
+    int32_t exp = number.exponent;
+    int32_t max_exp = std::max(exp + static_cast<int32_t>(chunks) - 1, 0);
+    int32_t min_exp = std::min(exp, 0);
+
+    for (int32_t i = max_exp; i >= min_exp; --i) {
+        if (i == -1) {
+            result += '.';
+        }
+        std::string chunk_str;
+        int32_t chunk_idx = i - exp;
+        if (chunk_idx >= 0 && static_cast<size_t>(chunk_idx) < chunks) {
+            chunk_str = std::to_string(number.chunks[chunk_idx]);
+        } else {
+            chunk_str = "0";
+        }
+        if (i != max_exp) {
+            chunk_str = std::string(CHUNK_DIGITS - chunk_str.size(), '0') + chunk_str;
+        }
+        result += chunk_str;
+    }
+
+    if (min_exp < 0) {
+        size_t suff_zeros = 0;
+        for (size_t i = result.size(); i > 0; --i) {
+            if (result[i - 1] == '0') {
+                ++suff_zeros;
+            } else if (result[i - 1] == '.') {
+                break;
+            } else {
+                break;
+            }
+        }
+        if (suff_zeros > 0) {
+            result.erase(result.size() - suff_zeros, suff_zeros);
+        }
+        if (!result.empty() && result.back() == '.') {
+            result.pop_back();
+        }
+    }
+
+    return result;
 }
