@@ -20,3 +20,6 @@ test:
 
 clean:
 	@rm -rf $(BUILD_DIR)
+
+
+rebuild: clean build
