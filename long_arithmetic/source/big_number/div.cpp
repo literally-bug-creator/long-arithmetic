@@ -7,7 +7,7 @@
 #include "constructors.hpp"
 #include "getters.hpp"
 
-const size_t _DIV_PRECISION = 5560; // should be enough for most cases, but the
+const size_t _DIV_PRECISION = 100; // should be enough for most cases, but the
                                     // real precision calculated differently
 const BigNumber ZERO = make_big_number( "0" );
 const BigNumber ONE = make_big_number( "1" );
