@@ -35,7 +35,7 @@ BigNumber simple_mul( const BigNumber& multiplicand,
 }
 
 BigNumber mul( const BigNumber& multiplicand, const BigNumber& multiplier ) {
-    if ( is_zero( multiplicand ) && is_zero( multiplier ) ) return make_zero();
+    if ( is_zero( multiplicand ) || is_zero( multiplier ) ) return make_zero();
 
     if ( get_size( multiplicand ) <= MULTIPLY_THRESHOLD ||
          get_size( multiplier ) <= MULTIPLY_THRESHOLD )
