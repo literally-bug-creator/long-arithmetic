@@ -33,3 +33,14 @@ TEST(Multiplication, RandomFloatStrings) {
     }
     ASSERT_EQ(mul_fail, 0) << "Multiplication: " << mul_ok << "/" << TEST_CASES << " passed, " << mul_fail << " failed.";
 }
+
+TEST(Multiplication, Manual_1000x1000_Nines) {
+    std::string nines_1000(10000, '9');
+    BigNumber a = make_big_number(nines_1000);
+    BigNumber b = make_big_number(nines_1000);
+    BigNumber prod = mul(a, b);
+    mpz_class a_gmp(nines_1000);
+    mpz_class b_gmp(nines_1000);
+    mpz_class prod_gmp = a_gmp * b_gmp;
+    ASSERT_EQ(to_string(prod), prod_gmp.get_str()) << "Manual 1000x1000 nines failed: got=" << to_string(prod) << ", expected=" << prod_gmp.get_str();
+}

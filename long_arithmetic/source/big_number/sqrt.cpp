@@ -17,7 +17,7 @@ BigNumber sqrt(const BigNumber& number) {
         return number;
     BigNumber x = number;
     BigNumber last = ZERO;
-    for (int i = 0; i < 100 && !(is_equal(x, last)); ++i) {
+    for (int i = 0; i < 30 && !(is_equal(x, last)); ++i) {
         last = x;
         x = div(add(x, div(number,x)), TWO); // if DIV_PRECISION is too big(5560 is a lot), sqrt might take a while
         // x = (x + number / x) / "2"_bn;
