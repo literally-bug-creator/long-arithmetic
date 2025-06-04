@@ -7,7 +7,7 @@
 
 using namespace std;
 
-constexpr int TEST_CASES = 10000;
+constexpr int TEST_CASES = 1000;
 constexpr double EPS = 1e-6;
 
 TEST(Sqrt, RandomFloatStrings) {

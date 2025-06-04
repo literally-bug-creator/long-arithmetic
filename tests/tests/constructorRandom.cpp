@@ -88,4 +88,12 @@ TEST(Constructor, ManualEdgeCases) {
     ASSERT_EQ(to_string(n29), "-123");
     BigNumber n30 = make_big_number("-1.23e-2");
     ASSERT_EQ(to_string(n30), "-0.0123");
+    BigNumber n31 = make_big_number("123e36");
+    ASSERT_EQ(to_string(n31), "123000000000000000000000000000000000000");
+
+    BigNumber n50 = make_big_number("50");
+    BigNumber n51 = make_big_number("-50");
+    ASSERT_EQ(n50.exponent, n51.exponent);
+    ASSERT_EQ(n50.is_negative, !n51.is_negative);
+    ASSERT_EQ(n50.chunks, n51.chunks);
 }
