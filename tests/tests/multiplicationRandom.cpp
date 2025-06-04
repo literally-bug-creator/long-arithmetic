@@ -27,6 +27,8 @@ TEST(Multiplication, RandomFloatStrings) {
         } else {
             ++mul_fail;
             ADD_FAILURE() << "[MUL FAIL] a=" << a_str << ", b=" << b_str << ", got=" << prod_bn << ", expected=" << prod_gmp;
+            std::cout << a.exponent << " " << b.exponent << std::endl;
+            std::cout << prod.exponent << std::endl;
         }
     }
     ASSERT_EQ(mul_fail, 0) << "Multiplication: " << mul_ok << "/" << TEST_CASES << " passed, " << mul_fail << " failed.";

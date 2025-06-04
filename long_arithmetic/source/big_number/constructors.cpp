@@ -168,5 +168,6 @@ std::string to_string( const BigNumber& number ) { // TODO: reimplement
         }
         if ( res.back() == '.' && !res.empty() ) { res.pop_back(); }
     }
+
     return res;
 }
