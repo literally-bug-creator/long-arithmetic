@@ -6,7 +6,7 @@
 const Error ROOT_FROM_NEG =
     make_error( CALCULATION_ERROR, "sqrt: negative number" );
 
-const int ITERATIONS = 30;
+const int ITERATIONS = 35;
 
 BigNumber sqrt( const BigNumber& number ) {
     if ( is_lower_than( number, ZERO ) ) return make_zero( ROOT_FROM_NEG );

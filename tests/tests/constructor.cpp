@@ -97,3 +97,52 @@ TEST(Constructor, ManualEdgeCases) {
     ASSERT_EQ(n50.is_negative, !n51.is_negative);
     ASSERT_EQ(n50.chunks, n51.chunks);
 }
+
+TEST(Constructor, Manual_LeadingZeros) {
+    BigNumber n1 = make_big_number("0000123");
+    ASSERT_EQ(to_string(n1), "123");
+    BigNumber n2 = make_big_number("-0000123");
+    ASSERT_EQ(to_string(n2), "-123");
+    BigNumber n3 = make_big_number("0000.0000456");
+    ASSERT_EQ(to_string(n3), "0.0000456");
+    BigNumber n4 = make_big_number("-0000.0000456");
+    ASSERT_EQ(to_string(n4), "-0.0000456");
+}
+
+TEST(Constructor, Manual_ZeroVariants) {
+    BigNumber n1 = make_big_number("0.0");
+    ASSERT_EQ(to_string(n1), "0");
+    BigNumber n2 = make_big_number("-0.0");
+    ASSERT_EQ(to_string(n2), "0");
+    BigNumber n3 = make_big_number("0000");
+    ASSERT_EQ(to_string(n3), "0");
+    BigNumber n4 = make_big_number("-0000");
+    ASSERT_EQ(to_string(n4), "0");
+}
+
+TEST(Constructor, Manual_OnlyDot) {
+    BigNumber n1 = make_big_number(".");
+    ASSERT_EQ(to_string(n1), "0");
+    BigNumber n2 = make_big_number("-.0");
+    ASSERT_EQ(to_string(n2), "0");
+}
+
+TEST(Constructor, Manual_ExponentEdgeCases) {
+    BigNumber n1 = make_big_number("1e-100");
+    ASSERT_EQ(to_string(n1), "0."
+        + std::string(99, '0') + "1");
+    BigNumber n2 = make_big_number("-1e-100");
+    ASSERT_EQ(to_string(n2), "-0."
+        + std::string(99, '0') + "1");
+    BigNumber n3 = make_big_number("1e+5");
+    ASSERT_EQ(to_string(n3), "100000");
+    BigNumber n4 = make_big_number("-1e+5");
+    ASSERT_EQ(to_string(n4), "-100000");
+}
+
+TEST(Constructor, Manual_FractionalEdgeCases) {
+    BigNumber n1 = make_big_number(".0000000000000000000000000000001");
+    ASSERT_EQ(to_string(n1), "0.0000000000000000000000000000001");
+    BigNumber n2 = make_big_number("-.0000000000000000000000000000001");
+    ASSERT_EQ(to_string(n2), "-0.0000000000000000000000000000001");
+}

@@ -6,7 +6,6 @@
 #include "getters.hpp"
 
 const size_t TO_RESERVE = 5560;
-const int32_t DIV_PRECISION = 100; // should be enough, doesnt real
 const Error DIVISION_BY_ZERO =
     make_error( CALCULATION_ERROR, "Division by zero" );
 
@@ -14,7 +13,7 @@ int32_t compute_max_exp( const BigNumber& number ) {
     return get_exponent( number ) + get_size( number ) - 1;
 }
 
-BigNumber div( const BigNumber& x, const BigNumber& y ) {
+BigNumber div( const BigNumber& x, const BigNumber& y, int32_t precision ) {
     if ( is_equal( x, ZERO ) ) { return ZERO; }
     if ( is_equal( y, ZERO ) ) { return make_zero( DIVISION_BY_ZERO ); }
     if ( is_equal( y, ONE ) ) { return x; }
@@ -32,7 +31,7 @@ BigNumber div( const BigNumber& x, const BigNumber& y ) {
     result_chunks.reserve( TO_RESERVE );
     int32_t max_chunks =
         std::max( compute_max_exp( x ) - compute_max_exp( y ) + 1, 0 ) +
-        DIV_PRECISION;
+        precision;
     int32_t current_exp = compute_max_exp( x );
     mul_chunk b0 = get_chunks( b ).back();
 
