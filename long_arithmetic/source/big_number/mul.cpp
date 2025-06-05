@@ -2,7 +2,6 @@
 #include "big_number.hpp"
 #include "constructors.hpp"
 #include "getters.hpp"
-#include <iostream>
 
 #define MULTIPLY_THRESHOLD 42
 
