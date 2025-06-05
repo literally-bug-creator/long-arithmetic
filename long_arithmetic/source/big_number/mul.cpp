@@ -3,7 +3,7 @@
 #include "constructors.hpp"
 #include "getters.hpp"
 
-#define MULTIPLY_THRESHOLD 42
+#define MULTIPLY_THRESHOLD 100
 
 BigNumber simple_mul( const BigNumber& multiplicand,
                       const BigNumber& multiplier ) {
