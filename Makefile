@@ -1,4 +1,4 @@
-.PHONY: all build run test clean
+.PHONY: all build run test benchmark clean
 
 BUILD_DIR = build
 
@@ -16,6 +16,10 @@ run:
 
 test:
 	@./$(BUILD_DIR)/tests/run_tests
+
+
+benchmark:
+	@./$(BUILD_DIR)/benchmark/run_benchmark --benchmark_time_unit=ms
 
 
 clean:
