@@ -81,9 +81,9 @@ BigNumber compute_add( const BigNumber& augend, const BigNumber& addend ) {
         carry = sum_chunk / CHUNK_BASE;
         sum_chunks[index] = sum_chunk % CHUNK_BASE;
     }
-    // strip zeros)))
+    // TODO: strip zeros)))
 
-    Error error = make_error( OK, "" ); // TODO: Change
+    Error error = make_error( OK, "" ); // TODO: add error collection
     return from_scratch( sum_chunks, min_exp, is_negative( augend ), error );
 }
 
@@ -115,8 +115,8 @@ BigNumber compute_sub( const BigNumber& minuend, const BigNumber& subtrahend ) {
         borrow = ( minuend_chunk < ( subtrahend_chunk + borrow ) ); // 0 | 1
         sub_chunks[index] = diff;
     }
-    // strip zeros)))
-    Error error = make_error( OK, "" ); // TODO: Change
+    // TODO: strip zeros)))
+    Error error = make_error( OK, "" ); // TODO: add error collection
     return from_scratch( sub_chunks, min_exp, is_negative( minuend ), error );
 }
 
