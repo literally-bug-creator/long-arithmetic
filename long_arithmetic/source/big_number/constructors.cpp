@@ -4,100 +4,123 @@
 #include <cstring>
 
 #include "error.hpp"
+#include "getters.hpp"
 
-void strip_zeros( BigNumber& num ) { // TODO: reimplement
-    size_t pref_zeros = 0;
-    size_t suff_zeros = 0;
-    size_t sz = num.chunks.size();
-    for ( size_t i = 0; i < sz; ++i ) {
-        if ( num.chunks[i] == 0 )
-            pref_zeros++;
-        else
-            break;
+void strip_zeros(BigNumber& num) {
+    auto& chunks = num.chunks;
+    size_t sz = chunks.size();
+
+    if (sz == 0) return;
+
+    size_t start = 0;
+    while (start < sz && chunks[start] == 0) {
+        ++start;
     }
-    for ( size_t i = sz; i > 0; --i ) {
-        if ( num.chunks[i - 1] == 0 )
-            suff_zeros++;
-        else
-            break;
+
+    size_t end = sz;
+    while (end > start && chunks[end - 1] == 0) {
+        --end;
     }
-    if ( pref_zeros == sz ) {
+
+    if (start == end) {
+        num.chunks.clear();
         num.exponent = 0;
         num.is_negative = false;
-        num.chunks.clear();
         return;
     }
-    num.exponent += pref_zeros;
-    size_t new_size = sz - pref_zeros - suff_zeros;
-    if ( new_size == sz ) return;
-    num.chunks.erase( num.chunks.begin(), num.chunks.begin() + pref_zeros );
-    num.chunks.resize( new_size );
+
+    num.exponent += static_cast<int32_t>(start);
+    chunks = std::vector<chunk>(chunks.begin() + start, chunks.begin() + end);
 }
 
-BigNumber make_big_number( const std::string& number ) { // TODO: reimplement
-    BigNumber res;
-    res.chunks.clear();
-    res.exponent = 0;
-    res.is_negative = false;
-    res.error = Error();
+BigNumber make_big_number(const std::string& number) {
     std::string num = number;
+    bool isNegative = false;
     int64_t expAdjust = 0;
-    auto ePos = num.find_first_of( "eE" );
-    if ( ePos != std::string::npos ) {
-        std::string expPart = num.substr( ePos + 1 );
-        expAdjust = std::stoll( expPart );
-        num.erase( ePos );
+    Error errorObj;                   
+    std::vector<chunk> chunksVec;     
+    int32_t exponentValue = 0;        
+
+    auto ePos = num.find_first_of("eE");
+    if (ePos != std::string::npos) {
+        std::string expPart = num.substr(ePos + 1);
+        expAdjust = std::stoll(expPart);
+        num.erase(ePos);
     }
-    if ( !num.empty() && num[0] == '-' ) {
-        res.is_negative = true;
-        num.erase( 0, 1 );
+
+    if (!num.empty() && num[0] == '-') {
+        isNegative = true;
+        num.erase(0, 1);
     }
+
     size_t frac_len = 0;
-    auto dot = num.find( '.' );
-    if ( dot != std::string::npos ) {
-        frac_len = num.size() - dot - 1;
-        num.erase( dot, 1 );
+    auto dotPos = num.find('.');
+    if (dotPos != std::string::npos) {
+        frac_len = num.size() - dotPos - 1;
+        num.erase(dotPos, 1);
     }
-    if ( expAdjust >= 0 ) {
-        if ( expAdjust > (int64_t)frac_len ) {
-            num.append( expAdjust - frac_len, '0' );
+
+    if (expAdjust >= 0) {
+        if (expAdjust > static_cast<int64_t>(frac_len)) {
+            num.append(static_cast<size_t>(expAdjust - frac_len), '0');
             frac_len = 0;
-        } else {
-            frac_len -= expAdjust;
+        } 
+        else {
+            frac_len -= static_cast<size_t>(expAdjust);
         }
-    } else {
-        num = std::string( -expAdjust, '0' ) + num;
-        frac_len += static_cast<size_t>( -expAdjust );
+    } 
+    else {
+        num = std::string(static_cast<size_t>(-expAdjust), '0') + num;
+        frac_len += static_cast<size_t>(-expAdjust);
     }
-    num.erase( 0, num.find_first_not_of( '0' ) );
-    if ( num.empty() ) num = "0";
-    res.exponent =
-        -( frac_len / CHUNK_DIGITS + ( frac_len % CHUNK_DIGITS != 0 ) );
-    if ( frac_len > 0 ) {
-        num += std::string( -res.exponent * CHUNK_DIGITS - frac_len, '0' );
+
+    num.erase(0, num.find_first_not_of('0'));
+    if (num.empty()) {
+        num = "0";
     }
-    size_t chunks_count =
-        num.size() / CHUNK_DIGITS + ( num.size() % CHUNK_DIGITS != 0 );
-    num = std::string( chunks_count * CHUNK_DIGITS - num.size(), '0' ) + num;
-    res.chunks.resize( chunks_count );
-    for ( size_t i = 0; i < chunks_count; i++ ) {
-        size_t start = num.size() - ( i + 1 ) * CHUNK_DIGITS;
-        res.chunks[i] = std::stoull( num.substr( start, CHUNK_DIGITS ) );
+
+    exponentValue = -(
+        static_cast<int32_t>(frac_len / CHUNK_DIGITS) +
+        static_cast<int32_t>((frac_len % CHUNK_DIGITS != 0) ? 1 : 0)
+    );
+
+    if (frac_len > 0) {
+        num += std::string(
+            static_cast<size_t>(-exponentValue) * CHUNK_DIGITS - frac_len,
+            '0'
+        );
     }
-    strip_zeros( res );
-    return res;
+
+    size_t chunksCount = num.size() / CHUNK_DIGITS
+                         + (num.size() % CHUNK_DIGITS != 0 ? 1 : 0);
+
+    size_t totalLen = chunksCount * CHUNK_DIGITS;
+    if (num.size() < totalLen) {
+        num = std::string(totalLen - num.size(), '0') + num;
+    }
+
+    chunksVec.resize(chunksCount);
+    for (size_t i = 0; i < chunksCount; ++i) {
+        size_t startIdx = num.size() - (i + 1) * CHUNK_DIGITS;
+        std::string chunkSubstring = num.substr(startIdx, CHUNK_DIGITS);
+        chunksVec[i] = static_cast<chunk>(std::stoull(chunkSubstring));
+    }
+
+    BigNumber temp = from_scratch(chunksVec,
+                                  exponentValue,
+                                  isNegative,
+                                  errorObj);
+
+    strip_zeros(temp);
+    return temp;
 }
 
 BigNumber from_scratch( const std::vector<chunk>& chunks,
                         int32_t exponent,
                         bool is_negative,
-                        const Error& error ) { // TODO: reimplement
+                        const Error& error ) {
 
-    BigNumber res;
-    res.chunks = chunks;
-    res.exponent = exponent;
-    res.is_negative = is_negative;
-    res.error = error;
+    BigNumber res = { chunks, exponent, is_negative, error };
     strip_zeros( res );
     return res;
 }
@@ -125,34 +148,44 @@ BigNumber make_zero() {
     return from_scratch( {}, 0, false, make_error( OK, "" ) ); // TODO: Fix
 }
 
-BigNumber from_int( int v ) { return make_big_number( std::to_string( v ) ); }
-
-BigNumber from_long( long v ) { return make_big_number( std::to_string( v ) ); }
-
 BigNumber from_long_long( long long v ) {
     return make_big_number( std::to_string( v ) );
 }
 
-BigNumber from_float( float v ) {
-    return make_big_number( std::to_string( v ) );
+static void trimTrailingZeros(std::string& s) {
+    size_t suff_zeros = 0;
+    for (size_t i = s.size(); i > 0; --i) {
+        if (s[i - 1] == '0') {
+            ++suff_zeros;
+        }
+        else if (s[i - 1] == '.') {
+            break;
+        }
+        else {
+            break;
+        }
+    }
+    if (suff_zeros > 0) {
+        s.erase(s.size() - suff_zeros, suff_zeros);
+    }
+    if (!s.empty() && s.back() == '.') {
+        s.pop_back();
+    }
 }
-
-BigNumber from_double( double v ) {
-    return make_big_number( std::to_string( v ) );
-}
-
-std::string to_string( const BigNumber& number ) { // TODO: reimplement
-    if (number.chunks.empty() || (number.chunks.size() == 1 && number.chunks[0] == 0))
+std::string to_string( const BigNumber& number ) {
+    std::vector<chunk> chunks = get_chunks(number);
+    size_t chunks_size = chunks.size();
+    if (chunks.empty() || (chunks.size() == 1 && chunks[0] == 0))
         return "0";
 
     std::string result;
-    if (number.is_negative) {
+    result.reserve(1 + 1 + chunks_size * CHUNK_DIGITS);
+    if (is_negative(number)) {
         result.push_back('-');
     }
 
-    size_t chunks = number.chunks.size();
-    int32_t exp = number.exponent;
-    int32_t max_exp = std::max(exp + static_cast<int32_t>(chunks) - 1, 0);
+    int32_t exp = get_exponent(number);
+    int32_t max_exp = std::max(exp + static_cast<int32_t>(chunks_size) - 1, 0);
     int32_t min_exp = std::min(exp, 0);
 
     for (int32_t i = max_exp; i >= min_exp; --i) {
@@ -161,34 +194,19 @@ std::string to_string( const BigNumber& number ) { // TODO: reimplement
         }
         std::string chunk_str;
         int32_t chunk_idx = i - exp;
-        if (chunk_idx >= 0 && static_cast<size_t>(chunk_idx) < chunks) {
-            chunk_str = std::to_string(number.chunks[chunk_idx]);
+        if (chunk_idx >= 0 && static_cast<size_t>(chunk_idx) < chunks_size) {
+            chunk_str = std::to_string(chunks[chunk_idx]);
         } else {
             chunk_str = "0";
         }
         if (i != max_exp) {
             chunk_str = std::string(CHUNK_DIGITS - chunk_str.size(), '0') + chunk_str;
         }
-        result += chunk_str;
+        result.append(chunk_str);
     }
 
     if (min_exp < 0) {
-        size_t suff_zeros = 0;
-        for (size_t i = result.size(); i > 0; --i) {
-            if (result[i - 1] == '0') {
-                ++suff_zeros;
-            } else if (result[i - 1] == '.') {
-                break;
-            } else {
-                break;
-            }
-        }
-        if (suff_zeros > 0) {
-            result.erase(result.size() - suff_zeros, suff_zeros);
-        }
-        if (!result.empty() && result.back() == '.') {
-            result.pop_back();
-        }
+        trimTrailingZeros(result);
     }
 
     return result;
