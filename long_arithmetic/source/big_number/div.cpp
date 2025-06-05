@@ -5,6 +5,7 @@
 #include "constructors.hpp"
 #include "getters.hpp"
 
+const size_t TO_RESERVE = 5560;
 const int32_t DIV_PRECISION = 100; // should be enough, doesnt real
 const Error DIVISION_BY_ZERO =
     make_error( CALCULATION_ERROR, "Division by zero" );
@@ -28,6 +29,7 @@ BigNumber div( const BigNumber& x, const BigNumber& y ) {
     BigNumber a = abs( x );
     mul_chunk carry = 0;
     std::vector<chunk> result_chunks;
+    result_chunks.reserve( TO_RESERVE );
     int32_t max_chunks =
         std::max( compute_max_exp( x ) - compute_max_exp( y ) + 1, 0 ) +
         DIV_PRECISION;
