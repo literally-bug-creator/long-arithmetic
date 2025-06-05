@@ -45,6 +45,7 @@ BigNumber div( const BigNumber& x, const BigNumber& y ) {
     // std::cout << "b (shifted)=" << to_string(b) << ", b.exp=" << b.exponent << std::endl;
 
     std::vector<chunk> result_chunks;
+    result_chunks.reserve(5560);
 
     int32_t integer_chunks = std::max( a_max_exp - b_max_exp + 1, 0 );
     int32_t integer_digits = integer_chunks * CHUNK_DIGITS;
