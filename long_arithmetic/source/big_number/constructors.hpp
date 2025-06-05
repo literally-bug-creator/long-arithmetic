@@ -3,6 +3,8 @@
 
 const std::string EMPTY_STR = "";
 const Error DEFAULT_ERROR = make_error( OK, EMPTY_STR );
+const BigNumber ZERO = make_big_number( "0" );
+const BigNumber ONE = make_big_number( "1" );
 
 BigNumber make_big_number( const std::string& str );
 
