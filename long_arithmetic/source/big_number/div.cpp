@@ -7,7 +7,7 @@
 #include "big_number.hpp"
 #include "constructors.hpp"
 #include "getters.hpp"
-
+const size_t TO_RESERVE = 5560;
 const size_t _DIV_PRECISION = 100; // should be enough for most cases, but the
                                     // real precision calculated differently
 const BigNumber ZERO = make_big_number( "0" );
@@ -45,7 +45,7 @@ BigNumber div( const BigNumber& x, const BigNumber& y ) {
     // std::cout << "b (shifted)=" << to_string(b) << ", b.exp=" << b.exponent << std::endl;
 
     std::vector<chunk> result_chunks;
-    result_chunks.reserve(5560);
+    result_chunks.reserve(TO_RESERVE);
 
     int32_t integer_chunks = std::max( a_max_exp - b_max_exp + 1, 0 );
     int32_t integer_digits = integer_chunks * CHUNK_DIGITS;
