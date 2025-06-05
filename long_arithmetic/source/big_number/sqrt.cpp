@@ -15,7 +15,8 @@ BigNumber sqrt( const BigNumber& number ) {
     BigNumber x = number;
     BigNumber last = ZERO;
 
-    for ( int i = 0; i < ITERATIONS && !( is_equal( x, last ) ); ++i ) {
+    for ( int i = 0; i < ITERATIONS; ++i ) {
+        if ( is_equal( x, last ) ) break;
         last = x;
         x = div( add( x, div( number, x ) ), TWO );
     }
