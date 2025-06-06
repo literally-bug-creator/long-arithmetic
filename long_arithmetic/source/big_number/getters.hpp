@@ -1,17 +1,19 @@
 #include "big_number.hpp"
 
-const Error& get_error( const BigNumber& number );
+namespace big_number {
+    const Error& get_error( const BigNumber& number );
 
-int32_t get_exponent( const BigNumber& number );
+    int32_t get_exponent( const BigNumber& number );
 
-size_t get_size( const BigNumber& number );
+    size_t get_size( const BigNumber& number );
 
-const std::vector<chunk>& get_chunks( const BigNumber& number );
+    const std::vector<chunk>& get_chunks( const BigNumber& number );
 
-chunk get_chunk( const BigNumber& number, int32_t index );
+    chunk get_chunk( const BigNumber& number, int32_t index );
 
-chunk get_chunk_direct( const BigNumber& number, int32_t index );
+    chunk get_chunk_direct( const BigNumber& number, int32_t index );
 
-bool is_negative( const BigNumber& number );
+    bool is_negative( const BigNumber& number );
 
-bool is_zero( const BigNumber& number );
+    bool is_zero( const BigNumber& number );
+}
