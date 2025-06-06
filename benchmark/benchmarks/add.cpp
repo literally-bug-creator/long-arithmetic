@@ -1,6 +1,8 @@
 #include <benchmark/benchmark.h>
 #include <big_number.hpp>
 
+using namespace big_number;
+
 static void Add(benchmark::State& state) {
     BigNumber left = make_big_number(std::string(state.range(0), '9'));
     BigNumber right = make_big_number(std::string(state.range(0), '9'));
