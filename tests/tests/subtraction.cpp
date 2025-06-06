@@ -6,6 +6,7 @@
 #include <string>
 
 using namespace std;
+using namespace big_number;
 
 constexpr int TEST_CASES = 10000;
 constexpr double EPS = 1e-6;

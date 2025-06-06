@@ -1,4 +1,4 @@
-.PHONY: all build run test benchmark clean
+.PHONY: all build run test benchmark clean rebuild
 
 BUILD_DIR = build
 

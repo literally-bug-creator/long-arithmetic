@@ -1,8 +1,6 @@
 #pragma once
 #include <string>
 #include <random>
-#include <sstream>
-#include <iomanip>
 
 // Генерирует случайную строку, представляющую float-число без незначащих нулей
 inline std::string randomFloatString() {
