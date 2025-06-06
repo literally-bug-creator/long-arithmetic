@@ -14,7 +14,7 @@ typedef uint64_t chunk;
 
 const chunk CHUNK_BASE = static_cast<chunk>( std::pow( 10, CHUNK_DIGITS ) );
 const chunk MAX_CHUNK = CHUNK_BASE - 1;
-const int32_t DIV_PRECISION = 10;
+const int32_t DIV_PRECISION = 5556;
 
 struct BigNumber {
     std::vector<chunk> chunks;
@@ -43,7 +43,7 @@ BigNumber sub( const BigNumber& minuend, const BigNumber& subtrahend );
 
 BigNumber mul( const BigNumber& multiplicand, const BigNumber& multiplier );
 
-BigNumber div( const BigNumber& dividend, const BigNumber& divisor, int32_t precision = DIV_PRECISION ); 
+BigNumber div( const BigNumber& dividend, const BigNumber& divisor, int32_t precision = DIV_PRECISION );
 
 BigNumber sqrt( const BigNumber& radicand );
 
