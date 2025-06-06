@@ -3,6 +3,7 @@
 #include "randomString.h"
 
 using namespace std;
+using namespace big_number;
 
 TEST(Constructor, RandomFloatStrings) {
     for (int i = 0; i < 10000; ++i) {
@@ -51,13 +52,13 @@ TEST(Constructor, ManualEdgeCases) {
 
     BigNumber n16 = make_big_number("-1.");
     ASSERT_EQ(to_string(n16), "-1");
-    
+
     BigNumber n17 = make_big_number(".1");
     ASSERT_EQ(to_string(n17), "0.1");
 
     BigNumber n18 = make_big_number("-.1");
     ASSERT_EQ(to_string(n18), "-0.1");
-    
+
     BigNumber n19 = make_big_number("0.");
     ASSERT_EQ(to_string(n19), "0");
 
