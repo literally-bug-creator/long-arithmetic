@@ -13,12 +13,18 @@ namespace big_number {
     BigNumber from_scratch( const std::vector<chunk>& chunks,
                             int32_t exponent,
                             bool is_negative,
-                            const Error& error );
+                            const Error& error,
+                            bool is_nan = false,
+                            bool is_inf = false );
 
     BigNumber from_iterator( std::vector<chunk>::const_iterator begin,
                              std::vector<chunk>::const_iterator end );
 
     BigNumber make_zero( Error error = DEFAULT_ERROR );
+
+    BigNumber make_nan( Error error = DEFAULT_ERROR );
+
+    BigNumber make_inf(bool is_negative, Error error = DEFAULT_ERROR);
 
     BigNumber from_int( int v );
 

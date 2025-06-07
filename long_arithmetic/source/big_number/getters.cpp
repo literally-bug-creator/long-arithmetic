@@ -38,4 +38,8 @@ namespace big_number {
         return get_size( number ) == ZERO;
     }
 
+    bool is_nan( const BigNumber& number ) { return number.is_nan; }
+
+    bool is_inf( const BigNumber& number ) { return number.is_inf; }
+
 }

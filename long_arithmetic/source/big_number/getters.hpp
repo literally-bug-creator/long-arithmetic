@@ -16,4 +16,8 @@ namespace big_number {
     bool is_negative( const BigNumber& number );
 
     bool is_zero( const BigNumber& number );
+
+    bool is_nan( const BigNumber& number );
+
+    bool is_inf( const BigNumber& number );
 }

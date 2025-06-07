@@ -20,6 +20,8 @@ namespace big_number {
         int32_t exponent;
         bool is_negative;
         Error error;
+        bool is_nan;
+        bool is_inf;
     };
 
     const Error& get_error( const BigNumber& number );

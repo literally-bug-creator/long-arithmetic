@@ -3,6 +3,7 @@
 #include <cstdint>
 #include <cstring>
 
+#include "big_number.hpp"
 #include "error.hpp"
 
 namespace big_number {
@@ -94,13 +95,17 @@ namespace big_number {
     BigNumber from_scratch( const std::vector<chunk>& chunks,
                             int32_t exponent,
                             bool is_negative,
-                            const Error& error ) { // TODO: reimplement
+                            const Error& error,
+                            bool is_nan,
+                            bool is_inf ) { // TODO: reimplement
 
         BigNumber res;
         res.chunks = chunks;
         res.exponent = exponent;
         res.is_negative = is_negative;
         res.error = error;
+        res.is_nan = is_nan;
+        res.is_inf = is_inf;
         strip_zeros( res );
         return res;
     }
@@ -126,6 +131,14 @@ namespace big_number {
 
     BigNumber make_zero( Error error ) {
         return from_scratch( {}, 0, false, error );
+    }
+
+    BigNumber make_nan( Error error ) {
+        return from_scratch( {}, 0, false, error, true, false );
+    }
+
+    BigNumber make_inf( bool is_negative, Error error ) {
+        return from_scratch( {}, 0, is_negative, error, false, true );
     }
 
     BigNumber from_int( int v ) {

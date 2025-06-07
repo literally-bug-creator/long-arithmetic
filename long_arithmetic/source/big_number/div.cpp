@@ -15,6 +15,20 @@ namespace big_number {
     }
 
     BigNumber div( const BigNumber& x, const BigNumber& y, int32_t precision ) {
+        if ( is_nan( x ) || is_nan( y ) ) return make_nan();
+
+        if ( is_inf( x ) && is_inf( y ) ) {
+            return make_nan();
+        }
+
+        if ( is_inf( multiplicand ) && is_zero( multiplier ) )
+            return make_nan();
+        if ( is_inf( multiplier ) && is_zero( multiplicand ) )
+            return make_nan();
+
+        if ( is_inf( multiplicand ) ) return multiplicand;
+        if ( is_inf( multiplier ) ) return multiplier;
+
         if ( is_equal( x, ZERO ) ) { return ZERO; }
         if ( is_equal( y, ZERO ) ) { return make_zero( DIVISION_BY_ZERO ); }
         if ( is_equal( y, ONE ) ) { return x; }

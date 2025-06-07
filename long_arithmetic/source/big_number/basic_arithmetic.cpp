@@ -18,10 +18,14 @@ namespace big_number {
         return from_scratch( get_chunks( operand ),
                              get_exponent( operand ),
                              !is_negative( operand ),
-                             get_error( operand ) );
+                             get_error( operand ),
+                             is_nan( operand ),
+                             is_inf( operand ) );
     }
 
     bool is_equal( const BigNumber& left, const BigNumber& right ) {
+        if ( is_nan( left ) || is_nan( right ) ) return false;
+        if ( is_inf( left ) != is_inf( right ) ) return false;
         if ( is_negative( left ) != is_negative( right ) ) return false;
         if ( get_size( left ) != get_size( right ) ) return false;
         if ( get_exponent( left ) != get_exponent( right ) ) return false;
@@ -33,7 +37,7 @@ namespace big_number {
             if ( left_chunk != right_chunk ) return false;
         }
 
-        return true;
+        return true;addend
     }
 
     int32_t choose_max_exp( const BigNumber& a, const BigNumber& b ) {
@@ -90,6 +94,17 @@ namespace big_number {
     }
 
     BigNumber add( const BigNumber& augend, const BigNumber& addend ) {
+        if ( is_nan( augend ) || is_nan( addend ) ) return make_nan();
+
+        if ( is_inf( augend ) && is_inf( addend ) ) {
+            if ( is_negative( augend ) != is_negative( addend ) )
+                return make_nan();
+            return augend;
+        }
+
+        if ( is_inf( augend ) ) return augend;
+        if ( is_inf( addend ) ) return addend;
+
         if ( is_zero( augend ) ) return addend;
         if ( is_zero( addend ) ) return augend;
 
@@ -126,6 +141,17 @@ namespace big_number {
     }
 
     BigNumber sub( const BigNumber& minuend, const BigNumber& subtrahend ) {
+        if ( is_nan( minuend ) || is_nan( subtrahend ) ) return make_nan();
+
+        if ( is_inf( minuend ) && is_inf( subtrahend ) ) {
+            if ( is_negative( minuend ) != is_negative( subtrahend ) )
+                return make_nan();
+            return minuend;
+        }
+
+        if ( is_inf( minuend ) ) return subtrahend;
+        if ( is_inf( minuend ) ) return subtrahend;
+
         if ( is_zero( minuend ) ) return neg( subtrahend );
         if ( is_zero( subtrahend ) ) return minuend;
 

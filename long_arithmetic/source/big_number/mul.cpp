@@ -35,6 +35,21 @@ namespace big_number {
 
     BigNumber mul( const BigNumber& multiplicand,
                    const BigNumber& multiplier ) {
+        if ( is_nan( multiplicand ) || is_nan( multiplier ) ) return make_nan();
+
+        if ( is_inf( multiplicand ) && is_inf( multiplier ) ) {
+            return make_inf( is_negative( multiplicand ) &&
+                             is_negative( multiplier ) );
+        }
+
+        if ( is_inf( multiplicand ) && is_zero( multiplier ) )
+            return make_nan();
+        if ( is_inf( multiplier ) && is_zero( multiplicand ) )
+            return make_nan();
+
+        if ( is_inf( multiplicand ) ) return multiplicand;
+        if ( is_inf( multiplier ) ) return multiplier;
+
         if ( is_zero( multiplicand ) || is_zero( multiplier ) )
             return make_zero();
         if ( get_size( multiplicand ) <= MULTIPLY_THRESHOLD ||
