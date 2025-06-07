@@ -90,11 +90,11 @@ namespace big_number {
     }
 
     BigNumber add( const BigNumber& augend, const BigNumber& addend ) {
-        if ( is_negative( augend ) != is_negative( addend ) )
-            return sub( augend, neg( addend ) );
-
         if ( is_zero( augend ) ) return addend;
         if ( is_zero( addend ) ) return augend;
+
+        if ( is_negative( augend ) != is_negative( addend ) )
+            return sub( augend, neg( addend ) );
 
         return compute_add( augend, addend );
     }
@@ -126,11 +126,11 @@ namespace big_number {
     }
 
     BigNumber sub( const BigNumber& minuend, const BigNumber& subtrahend ) {
-        if ( is_negative( minuend ) != is_negative( subtrahend ) )
-            return add( minuend, neg( subtrahend ) );
-
         if ( is_zero( minuend ) ) return neg( subtrahend );
         if ( is_zero( subtrahend ) ) return minuend;
+
+        if ( is_negative( minuend ) != is_negative( subtrahend ) )
+            return add( minuend, neg( subtrahend ) );
 
         if ( is_lower_than( abs( minuend ), abs( subtrahend ) ) )
             return neg( sub( subtrahend, minuend ) );
