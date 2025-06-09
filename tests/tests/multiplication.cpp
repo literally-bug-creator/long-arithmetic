@@ -19,10 +19,10 @@ TEST(Multiplication, RandomFloatStrings) {
         BigNumber a = make_big_number(a_str);
         BigNumber b = make_big_number(b_str);
         BigNumber prod = mul(a, b);
-        mpf_class a_gmp(a_str, 128);
-        mpf_class b_gmp(b_str, 128);
+        mpf_class a_gmp(a_str, 1280);
+        mpf_class b_gmp(b_str, 1280);
         mpf_class prod_gmp = a_gmp * b_gmp;
-        mpf_class prod_bn(to_string(prod), 128);
+        mpf_class prod_bn(to_string(prod), 1280);
         if (abs(prod_bn - prod_gmp) < EPS) {
             ++mul_ok;
         } else {
