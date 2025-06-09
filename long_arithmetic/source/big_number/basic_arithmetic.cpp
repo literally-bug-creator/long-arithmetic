@@ -138,15 +138,7 @@ namespace big_number {
         return compute_sub( minuend, subtrahend );
     }
 
-    BigNumber shift( const BigNumber& operand, int32_t exp ) {
-        return from_scratch( get_chunks( operand ),
-                             get_exponent( operand ) + exp,
-                             is_negative( operand ),
-                             get_error( operand ) );
-    }
-
     bool is_greater_than( const BigNumber& left, const BigNumber& right ) {
         return !is_equal( left, right ) && !is_lower_than( left, right );
     }
-
 }

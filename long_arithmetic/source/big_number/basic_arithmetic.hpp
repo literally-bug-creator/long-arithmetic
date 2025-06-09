@@ -14,6 +14,4 @@ namespace big_number {
     BigNumber add( const BigNumber& augend, const BigNumber& addend );
 
     BigNumber sub( const BigNumber& minuend, const BigNumber& subtrahend );
-
-    BigNumber shift( const BigNumber& operand, int32_t exp );
 }
