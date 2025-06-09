@@ -15,6 +15,4 @@ namespace big_number {
                             const Error& error );
 
     BigNumber make_zero( Error error = DEFAULT_ERROR );
-
-    std::string to_string( const BigNumber& number );
 }
