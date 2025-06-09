@@ -6,7 +6,7 @@
 #include "error.hpp"
 
 namespace big_number {
-    void strip_zeros( BigNumber& num ) { // TODO: reimplement
+    void strip_zeros( BigNumber& num ) { // TODO: need a refactor
         size_t pref_zeros = 0;
         size_t suff_zeros = 0;
         size_t sz = num.chunks.size();
@@ -35,66 +35,11 @@ namespace big_number {
         num.chunks.resize( new_size );
     }
 
-    BigNumber
-    make_big_number( const std::string& number ) { // TODO: reimplement
-        BigNumber res;
-        res.chunks.clear();
-        res.exponent = 0;
-        res.is_negative = false;
-        res.error = Error();
-        std::string num = number;
-        int64_t expAdjust = 0;
-        auto ePos = num.find_first_of( "eE" );
-        if ( ePos != std::string::npos ) {
-            std::string expPart = num.substr( ePos + 1 );
-            expAdjust = std::stoll( expPart );
-            num.erase( ePos );
-        }
-        if ( !num.empty() && num[0] == '-' ) {
-            res.is_negative = true;
-            num.erase( 0, 1 );
-        }
-        size_t frac_len = 0;
-        auto dot = num.find( '.' );
-        if ( dot != std::string::npos ) {
-            frac_len = num.size() - dot - 1;
-            num.erase( dot, 1 );
-        }
-        if ( expAdjust >= 0 ) {
-            if ( expAdjust > (int64_t)frac_len ) {
-                num.append( expAdjust - frac_len, '0' );
-                frac_len = 0;
-            } else {
-                frac_len -= expAdjust;
-            }
-        } else {
-            num = std::string( -expAdjust, '0' ) + num;
-            frac_len += static_cast<size_t>( -expAdjust );
-        }
-        num.erase( 0, num.find_first_not_of( '0' ) );
-        if ( num.empty() ) num = "0";
-        res.exponent =
-            -( frac_len / CHUNK_DIGITS + ( frac_len % CHUNK_DIGITS != 0 ) );
-        if ( frac_len > 0 ) {
-            num += std::string( -res.exponent * CHUNK_DIGITS - frac_len, '0' );
-        }
-        size_t chunks_count =
-            num.size() / CHUNK_DIGITS + ( num.size() % CHUNK_DIGITS != 0 );
-        num =
-            std::string( chunks_count * CHUNK_DIGITS - num.size(), '0' ) + num;
-        res.chunks.resize( chunks_count );
-        for ( size_t i = 0; i < chunks_count; i++ ) {
-            size_t start = num.size() - ( i + 1 ) * CHUNK_DIGITS;
-            res.chunks[i] = std::stoull( num.substr( start, CHUNK_DIGITS ) );
-        }
-        strip_zeros( res );
-        return res;
-    }
-
-    BigNumber from_scratch( const std::vector<chunk>& chunks,
-                            int32_t exponent,
-                            bool is_negative,
-                            const Error& error ) { // TODO: reimplement
+    BigNumber from_scratch(
+        const std::vector<chunk>& chunks,
+        int32_t exponent,
+        bool is_negative,
+        const Error& error = DEFAULT_ERROR ) { // TODO: need a refactor
 
         BigNumber res;
         res.chunks = chunks;
@@ -105,8 +50,9 @@ namespace big_number {
         return res;
     }
 
-    BigNumber from_iterator( std::vector<chunk>::const_iterator begin,
-                             std::vector<chunk>::const_iterator end ) {
+    BigNumber from_iterator(
+        std::vector<chunk>::const_iterator begin,
+        std::vector<chunk>::const_iterator end ) { // TODO: need a refactor
         std::vector<chunk> chunks;
         int32_t exponent = 0;
         size_t new_size = end - begin;
@@ -120,35 +66,14 @@ namespace big_number {
             new_size--;
         }
         if ( new_size > 0 ) { chunks = std::vector<chunk>( begin, end ); }
-        return from_scratch(
-            chunks, exponent, false, make_error( OK, "" ) ); // TODO: Fix
+        return from_scratch( chunks, exponent, false );
     }
 
     BigNumber make_zero( Error error ) {
         return from_scratch( {}, 0, false, error );
     }
 
-    BigNumber from_int( int v ) {
-        return make_big_number( std::to_string( v ) );
-    }
-
-    BigNumber from_long( long v ) {
-        return make_big_number( std::to_string( v ) );
-    }
-
-    BigNumber from_long_long( long long v ) {
-        return make_big_number( std::to_string( v ) );
-    }
-
-    BigNumber from_float( float v ) {
-        return make_big_number( std::to_string( v ) );
-    }
-
-    BigNumber from_double( double v ) {
-        return make_big_number( std::to_string( v ) );
-    }
-
-    std::string to_string( const BigNumber& number ) { // TODO: reimplement
+    std::string to_string( const BigNumber& number ) { // TODO: need a refactor
         if ( number.chunks.empty() ||
              ( number.chunks.size() == 1 && number.chunks[0] == 0 ) )
             return "0";

@@ -8,8 +8,6 @@ namespace big_number {
     const BigNumber ONE = make_big_number( "1" );
     const BigNumber TWO = make_big_number( "2" );
 
-    BigNumber make_big_number( const std::string& str );
-
     BigNumber from_scratch( const std::vector<chunk>& chunks,
                             int32_t exponent,
                             bool is_negative,
@@ -19,16 +17,6 @@ namespace big_number {
                              std::vector<chunk>::const_iterator end );
 
     BigNumber make_zero( Error error = DEFAULT_ERROR );
-
-    BigNumber from_int( int v );
-
-    BigNumber from_long( long v );
-
-    BigNumber from_long_long( long long v );
-
-    BigNumber from_float( float v );
-
-    BigNumber from_double( double v );
 
     std::string to_string( const BigNumber& number );
 }
