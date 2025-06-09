@@ -1,9 +1,15 @@
 #include "big_number.hpp"
+#include "constructors.hpp"
 
 namespace big_number {
+    const std::string ZERO_STR = "0";
+    const std::string MINUS_STR = "-";
+    const char DOT_CHAR = '.';
+    const char ZERO_CHAR = '0';
+
     bool is_zero( const BigNumber& number ) {
-        return number.chunks.empty() ||
-               ( number.chunks.size() == 1 && number.chunks[0] == 0 );
+        return number.chunks.empty() || ( number.chunks.size() == ONE_INT &&
+                                          number.chunks[ZERO_INT] == ZERO_INT );
     }
 
     std::string get_chunk_string( const BigNumber& number,
@@ -11,45 +17,47 @@ namespace big_number {
                                   bool is_first ) {
         int32_t chunk_index = position - number.exponent;
 
-        if ( chunk_index < 0 ||
+        if ( chunk_index < ZERO_INT ||
              chunk_index >= static_cast<int32_t>( number.chunks.size() ) ) {
-            return is_first ? "0" : std::string( CHUNK_DIGITS, '0' );
+            return is_first ? ZERO_STR : std::string( CHUNK_DIGITS, ZERO_CHAR );
         }
 
         std::string chunk_str = std::to_string( number.chunks[chunk_index] );
 
         if ( !is_first && chunk_str.size() < CHUNK_DIGITS ) {
             chunk_str =
-                std::string( CHUNK_DIGITS - chunk_str.size(), '0' ) + chunk_str;
+                std::string( CHUNK_DIGITS - chunk_str.size(), ZERO_CHAR ) +
+                chunk_str;
         }
 
         return chunk_str;
     }
 
     std::string trim_decimal_zeros( std::string str ) {
-        if ( str.find( '.' ) != std::string::npos ) {
-            while ( str.back() == '0' )
+        if ( str.find( DOT_CHAR ) != std::string::npos ) {
+            while ( str.back() == ZERO_CHAR )
                 str.pop_back();
-            if ( str.back() == '.' ) str.pop_back();
+            if ( str.back() == DOT_CHAR ) str.pop_back();
         }
         return str;
     }
 
     std::string to_string( const BigNumber& number ) {
-        if ( is_zero( number ) ) return "0";
+        if ( is_zero( number ) ) return ZERO_STR;
 
-        std::string result = number.is_negative ? "-" : "";
+        std::string result = number.is_negative ? MINUS_STR : EMPTY_STR;
 
         int32_t max_pos = std::max(
-            number.exponent + static_cast<int32_t>( number.chunks.size() ) - 1,
-            0 );
-        int32_t min_pos = std::min( number.exponent, 0 );
+            number.exponent + static_cast<int32_t>( number.chunks.size() ) -
+                ONE_INT,
+            ZERO_INT );
+        int32_t min_pos = std::min( number.exponent, ZERO_INT );
 
         for ( int32_t pos = max_pos; pos >= min_pos; --pos ) {
-            if ( pos == -1 ) result += '.';
+            if ( pos == -ONE_INT ) result += DOT_CHAR;
             result += get_chunk_string( number, pos, pos == max_pos );
         }
 
-        return min_pos < 0 ? trim_decimal_zeros( result ) : result;
+        return min_pos < ZERO_INT ? trim_decimal_zeros( result ) : result;
     }
 }

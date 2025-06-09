@@ -3,13 +3,13 @@
 #include "big_number.hpp"
 
 namespace big_number {
-    chunk ZERO_CHUNK = 0;
+    chunk ZERO_CHUNK = ZERO_INT;
 
     int32_t compute_exponent_delta( const std::vector<chunk>& chunks ) {
         size_t first_non_zero_chunk = chunks.size();
-        size_t last_non_zero_chunk = 0;
+        size_t last_non_zero_chunk = ZERO_INT;
 
-        for ( size_t index = 0; index < chunks.size(); index++ ) {
+        for ( size_t index = ZERO_INT; index < chunks.size(); index++ ) {
             chunk value = chunks[index];
             if ( value == ZERO_CHUNK ) continue;
 
@@ -25,16 +25,16 @@ namespace big_number {
         if ( chunks.empty() ) return {};
 
         size_t size = chunks.size();
-        size_t first_nonzero = 0;
+        size_t first_nonzero = ZERO_INT;
         size_t last_nonzero = size;
 
-        while ( first_nonzero < size && chunks[first_nonzero] == 0 ) {
+        while ( first_nonzero < size && chunks[first_nonzero] == ZERO_INT ) {
             first_nonzero++;
         }
 
         if ( first_nonzero == size ) return {};
 
-        while ( last_nonzero > first_nonzero && chunks[last_nonzero - 1] == 0 )
+        while ( last_nonzero > first_nonzero && chunks[last_nonzero - 1] == ZERO_INT )
             last_nonzero--;
 
         return std::vector<chunk>(
@@ -56,6 +56,6 @@ namespace big_number {
     }
 
     BigNumber make_zero( Error error ) {
-        return from_scratch( {}, 0, false, error );
+        return from_scratch( {}, ZERO_INT, false, error );
     }
 }
