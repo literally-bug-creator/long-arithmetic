@@ -36,7 +36,7 @@ TEST(Multiplication, RandomFloatStrings) {
 }
 
 TEST(Multiplication, Manual_1000x1000_Nines) {
-    std::string nines_1000(10000, '9');
+    std::string nines_1000(100000, '9');
     BigNumber a = make_big_number(nines_1000);
     BigNumber b = make_big_number(nines_1000);
     BigNumber prod = mul(a, b);

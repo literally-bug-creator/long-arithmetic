@@ -192,7 +192,6 @@ namespace big_number {
 static const uint32_t MOD1 = 998244353;     // 119 * 2^23 + 1
 static const uint32_t MOD2 = 1004535809;    // 479 * 2^21 + 1
 static const uint32_t MOD3 = 469762049;     // 7 * 2^26 + 1
-static const uint32_t MOD4 = 1224736769;    // 73 * 2^24 + 1
 static const uint32_t ROOT = 3;
 
 static uint32_t mod_pow(uint64_t a, uint64_t e, uint32_t mod) {
@@ -244,59 +243,55 @@ static std::vector<uint32_t> to_base1e9(const std::vector<chunk>& c) {
     return d;
 }
 
-// CRT-сборка из четырех модулей
-static std::vector<chunk> from_ntt_crt4(
+// CRT-сборка для трёх модулей
+static std::vector<chunk> from_ntt_crt3(
     const std::vector<uint32_t>& r1,
     const std::vector<uint32_t>& r2,
-    const std::vector<uint32_t>& r3,
-    const std::vector<uint32_t>& r4)
+    const std::vector<uint32_t>& r3)
 {
     size_t n = r1.size();
-    
-    const __int128 m1 = MOD1, m2 = MOD2, m3 = MOD3, m4 = MOD4;
+    const __int128 m1 = MOD1, m2 = MOD2, m3 = MOD3;
     const __int128 m12 = m1 * m2;
-    const __int128 m123 = m12 * m3;
     
-    // Вычисление CRT-коэффициентов в base 1e9
+    // Предвычисление инверсий
+    uint64_t inv_m1_mod2 = mod_pow(static_cast<uint64_t>(m1 % m2), m2 - 2, MOD2);
+    uint64_t inv_m12_mod3 = mod_pow(static_cast<uint64_t>(m12 % m3), m3 - 2, MOD3);
+
     std::vector<__int128> coeff(n);
-    uint64_t inv_m1_mod2 = mod_pow((uint64_t)(m1 % m2), (uint64_t)(m2 - 2), MOD2);
-    uint64_t inv_m12_mod3 = mod_pow((uint64_t)(m12 % m3), (uint64_t)(m3 - 2), MOD3);
-    uint64_t inv_m123_mod4 = mod_pow((uint64_t)(m123 % m4), (uint64_t)(m4 - 2), MOD4);
     for (size_t i = 0; i < n; ++i) {
-        __int128 t = ((__int128)r2[i] - r1[i] + m2) % m2;
+        // Шаг 1: комбинирование MOD1 и MOD2
+        __int128 t = (static_cast<__int128>(r2[i]) - r1[i] + m2) % m2;
         t = t * inv_m1_mod2 % m2;
         __int128 x12 = r1[i] + t * m1;
-        t = ((__int128)r3[i] - (x12 % m3) + m3) % m3;
+        
+        // Шаг 2: подключение MOD3
+        t = (static_cast<__int128>(r3[i]) - (x12 % m3) + m3) % m3;
         t = t * inv_m12_mod3 % m3;
-        __int128 x123 = x12 + t * m12;
-        t = ((__int128)r4[i] - (x123 % m4) + m4) % m4;
-        t = t * inv_m123_mod4 % m4;
-        coeff[i] = x123 + t * m123;
+        coeff[i] = x12 + t * m12;
     }
     
-    // Нормализация разрядов: собираем все цифры base 1e9
+    // Нормализация разрядов
     std::vector<uint32_t> digits;
     digits.reserve(n + 1);
     __int128 carry = 0;
     for (size_t i = 0; i < n; ++i) {
         __int128 val = coeff[i] + carry;
-        digits.push_back((uint32_t)(val % 1000000000));
+        digits.push_back(static_cast<uint32_t>(val % 1000000000));
         carry = val / 1000000000;
     }
     while (carry > 0) {
-        digits.push_back((uint32_t)(carry % 1000000000));
+        digits.push_back(static_cast<uint32_t>(carry % 1000000000));
         carry /= 1000000000;
     }
 
-    // Формирование чанков base 1e18 (по две цифры base 1e9)
+    // Формирование чанков base1e18
     std::vector<chunk> out;
     for (size_t i = 0; i < digits.size(); i += 2) {
         uint64_t low = digits[i];
         uint64_t high = (i + 1 < digits.size()) ? digits[i + 1] : 0;
-        out.push_back((chunk)(high * 1000000000ULL + low));
+        out.push_back(static_cast<chunk>(high) * 1000000000ULL + low);
     }
     
-    // Удаление ведущих нулей
     while (!out.empty() && out.back() == 0) out.pop_back();
     return out;
 }
@@ -309,26 +304,27 @@ BigNumber ntt_mul(const BigNumber &A, const BigNumber &B) {
     size_t n = 1;
     while (n < a.size() + b.size()) n <<= 1;
     a.resize(n); b.resize(n);
-    // копии для четырех модулей
+    
+    // Обработка только трёх модулей
     auto a1 = a, b1 = b;
     auto a2 = a, b2 = b;
     auto a3 = a, b3 = b;
-    auto a4 = a, b4 = b;
+    
     ntt_mod(a1, false, MOD1); ntt_mod(b1, false, MOD1);
     ntt_mod(a2, false, MOD2); ntt_mod(b2, false, MOD2);
     ntt_mod(a3, false, MOD3); ntt_mod(b3, false, MOD3);
-    ntt_mod(a4, false, MOD4); ntt_mod(b4, false, MOD4);
+    
     for (size_t i = 0; i < n; ++i) {
-        a1[i] = (uint64_t)a1[i] * b1[i] % MOD1;
-        a2[i] = (uint64_t)a2[i] * b2[i] % MOD2;
-        a3[i] = (uint64_t)a3[i] * b3[i] % MOD3;
-        a4[i] = (uint64_t)a4[i] * b4[i] % MOD4;
+        a1[i] = static_cast<uint64_t>(a1[i]) * b1[i] % MOD1;
+        a2[i] = static_cast<uint64_t>(a2[i]) * b2[i] % MOD2;
+        a3[i] = static_cast<uint64_t>(a3[i]) * b3[i] % MOD3;
     }
+    
     ntt_mod(a1, true, MOD1);
     ntt_mod(a2, true, MOD2);
     ntt_mod(a3, true, MOD3);
-    ntt_mod(a4, true, MOD4);
-    auto chunks = from_ntt_crt4(a1, a2, a3, a4);
+    
+    auto chunks = from_ntt_crt3(a1, a2, a3);
     int32_t exp = get_exponent(A) + get_exponent(B);
     bool sign = is_negative(A) != is_negative(B);
     return from_scratch(chunks, exp, sign, get_error(A));
