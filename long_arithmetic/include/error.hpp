@@ -5,9 +5,7 @@
 namespace big_number {
     enum ErrorCode {
         OK,
-        INVALID_INPUT,
         CALCULATION_ERROR,
-        SOLUTION_ERROR,
     };
 
     struct Error {
