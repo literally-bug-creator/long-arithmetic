@@ -55,25 +55,6 @@ namespace big_number {
             trimmed_chunks, exponent + exponent_delta, is_negative, error );
     }
 
-    BigNumber from_iterator(
-        std::vector<chunk>::const_iterator begin,
-        std::vector<chunk>::const_iterator end ) { // TODO: need a refactor
-        std::vector<chunk> chunks;
-        int32_t exponent = 0;
-        size_t new_size = end - begin;
-        while ( new_size > 0 && *begin == 0 ) {
-            ++begin;
-            --new_size;
-            exponent++;
-        }
-        while ( new_size > 0 && *( end - 1 ) == 0 ) {
-            --end;
-            new_size--;
-        }
-        if ( new_size > 0 ) { chunks = std::vector<chunk>( begin, end ); }
-        return from_scratch( chunks, exponent, false );
-    }
-
     BigNumber make_zero( Error error ) {
         return from_scratch( {}, 0, false, error );
     }

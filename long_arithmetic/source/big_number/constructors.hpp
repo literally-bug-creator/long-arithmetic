@@ -14,9 +14,6 @@ namespace big_number {
                             bool is_negative,
                             const Error& error );
 
-    BigNumber from_iterator( std::vector<chunk>::const_iterator begin,
-                             std::vector<chunk>::const_iterator end );
-
     BigNumber make_zero( Error error = DEFAULT_ERROR );
 
     std::string to_string( const BigNumber& number );
