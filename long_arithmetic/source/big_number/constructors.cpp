@@ -34,7 +34,8 @@ namespace big_number {
 
         if ( first_nonzero == size ) return {};
 
-        while ( last_nonzero > first_nonzero && chunks[last_nonzero - 1] == ZERO_INT )
+        while ( last_nonzero > first_nonzero &&
+                chunks[last_nonzero - 1] == ZERO_INT )
             last_nonzero--;
 
         return std::vector<chunk>(
@@ -56,6 +57,6 @@ namespace big_number {
     }
 
     BigNumber make_zero( Error error ) {
-        return from_scratch( {}, ZERO_INT, false, error );
+        return BigNumber( {}, ZERO_INT, false, error );
     }
 }
