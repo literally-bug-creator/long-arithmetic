@@ -1,7 +1,5 @@
 #include "getters.hpp"
 
-#include <cstdint>
-
 #include "big_number.hpp"
 
 namespace big_number {

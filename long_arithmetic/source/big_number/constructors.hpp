@@ -1,5 +1,6 @@
+#pragma once
+
 #include "big_number.hpp"
-#include "error.hpp"
 
 namespace big_number {
     const std::string EMPTY_STR = "";

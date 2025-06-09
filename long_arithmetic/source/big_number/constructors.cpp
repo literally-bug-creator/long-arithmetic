@@ -1,8 +1,5 @@
 #include "constructors.hpp"
 
-#include <cstdint>
-#include <cstring>
-
 #include "error.hpp"
 
 namespace big_number {
