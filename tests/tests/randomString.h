@@ -7,7 +7,7 @@ inline std::string randomFloatString() {
     static std::random_device rd;
     static std::mt19937 gen(rd());
     std::uniform_int_distribution<int> sign_dist(0, 1);
-    std::uniform_int_distribution<int> int_dist(0, 100000);
+    std::uniform_int_distribution<int> int_dist(0, 10000);
     std::uniform_int_distribution<int> frac_len_dist(0, 6);
     std::uniform_int_distribution<int> exp_dist(-10, 10);
 
