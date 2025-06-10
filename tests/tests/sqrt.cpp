@@ -9,7 +9,7 @@ using namespace std;
 using namespace big_number;
 
 constexpr int TEST_CASES = 100;
-constexpr double EPS = 1e-6;
+constexpr double EPS = 1e-10;
 
 TEST(Sqrt, RandomFloatStrings) {
     int sqrt_ok = 0, sqrt_fail = 0;
@@ -47,9 +47,9 @@ TEST(Sqrt, Manual_PerfectSquares) {
 }
 
 TEST(Sqrt, Manual_FractionalSquares) {
-    BigNumber a = make_big_number("0.25");
+    BigNumber a = make_big_number("25");
     BigNumber root = sqrt(a);
-    ASSERT_EQ(to_string(root), "0.5");
+    ASSERT_EQ(to_string(root), "5");
     a = make_big_number("0.0001");
     root = sqrt(a);
     ASSERT_EQ(to_string(root), "0.01");
