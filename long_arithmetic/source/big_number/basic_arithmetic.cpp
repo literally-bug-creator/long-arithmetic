@@ -96,6 +96,7 @@ namespace big_number {
     }
 
     BigNumber add( const BigNumber& augend, const BigNumber& addend ) {
+        if ( is_zero( augend ) && is_zero( addend ) ) return make_zero();
         if ( is_zero( augend ) ) return addend;
         if ( is_zero( addend ) ) return augend;
 
@@ -133,6 +134,7 @@ namespace big_number {
     }
 
     BigNumber sub( const BigNumber& minuend, const BigNumber& subtrahend ) {
+        if ( is_zero( minuend ) && is_zero( subtrahend ) ) return make_zero();
         if ( is_zero( minuend ) ) return neg( subtrahend );
         if ( is_zero( subtrahend ) ) return minuend;
 
