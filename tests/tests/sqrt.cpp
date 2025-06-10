@@ -247,3 +247,34 @@ TEST(Sqrt, Manual_RepeatingDecimals) {
         ASSERT_NEAR(root_bn.get_d(), root_gmp.get_d(), 1e-10) << "Failed for input: " << input;
     }
 }
+
+TEST(Sqrt, Manual_MorePerfectSquaresAndFractions) {
+    struct TestCase {
+        const char* input;
+        const char* expected;
+    } test_cases[] = {
+        {"9", "3"},
+        {"81", "9"},
+        {"0.81", "0.9"},
+        {"0.0001", "0.01"},
+        {"0.000001", "0.001"},
+        {"0.00000001", "0.0001"},
+        {"1e-8", "0.0001"},
+        {"1e-4", "0.01"},
+        {"1e-2", "0.1"},
+        {"1e2", "10"},
+        {"1e4", "100"},
+        {"1e6", "1000"},
+        {"0.0000000009", "0.00003"},
+        {"0.0009", "0.03"},
+        {"100", "10"},
+        {"10000", "100"},
+        {"0.00000001", "0.0001"},
+    };
+
+    for (const auto& [input, expected] : test_cases) {
+        BigNumber a = make_big_number(input);
+        BigNumber root = sqrt(a);
+        ASSERT_EQ(to_string(root), expected) << "input: " << input;
+    }
+}
