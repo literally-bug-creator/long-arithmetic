@@ -1,5 +1,7 @@
 #include "constructors.hpp"
 
+#include "big_number.hpp"
+
 namespace big_number {
     chunk ZERO_CHUNK = ZERO_INT;
 
@@ -15,8 +17,8 @@ namespace big_number {
             if ( index > last_non_zero_chunk ) last_non_zero_chunk = index;
         }
 
-        return ( first_non_zero_chunk + 1 ) -
-               ( chunks.size() - ( last_non_zero_chunk + 1 ) );
+        return ( chunks.size() - ( last_non_zero_chunk + ONE_INT ) ) -
+               ( first_non_zero_chunk );
     }
 
     std::vector<chunk> trim_zeros( std::vector<chunk>& chunks ) {
@@ -33,7 +35,7 @@ namespace big_number {
         if ( first_nonzero == size ) return {};
 
         while ( last_nonzero > first_nonzero &&
-                chunks[last_nonzero - 1] == ZERO_INT )
+                chunks[last_nonzero - ONE_INT] == ZERO_INT )
             last_nonzero--;
 
         return std::vector<chunk>(
