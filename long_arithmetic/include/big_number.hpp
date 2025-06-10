@@ -24,9 +24,12 @@ namespace big_number {
         Error error;
     };
 
-    const Error& get_error( const BigNumber& number );
+    BigNumber make_big_number( std::vector<chunk> chunks,
+                               int32_t exponent,
+                               bool is_negative,
+                               const Error& error = get_default_error() );
 
-    BigNumber make_big_number( const std::string& str );
+    const Error& get_error( const BigNumber& number );
 
     bool is_equal( const BigNumber& left, const BigNumber& right );
 
@@ -42,14 +45,5 @@ namespace big_number {
 
     BigNumber sub( const BigNumber& minuend, const BigNumber& subtrahend );
 
-    BigNumber mul( const BigNumber& multiplicand, const BigNumber& multiplier );
-
-    BigNumber div( const BigNumber& dividend,
-                   const BigNumber& divisor,
-                   int32_t precision = DIV_PRECISION );
-
-    BigNumber sqrt( const BigNumber& radicand );
-
     std::string to_string( const BigNumber& number );
-
 }
