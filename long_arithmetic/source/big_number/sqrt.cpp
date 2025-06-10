@@ -50,15 +50,32 @@ namespace big_number {
     // Helper function to remove decimal point and trailing zeros
     std::string clean_number(const std::string& num_str) {
         std::string result = num_str;
-        // Remove trailing zeros
-        while (!result.empty() && result.back() == '0') {
-            result.pop_back();
+        size_t dot_pos = result.find('.');
+        
+        // Split into integer and fractional parts
+        std::string integer_part = result.substr(0, dot_pos);
+        std::string fractional_part = (dot_pos != std::string::npos) ? result.substr(dot_pos + 1) : "";
+        
+        // Remove leading zeros from integer part (except if it's zero)
+        if (!integer_part.empty()) {
+            integer_part.erase(0, integer_part.find_first_not_of('0'));
+            if (integer_part.empty()) integer_part = "0"; // Handle case when all zeros
         }
-        // Remove decimal point if it's the last character
-        if (!result.empty() && result.back() == '.') {
-            result.pop_back();
+        
+        // Remove trailing zeros from fractional part
+        if (!fractional_part.empty()) {
+            fractional_part.erase(fractional_part.find_last_not_of('0') + 1);
+            if (fractional_part.empty() && !integer_part.empty()) {
+                // If fractional part is all zeros, remove the decimal point
+                return integer_part;
+            }
         }
-        return result;
+        
+        // Combine parts
+        if (!fractional_part.empty()) {
+            return integer_part + "." + fractional_part;
+        }
+        return integer_part;
     }
 
     BigNumber sqrt( const BigNumber& number ) {
