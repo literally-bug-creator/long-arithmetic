@@ -20,4 +20,6 @@ namespace big_number {
     const std::string& get_error_message( const Error& error );
 
     bool is_ok( const Error& error );
+
+    Error get_default_error();
 }
