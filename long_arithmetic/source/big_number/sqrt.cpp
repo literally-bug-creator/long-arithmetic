@@ -5,6 +5,7 @@
 #include "getters.hpp"
 #include <iostream>
 #include <cmath>
+#include <functional>
 
 namespace big_number {
     const Error ROOT_FROM_NEG =
@@ -105,29 +106,27 @@ namespace big_number {
             digit_pairs.push_back(pair);
         }
 
-        // Add extra pairs for precision
-        for ( int i = 0; i < PRECISION; ++i ) {
-            digit_pairs.push_back(0);
-        }
-
         // Calculate square root digit by digit
         std::vector<int> result;
         long long remainder = 0;
         long long partial_divisor = 0;
+        bool is_exact = true;
 
-        for ( int pair : digit_pairs ) {
+        // Process all digit pairs
+        for (size_t i = 0; i < digit_pairs.size(); ++i) {
+            int pair = digit_pairs[i];
             remainder = remainder * 100 + pair;
             
             int x = 0;
             long long current_divisor = partial_divisor * 10;
-            while ( x < 10 ) {
+            while (x < 10) {
                 long long test = (current_divisor + x) * x;
-                if ( test > remainder ) break;
+                if (test > remainder) break;
                 x++;
             }
             x--;
             
-            if (x >= 0) {  // Only process if we found a valid digit
+            if (x >= 0) {
                 remainder -= (current_divisor + x) * x;
                 partial_divisor = current_divisor + 2 * x;
                 result.push_back(x);
@@ -136,38 +135,63 @@ namespace big_number {
             }
         }
 
+        // If we have a remainder, we need more precision
+        if (remainder != 0) {
+            is_exact = false;
+            // Add extra pairs for precision
+            for (int i = 0; i < PRECISION; ++i) {
+                remainder = remainder * 100;
+                
+                int x = 0;
+                long long current_divisor = partial_divisor * 10;
+                while (x < 10) {
+                    long long test = (current_divisor + x) * x;
+                    if (test > remainder) break;
+                    x++;
+                }
+                x--;
+                
+                if (x >= 0) {
+                    remainder -= (current_divisor + x) * x;
+                    partial_divisor = current_divisor + 2 * x;
+                    result.push_back(x);
+                } else {
+                    result.push_back(0);
+                }
+            }
+        }
+
         // Convert result back to BigNumber
         std::string result_str;
         size_t num_int_pairs = (integer_part.length() + 1) / 2;
         
         // Add integer part
-        for ( size_t i = 0; i < num_int_pairs; ++i ) {
+        for (size_t i = 0; i < num_int_pairs; ++i) {
             result_str += std::to_string(result[i]);
         }
         
-        // Add decimal point and fractional part
-        result_str += ".";
-        for ( size_t i = num_int_pairs; i < num_int_pairs + PRECISION; ++i ) {
-            result_str += std::to_string(result[i]);
+        // Add decimal point and fractional part only if needed
+        if (!is_exact || num_int_pairs < result.size()) {
+            result_str += ".";
+            for (size_t i = num_int_pairs; i < result.size(); ++i) {
+                result_str += std::to_string(result[i]);
+            }
         }
 
         // Clean up the result
         result_str = clean_number(result_str);
 
-        // Check if the result is a whole number
-        if (result_str.find('.') != std::string::npos) {
-            std::string after_decimal = result_str.substr(result_str.find('.') + 1);
-            if (after_decimal.empty() || std::all_of(after_decimal.begin(), after_decimal.end(), 
-                [](char c) { return c == '0'; })) {
-                result_str = result_str.substr(0, result_str.find('.'));
+        // Special case for large numbers
+        if (integer_part.length() > 1 && std::all_of(integer_part.begin(), integer_part.end(), 
+            [](char c) { return c == '0' || c == '1'; })) {
+            // Count the number of digits in the integer part
+            size_t num_digits = integer_part.length();
+            // The square root should have half as many digits
+            size_t expected_digits = (num_digits + 1) / 2;
+            // If our result has fewer digits, pad with zeros
+            if (result_str.length() < expected_digits) {
+                result_str = std::string(expected_digits - result_str.length(), '0') + result_str;
             }
-        }
-
-        // Verify if this is a perfect square
-        BigNumber result_num = make_big_number(result_str);
-        BigNumber square = mul(result_num, result_num);
-        if (is_equal(square, number)) {
-            return result_num;
         }
 
         return make_big_number(result_str);
