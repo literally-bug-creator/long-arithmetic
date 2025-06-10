@@ -11,7 +11,7 @@ namespace big_number {
     const Error ROOT_FROM_NEG =
         make_error( CALCULATION_ERROR, "sqrt: negative number" );
 
-    const int PRECISION = 100; // Number of decimal places to calculate
+    const int PRECISION = 100000; // Number of decimal places to calculate
 
     // Helper function to check if a number is a perfect square
     bool is_perfect_square(const std::string& num_str) {
