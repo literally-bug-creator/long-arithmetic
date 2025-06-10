@@ -8,7 +8,7 @@
 using namespace std;
 using namespace big_number;
 
-constexpr int TEST_CASES = 100;
+constexpr int TEST_CASES = 1000;
 constexpr double EPS = 1e-10;
 
 TEST(Sqrt, RandomFloatStrings) {
