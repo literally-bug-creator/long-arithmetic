@@ -1,16 +1,12 @@
 #include "big_number.hpp"
-#include "constructors.hpp"
+#include "getters.hpp"
 
 namespace big_number {
+    const std::string EMPTY_STR = "";
     const std::string ZERO_STR = "0";
     const std::string MINUS_STR = "-";
     const char DOT_CHAR = '.';
     const char ZERO_CHAR = '0';
-
-    bool is_zero( const BigNumber& number ) {
-        return number.chunks.empty() || ( number.chunks.size() == ONE_INT &&
-                                          number.chunks[ZERO_INT] == ZERO_INT );
-    }
 
     std::string get_chunk_string( const BigNumber& number,
                                   int32_t position,

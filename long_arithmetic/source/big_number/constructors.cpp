@@ -1,7 +1,5 @@
 #include "constructors.hpp"
 
-#include "big_number.hpp"
-
 namespace big_number {
     chunk ZERO_CHUNK = ZERO_INT;
 
@@ -43,10 +41,14 @@ namespace big_number {
             std::make_move_iterator( chunks.begin() + last_nonzero ) );
     }
 
-    BigNumber from_scratch( std::vector<chunk>& chunks,
-                            int32_t exponent,
-                            bool is_negative,
-                            const Error& error = DEFAULT_ERROR ) {
+    BigNumber make_zero( const Error& error ) {
+        return BigNumber( {}, ZERO_INT, false, error );
+    }
+
+    BigNumber make_big_number( std::vector<chunk> chunks,
+                               int32_t exponent,
+                               bool is_negative,
+                               const Error& error ) {
         int32_t exponent_delta = compute_exponent_delta( chunks );
         std::vector<chunk> trimmed_chunks = trim_zeros( chunks );
 
@@ -54,9 +56,5 @@ namespace big_number {
 
         return BigNumber(
             trimmed_chunks, exponent + exponent_delta, is_negative, error );
-    }
-
-    BigNumber make_zero( Error error ) {
-        return BigNumber( {}, ZERO_INT, false, error );
     }
 }

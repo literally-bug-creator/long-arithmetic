@@ -3,16 +3,14 @@
 #include "big_number.hpp"
 
 namespace big_number {
-    const std::string EMPTY_STR = "";
-    const Error DEFAULT_ERROR = make_error( OK, EMPTY_STR );
-    const BigNumber ZERO = make_big_number( "0" );
-    const BigNumber ONE = make_big_number( "1" );
-    const BigNumber TWO = make_big_number( "2" );
+    const BigNumber ZERO = make_big_number( {}, 0, false );
+    const BigNumber ONE = make_big_number( { 1 }, 0, false );
+    const BigNumber TWO = make_big_number( { 2 }, 0, false );
 
-    BigNumber from_scratch( const std::vector<chunk>& chunks,
-                            int32_t exponent,
-                            bool is_negative,
-                            const Error& error );
+    BigNumber make_zero( const Error& error = get_default_error() );
 
-    BigNumber make_zero( Error error = DEFAULT_ERROR );
+    BigNumber make_big_number( std::vector<chunk> chunks,
+                               int32_t exponent,
+                               bool is_negative,
+                               const Error& error );
 }

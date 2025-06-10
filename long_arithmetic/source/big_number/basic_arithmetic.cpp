@@ -4,17 +4,17 @@
 
 namespace big_number {
     BigNumber abs( const BigNumber& operand ) {
-        return from_scratch( get_chunks( operand ),
-                             get_exponent( operand ),
-                             false,
-                             get_error( operand ) );
+        return make_big_number( get_chunks( operand ),
+                                get_exponent( operand ),
+                                false,
+                                get_error( operand ) );
     }
 
     BigNumber neg( const BigNumber& operand ) {
-        return from_scratch( get_chunks( operand ),
-                             get_exponent( operand ),
-                             !is_negative( operand ),
-                             get_error( operand ) );
+        return make_big_number( get_chunks( operand ),
+                                get_exponent( operand ),
+                                !is_negative( operand ),
+                                get_error( operand ) );
     }
 
     bool is_equal( const BigNumber& left, const BigNumber& right ) {
@@ -72,7 +72,7 @@ namespace big_number {
         if ( !is_ok( left_error ) ) return left_error;
         if ( !is_ok( right_error ) ) return right_error;
 
-        return DEFAULT_ERROR;
+        return get_default_error();
     }
 
     BigNumber compute_add( const BigNumber& augend, const BigNumber& addend ) {
@@ -89,10 +89,10 @@ namespace big_number {
             sum_chunks[index] = sum_chunk % CHUNK_BASE;
         }
 
-        return from_scratch( sum_chunks,
-                             min_exp,
-                             is_negative( augend ),
-                             collect_error( augend, addend ) );
+        return make_big_number( sum_chunks,
+                                min_exp,
+                                is_negative( augend ),
+                                collect_error( augend, addend ) );
     }
 
     BigNumber add( const BigNumber& augend, const BigNumber& addend ) {
@@ -126,10 +126,10 @@ namespace big_number {
             sub_chunks[index] = diff;
         }
 
-        return from_scratch( sub_chunks,
-                             min_exp,
-                             is_negative( minuend ),
-                             collect_error( minuend, subtrahend ) );
+        return make_big_number( sub_chunks,
+                                min_exp,
+                                is_negative( minuend ),
+                                collect_error( minuend, subtrahend ) );
     }
 
     BigNumber sub( const BigNumber& minuend, const BigNumber& subtrahend ) {
