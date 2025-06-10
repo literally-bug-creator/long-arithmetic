@@ -5,22 +5,6 @@
 namespace big_number {
     chunk ZERO_CHUNK = ZERO_INT;
 
-    int32_t compute_exponent_delta( const std::vector<chunk>& chunks ) {
-        size_t first_non_zero_chunk = chunks.size();
-        size_t last_non_zero_chunk = ZERO_INT;
-
-        for ( size_t index = ZERO_INT; index < chunks.size(); index++ ) {
-            chunk value = chunks[index];
-            if ( value == ZERO_CHUNK ) continue;
-
-            if ( index < first_non_zero_chunk ) first_non_zero_chunk = index;
-            if ( index > last_non_zero_chunk ) last_non_zero_chunk = index;
-        }
-
-        return ( chunks.size() - ( last_non_zero_chunk + ONE_INT ) ) -
-               ( first_non_zero_chunk );
-    }
-
     std::vector<chunk> trim_zeros( std::vector<chunk>& chunks ) {
         if ( chunks.empty() ) return {};
 
@@ -51,12 +35,9 @@ namespace big_number {
                                int32_t exponent,
                                bool is_negative,
                                const Error& error ) {
-        int32_t exponent_delta = compute_exponent_delta( chunks );
         std::vector<chunk> trimmed_chunks = trim_zeros( chunks );
-
         if ( trimmed_chunks.empty() ) { return make_zero(); }
 
-        return BigNumber(
-            trimmed_chunks, exponent + exponent_delta, is_negative, error );
+        return BigNumber( trimmed_chunks, exponent, is_negative, error );
     }
 }
