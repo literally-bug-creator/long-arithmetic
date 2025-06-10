@@ -33,7 +33,8 @@ namespace big_number {
     bool is_negative( const BigNumber& number ) { return number.is_negative; }
 
     bool is_zero( const BigNumber& number ) {
-        return get_size( number ) == ZERO;
+        return get_size( number ) == ZERO ||
+               get_chunk_direct( number, ZERO_INT ) == ZERO_INT;
     }
 
 }
