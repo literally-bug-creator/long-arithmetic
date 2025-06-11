@@ -1,7 +1,6 @@
 #include <gtest/gtest.h>
-#include <big_number.hpp>
 
-#include <tuple>
-class ArithmeticTest : public testing::TestWithParam<
-                           std::tuple<std::string, std::string, std::string>> {
-};
+int main(int argc, char **argv) {
+    ::testing::InitGoogleTest(&argc, argv);
+    return RUN_ALL_TESTS();
+}

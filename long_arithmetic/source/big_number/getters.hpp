@@ -1,3 +1,5 @@
+#pragma once
+
 #include "big_number.hpp"
 
 namespace big_number {

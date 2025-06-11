@@ -5,9 +5,7 @@
 namespace big_number {
     enum ErrorCode {
         OK,
-        INVALID_INPUT,
         CALCULATION_ERROR,
-        SOLUTION_ERROR,
     };
 
     struct Error {
@@ -22,4 +20,6 @@ namespace big_number {
     const std::string& get_error_message( const Error& error );
 
     bool is_ok( const Error& error );
+
+    Error get_default_error();
 }

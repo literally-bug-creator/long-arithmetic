@@ -1,24 +1,20 @@
-#include <cstddef>
-#include <cstdint>
-
 #include "big_number.hpp"
 #include "constructors.hpp"
-#include "error.hpp"
 #include "getters.hpp"
 
 namespace big_number {
     BigNumber abs( const BigNumber& operand ) {
-        return from_scratch( get_chunks( operand ),
-                             get_exponent( operand ),
-                             false,
-                             get_error( operand ) );
+        return make_big_number( get_chunks( operand ),
+                                get_exponent( operand ),
+                                false,
+                                get_error( operand ) );
     }
 
     BigNumber neg( const BigNumber& operand ) {
-        return from_scratch( get_chunks( operand ),
-                             get_exponent( operand ),
-                             !is_negative( operand ),
-                             get_error( operand ) );
+        return make_big_number( get_chunks( operand ),
+                                get_exponent( operand ),
+                                !is_negative( operand ),
+                                get_error( operand ) );
     }
 
     bool is_equal( const BigNumber& left, const BigNumber& right ) {
@@ -69,6 +65,16 @@ namespace big_number {
         return false;
     }
 
+    Error collect_error( const BigNumber& left, const BigNumber& right ) {
+        const Error& left_error = get_error( left );
+        const Error& right_error = get_error( right );
+
+        if ( !is_ok( left_error ) ) return left_error;
+        if ( !is_ok( right_error ) ) return right_error;
+
+        return get_default_error();
+    }
+
     BigNumber compute_add( const BigNumber& augend, const BigNumber& addend ) {
         int32_t min_exp = choose_min_exp( augend, addend );
         int32_t sum_size = choose_max_exp( augend, addend ) - min_exp + 1;
@@ -82,14 +88,15 @@ namespace big_number {
             carry = sum_chunk / CHUNK_BASE;
             sum_chunks[index] = sum_chunk % CHUNK_BASE;
         }
-        // TODO: strip zeros)))
 
-        Error error = make_error( OK, "" ); // TODO: add error collection
-        return from_scratch(
-            sum_chunks, min_exp, is_negative( augend ), error );
+        return make_big_number( sum_chunks,
+                                min_exp,
+                                is_negative( augend ),
+                                collect_error( augend, addend ) );
     }
 
     BigNumber add( const BigNumber& augend, const BigNumber& addend ) {
+        if ( is_zero( augend ) && is_zero( addend ) ) return make_zero();
         if ( is_zero( augend ) ) return addend;
         if ( is_zero( addend ) ) return augend;
 
@@ -119,13 +126,15 @@ namespace big_number {
             borrow = ( minuend_chunk < ( subtrahend_chunk + borrow ) ); // 0 | 1
             sub_chunks[index] = diff;
         }
-        // TODO: strip zeros)))
-        Error error = make_error( OK, "" ); // TODO: add error collection
-        return from_scratch(
-            sub_chunks, min_exp, is_negative( minuend ), error );
+
+        return make_big_number( sub_chunks,
+                                min_exp,
+                                is_negative( minuend ),
+                                collect_error( minuend, subtrahend ) );
     }
 
     BigNumber sub( const BigNumber& minuend, const BigNumber& subtrahend ) {
+        if ( is_zero( minuend ) && is_zero( subtrahend ) ) return make_zero();
         if ( is_zero( minuend ) ) return neg( subtrahend );
         if ( is_zero( subtrahend ) ) return minuend;
 
@@ -138,15 +147,7 @@ namespace big_number {
         return compute_sub( minuend, subtrahend );
     }
 
-    BigNumber shift( const BigNumber& operand, int32_t exp ) {
-        return from_scratch( get_chunks( operand ),
-                             get_exponent( operand ) + exp,
-                             is_negative( operand ),
-                             get_error( operand ) );
-    }
-
     bool is_greater_than( const BigNumber& left, const BigNumber& right ) {
         return !is_equal( left, right ) && !is_lower_than( left, right );
     }
-
 }
