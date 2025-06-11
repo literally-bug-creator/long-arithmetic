@@ -45,5 +45,7 @@ namespace big_number {
 
     BigNumber sub( const BigNumber& minuend, const BigNumber& subtrahend );
 
+    BigNumber mul( const BigNumber& multiplicand, const BigNumber& multiplier );
+
     std::string to_string( const BigNumber& number );
 }
