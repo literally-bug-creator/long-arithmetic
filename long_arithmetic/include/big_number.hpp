@@ -13,7 +13,9 @@ namespace big_number {
     const int CHUNK_DIGITS = 18;
     const chunk CHUNK_BASE = static_cast<chunk>( std::pow( 10, CHUNK_DIGITS ) );
     const chunk MAX_CHUNK = CHUNK_BASE - 1;
-    const int32_t DIV_PRECISION = 100;
+    const int32_t DIV_PRECISION = 10;
+    const int32_t ONE_INT = 1;
+    const int32_t ZERO_INT = 0;
 
     struct BigNumber {
         std::vector<chunk> chunks;
@@ -22,9 +24,12 @@ namespace big_number {
         Error error;
     };
 
-    const Error& get_error( const BigNumber& number );
+    BigNumber make_big_number( std::vector<chunk> chunks,
+                               int32_t exponent,
+                               bool is_negative,
+                               const Error& error = get_default_error() );
 
-    BigNumber make_big_number( const std::string& str );
+    const Error& get_error( const BigNumber& number );
 
     bool is_equal( const BigNumber& left, const BigNumber& right );
 
@@ -40,14 +45,5 @@ namespace big_number {
 
     BigNumber sub( const BigNumber& minuend, const BigNumber& subtrahend );
 
-    BigNumber mul( const BigNumber& multiplicand, const BigNumber& multiplier );
-
-    BigNumber div( const BigNumber& dividend,
-                   const BigNumber& divisor,
-                   int32_t precision = DIV_PRECISION );
-
-    BigNumber sqrt( const BigNumber& radicand );
-
     std::string to_string( const BigNumber& number );
-
 }
