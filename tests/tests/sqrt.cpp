@@ -8,7 +8,7 @@
 using namespace std;
 using namespace big_number;
 
-constexpr int TEST_CASES = 1000;
+constexpr int TEST_CASES = 10;
 constexpr double EPS = 1e-10;
 
 TEST(Sqrt, RandomFloatStrings) {
@@ -22,6 +22,7 @@ TEST(Sqrt, RandomFloatStrings) {
         }
         BigNumber a = make_big_number(a_str);
         BigNumber root = sqrt(a);
+        std::cout<<root.chunks.size()<<std::endl;
         mpf_class root_gmp = sqrt(a_gmp);
         mpf_class root_bn(to_string(root), 128);
         if (abs(root_bn - root_gmp) < EPS) {

@@ -4,6 +4,7 @@
 #include "big_number.hpp"
 #include "constructors.hpp"
 #include "getters.hpp"
+#include "basic_arithmetic.hpp"
 
 namespace big_number {
     const size_t TO_RESERVE = 5560;
@@ -14,7 +15,7 @@ namespace big_number {
         return get_exponent( number ) + get_size( number ) - 1;
     }
 
-    BigNumber div( const BigNumber& x, const BigNumber& y, int32_t precision ) {
+    BigNumber div_old( const BigNumber& x, const BigNumber& y, int32_t precision ) {
         if ( is_equal( x, ZERO ) ) { return ZERO; }
         if ( is_equal( y, ZERO ) ) { return make_zero( DIVISION_BY_ZERO ); }
         if ( is_equal( y, ONE ) ) { return x; }
@@ -87,6 +88,38 @@ namespace big_number {
         std::vector<chunk> final_chunks( chunks_rev.begin(), chunks_rev.end() );
         bool sign = is_negative( x ) != is_negative( y );
         return from_scratch( final_chunks, result_exp, sign, DEFAULT_ERROR );
+    }
+    BigNumber div(const BigNumber& x, const BigNumber& y, int32_t precision) {
+        if (is_equal(x, ZERO)) return ZERO;
+        if (is_equal(y, ZERO)) return make_zero(DIVISION_BY_ZERO);
+        if (is_equal(y, ONE)) return x;
+        if (is_equal(x, y)) return ONE;
+
+        // Calculate required exponent shift
+        int32_t exp_x = get_exponent(x) + get_size(x);
+        int32_t exp_y = get_exponent(y) + get_size(y);
+        int32_t scale = std::max(0, exp_y - exp_x);
+        
+        // Scale numerator to align exponents
+        BigNumber scaled_x = shift(x, scale);
+        
+        // Compute reciprocal using existing div_old
+        BigNumber one = from_long_long(1);
+        BigNumber invY = div_old(one, y, precision + 10);
+        
+        // Multiply scaled numerator by reciprocal
+        BigNumber quotient = mul(scaled_x, invY);
+        
+        // Adjust exponent for scaling
+        quotient.exponent -= scale;
+        
+        // Remove trailing zeros
+        while (!quotient.chunks.empty() && quotient.chunks.back() == 0) {
+            quotient.chunks.pop_back();
+            quotient.exponent++;
+        }
+        
+        return quotient;
     }
 
 }
