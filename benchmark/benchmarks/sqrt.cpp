@@ -10,4 +10,4 @@ static void Sqrt(benchmark::State& state) {
     }
 }
 
-BENCHMARK(Sqrt)->Range(1, 1 << 5);
+BENCHMARK(Sqrt)->Range(1, 1 << 20);

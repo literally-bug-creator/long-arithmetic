@@ -16,4 +16,6 @@ namespace big_number {
     BigNumber sub( const BigNumber& minuend, const BigNumber& subtrahend );
 
     BigNumber shift( const BigNumber& operand, int32_t exp );
+
+    BigNumber div_old(const BigNumber& x, const BigNumber& y, int32_t precision);
 }

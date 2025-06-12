@@ -31,4 +31,5 @@ namespace big_number {
     BigNumber from_double( double v );
 
     std::string to_string( const BigNumber& number );
+    void strip_zeros( BigNumber& num );
 }

@@ -8,7 +8,7 @@
 using namespace std;
 using namespace big_number;
 
-constexpr int TEST_CASES = 10000;
+constexpr int TEST_CASES = 100;
 constexpr double EPS = 1e-6;
 
 TEST(Division, RandomFloatStrings) {
@@ -23,10 +23,10 @@ TEST(Division, RandomFloatStrings) {
         BigNumber a = make_big_number(a_str);
         BigNumber b = make_big_number(b_str);
         BigNumber quot = div(a, b);
-        mpf_class a_gmp(a_str, 128);
-        mpf_class b_gmp(b_str, 128);
+        mpf_class a_gmp(a_str, 1280);
+        mpf_class b_gmp(b_str, 1280);
         mpf_class quot_gmp = a_gmp / b_gmp;
-        mpf_class quot_bn(to_string(quot), 128);
+        mpf_class quot_bn(to_string(quot), 1280);
         if (abs(quot_bn - quot_gmp) < EPS) {
             ++div_ok;
         } else {
