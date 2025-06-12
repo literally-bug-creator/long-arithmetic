@@ -41,8 +41,6 @@ TEST_F( BigNumberAddTest, AddNegativeNumbers ) {
     BigNumber expected_result = make_big_number( { 300 }, 0, true );
 
     BigNumber result = add( num1, num2 );
-    std::cout << result.chunks[0] << " " << result.exponent << " "
-              << result.is_negative << std::endl;
 
     EXPECT_TRUE( is_equal( result, expected_result ) );
 }
