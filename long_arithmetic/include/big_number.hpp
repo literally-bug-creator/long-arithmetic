@@ -12,7 +12,7 @@ namespace big_number {
 
     const int CHUNK_DIGITS = 18;
     const chunk CHUNK_BASE = static_cast<chunk>( std::pow( 10, CHUNK_DIGITS ) );
-    const chunk MAX_CHUNK = CHUNK_BASE - 1;
+    const chunk MAX_CHUNK = CHUNK_BASE - 1; // Deprecated
     const int32_t DIV_PRECISION = 10;
     const int32_t ONE_INT = 1;
     const int32_t ZERO_INT = 0;
