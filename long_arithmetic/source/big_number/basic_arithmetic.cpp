@@ -85,8 +85,8 @@ namespace big_number {
         for ( size_t index = 0; index < sum_size; index++ ) {
             chunk sum_chunk = get_chunk( augend, index + min_exp ) +
                               get_chunk( addend, index + min_exp ) + carry;
-            carry = sum_chunk / CHUNK_BASE;
-            sum_chunks[index] = sum_chunk % CHUNK_BASE;
+            carry = sum_chunk / MAX_CHUNK;
+            sum_chunks[index] = sum_chunk % MAX_CHUNK;
         }
 
         return internal_make_big_number( sum_chunks,
@@ -121,7 +121,7 @@ namespace big_number {
 
             if ( minuend_chunk < ( subtrahend_chunk + borrow ) )
                 diff =
-                    ( CHUNK_BASE + minuend_chunk ) - subtrahend_chunk - borrow;
+                    ( MAX_CHUNK + minuend_chunk ) - subtrahend_chunk - borrow;
 
             borrow = ( minuend_chunk < ( subtrahend_chunk + borrow ) ); // 0 | 1
             sub_chunks[index] = diff;
