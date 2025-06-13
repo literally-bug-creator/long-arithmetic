@@ -1,85 +1,203 @@
 #include <gtest/gtest.h>
 
 #include "big_number.hpp"
-#include "error.hpp"
 
 using namespace big_number;
 
 class BigNumberAddTest : public ::testing::Test {};
 
-TEST_F( BigNumberAddTest, AddZeroToNumber ) {
-    BigNumber zero = make_big_number( { 0 }, 0, false );
-    BigNumber number = make_big_number( { 123 }, 2, false );
+TEST_F( BigNumberAddTest, PositiveNumbersBasic ) {
+    BigNumber a = make_big_number( { 1, 2, 3 }, 0 );
+    BigNumber b = make_big_number( { 4, 5, 6 }, 0 );
+    BigNumber expected = make_big_number( { 5, 7, 9 }, 0 );
 
-    BigNumber result = add( zero, number );
+    BigNumber result = add( a, b );
 
-    EXPECT_TRUE( is_equal( result, number ) );
+    EXPECT_EQ( result.chunks, expected.chunks );
+    EXPECT_EQ( result.exponent, expected.exponent );
+    EXPECT_EQ( result.is_negative, expected.is_negative );
+    EXPECT_TRUE( is_ok( result.error ) );
 }
 
-TEST_F( BigNumberAddTest, AddNumberToZero ) {
-    BigNumber zero = make_big_number( { 0 }, 0, false );
-    BigNumber number = make_big_number( { 456 }, 3, true );
+TEST_F( BigNumberAddTest, WithCarry ) {
+    BigNumber a = make_big_number( { 9, 9, 9 }, 0 );
+    BigNumber b = make_big_number( { 1 }, 0 );
+    BigNumber expected = make_big_number( { 1, 0, 0, 0 }, 0 );
 
-    BigNumber result = add( number, zero );
+    BigNumber result = add( a, b );
 
-    EXPECT_TRUE( is_equal( result, number ) );
+    EXPECT_EQ( result.chunks, expected.chunks );
+    EXPECT_EQ( result.exponent, expected.exponent );
+    EXPECT_EQ( result.is_negative, expected.is_negative );
+    EXPECT_TRUE( is_ok( result.error ) );
 }
 
-TEST_F( BigNumberAddTest, AddPositiveNumbers ) {
-    BigNumber num1 = make_big_number( { 100 }, 0, false );
-    BigNumber num2 = make_big_number( { 200 }, 0, false );
-    BigNumber expected_result = make_big_number( { 300 }, 0, false );
+TEST_F( BigNumberAddTest, AddWithZero ) {
+    BigNumber a = make_big_number( { 1, 2, 3 }, 0 );
+    BigNumber zero = make_big_number( { 0 }, 0 );
 
-    BigNumber result = add( num1, num2 );
+    BigNumber result = add( a, zero );
 
-    EXPECT_TRUE( is_equal( result, expected_result ) );
+    EXPECT_EQ( result.chunks, a.chunks );
+    EXPECT_EQ( result.exponent, a.exponent );
+    EXPECT_EQ( result.is_negative, a.is_negative );
+    EXPECT_TRUE( is_ok( result.error ) );
 }
 
-TEST_F( BigNumberAddTest, AddNegativeNumbers ) {
-    BigNumber num1 = make_big_number( { 100 }, 0, true );
-    BigNumber num2 = make_big_number( { 200 }, 0, true );
-    BigNumber expected_result = make_big_number( { 300 }, 0, true );
+TEST_F( BigNumberAddTest, NegativeNumbers ) {
+    BigNumber a = make_big_number( { 1, 2, 3 }, 0, true );
+    BigNumber b = make_big_number( { 4, 5, 6 }, 0, true );
+    BigNumber expected = make_big_number( { 5, 7, 9 }, 0, true );
 
-    BigNumber result = add( num1, num2 );
+    BigNumber result = add( a, b );
 
-    EXPECT_TRUE( is_equal( result, expected_result ) );
+    EXPECT_EQ( result.chunks, expected.chunks );
+    EXPECT_EQ( result.exponent, expected.exponent );
+    EXPECT_EQ( result.is_negative, expected.is_negative );
+    EXPECT_TRUE( is_ok( result.error ) );
 }
 
-TEST_F( BigNumberAddTest, AddPositiveAndNegative ) {
-    BigNumber positive = make_big_number( { 300 }, 1, false );
-    BigNumber negative = make_big_number( { 200 }, 1, true );
+TEST_F( BigNumberAddTest, DifferentSignsPositiveResult ) {
+    BigNumber a = make_big_number( { 5, 0, 0 }, 0 );
+    BigNumber b = make_big_number( { 2, 0, 0 }, 0, true );
+    BigNumber expected = make_big_number( { 3, 0, 0 }, 0 );
 
-    BigNumber result = add( positive, negative );
+    BigNumber result = add( a, b );
 
-    EXPECT_EQ( get_error_code( get_error( result ) ),
-               get_error_code( get_default_error() ) );
+    EXPECT_EQ( result.chunks, expected.chunks );
+    EXPECT_EQ( result.exponent, expected.exponent );
+    EXPECT_EQ( result.is_negative, expected.is_negative );
+    EXPECT_TRUE( is_ok( result.error ) );
 }
 
-TEST_F( BigNumberAddTest, AddNegativeAndPositive ) {
-    BigNumber negative = make_big_number( { 150 }, 2, true );
-    BigNumber positive = make_big_number( { 100 }, 2, false );
+TEST_F( BigNumberAddTest, DifferentSignsNegativeResult ) {
+    BigNumber a = make_big_number( { 2, 0, 0 }, 0 );
+    BigNumber b = make_big_number( { 5, 0, 0 }, 0, true );
+    BigNumber expected = make_big_number( { 3, 0, 0 }, 0, true );
 
-    BigNumber result = add( negative, positive );
+    BigNumber result = add( a, b );
 
-    EXPECT_TRUE( is_ok( get_error( result ) ) );
+    EXPECT_EQ( result.chunks, expected.chunks );
+    EXPECT_EQ( result.exponent, expected.exponent );
+    EXPECT_EQ( result.is_negative, expected.is_negative );
+    EXPECT_TRUE( is_ok( result.error ) );
 }
 
-TEST_F( BigNumberAddTest, AddCommutative ) {
-    BigNumber num1 = make_big_number( { 123 }, 1, false );
-    BigNumber num2 = make_big_number( { 456 }, 1, false );
+TEST_F( BigNumberAddTest, DifferentSignsZeroResult ) {
+    BigNumber a = make_big_number( { 1, 2, 3 }, 0 );
+    BigNumber b = make_big_number( { 1, 2, 3 }, 0, true );
+    BigNumber expected = make_big_number( { 0 }, 0 );
 
-    BigNumber result1 = add( num1, num2 );
-    BigNumber result2 = add( num2, num1 );
+    BigNumber result = add( a, b );
 
-    EXPECT_TRUE( is_equal( result1, result2 ) );
+    EXPECT_EQ( result.chunks, expected.chunks );
+    EXPECT_EQ( result.exponent, expected.exponent );
+    EXPECT_EQ( result.is_negative, expected.is_negative );
+    EXPECT_TRUE( is_ok( result.error ) );
 }
 
-TEST_F( BigNumberAddTest, AddZeros ) {
-    BigNumber zero1 = make_big_number( {}, 0, false );
-    BigNumber zero2 = make_big_number( {}, 0, true );
-    BigNumber expected_result = make_big_number( {}, 0, false );
+TEST_F( BigNumberAddTest, DifferentExponents ) {
+    BigNumber a = make_big_number( { 1, 2, 3 }, 2 );
+    BigNumber b = make_big_number( { 4, 5, 6 }, 0 );
+    BigNumber expected = make_big_number( { 1, 2, 7, 5, 6 }, 0 );
 
-    BigNumber result = add( zero1, zero2 );
+    BigNumber result = add( a, b );
 
-    EXPECT_TRUE( is_equal( result, expected_result ) );
+    EXPECT_EQ( result.chunks, expected.chunks );
+    EXPECT_EQ( result.exponent, expected.exponent );
+    EXPECT_EQ( result.is_negative, expected.is_negative );
+    EXPECT_TRUE( is_ok( result.error ) );
+}
+
+TEST_F( BigNumberAddTest, DifferentLengths ) {
+    BigNumber a = make_big_number( { 9, 9, 9, 9, 9, 9 }, 0 );
+    BigNumber b = make_big_number( { 1 }, 0 );
+    BigNumber expected = make_big_number( { 1, 0, 0, 0, 0, 0, 0 }, 0 );
+
+    BigNumber result = add( a, b );
+
+    EXPECT_EQ( result.chunks, expected.chunks );
+    EXPECT_EQ( result.exponent, expected.exponent );
+    EXPECT_EQ( result.is_negative, expected.is_negative );
+    EXPECT_TRUE( is_ok( result.error ) );
+}
+
+TEST_F( BigNumberAddTest, VeryLargeNumbers ) {
+    BigNumber a = make_big_number( { 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9,
+                                     9, 9, 9, 9, 9, 9, 8, 8, 8, 8, 8, 8,
+                                     8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8 },
+                                   0 );
+    BigNumber b = make_big_number( { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+                                     1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+                                     1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 },
+                                   0 );
+
+    BigNumber result = add( a, b );
+
+    EXPECT_TRUE( is_ok( result.error ) );
+    EXPECT_FALSE( result.is_negative );
+    EXPECT_EQ( result.chunks.size(), 3 );
+}
+
+TEST_F( BigNumberAddTest, MaxChunkValues ) {
+    BigNumber a = make_big_number(
+        { 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9 }, 0 );
+    BigNumber b = make_big_number(
+        { 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9 }, 0 );
+
+    BigNumber result = add( a, b );
+
+    EXPECT_TRUE( is_ok( result.error ) );
+    EXPECT_FALSE( result.is_negative );
+    EXPECT_GE( result.chunks.size(), 1u );
+}
+
+TEST_F( BigNumberAddTest, BorrowingRequired ) {
+    BigNumber a = make_big_number( { 1, 0, 0, 0 }, 0 );
+    BigNumber b = make_big_number( { 1 }, 0, true );
+    BigNumber expected = make_big_number( { 9, 9, 9 }, 0 );
+
+    BigNumber result = add( a, b );
+
+    EXPECT_EQ( result.chunks, expected.chunks );
+    EXPECT_EQ( result.exponent, expected.exponent );
+    EXPECT_EQ( result.is_negative, expected.is_negative );
+    EXPECT_TRUE( is_ok( result.error ) );
+}
+
+TEST_F( BigNumberAddTest, FractionalNumbers ) {
+    BigNumber a = make_big_number( { 1, 5 }, -1 );
+    BigNumber b = make_big_number( { 2, 5 }, -1 );
+    BigNumber expected = make_big_number( { 4, 0 }, -1 );
+
+    BigNumber result = add( a, b );
+
+    EXPECT_EQ( result.chunks, expected.chunks );
+    EXPECT_EQ( result.exponent, expected.exponent );
+    EXPECT_EQ( result.is_negative, expected.is_negative );
+    EXPECT_TRUE( is_ok( result.error ) );
+}
+
+TEST_F( BigNumberAddTest, ResultNormalization ) {
+    BigNumber a = make_big_number( { 9, 9, 9 }, 0 );
+    BigNumber b = make_big_number( { 1 }, 0 );
+
+    BigNumber result = add( a, b );
+
+    EXPECT_TRUE( is_ok( result.error ) );
+    if ( !result.chunks.empty() ) { EXPECT_NE( result.chunks.back(), 0u ); }
+}
+
+TEST_F( BigNumberAddTest, Commutativity ) {
+    BigNumber a = make_big_number( { 1, 2, 3 }, 1 );
+    BigNumber b = make_big_number( { 4, 5, 6 }, -1 );
+
+    BigNumber result1 = add( a, b );
+    BigNumber result2 = add( b, a );
+
+    EXPECT_EQ( result1.chunks, result2.chunks );
+    EXPECT_EQ( result1.exponent, result2.exponent );
+    EXPECT_EQ( result1.is_negative, result2.is_negative );
+    EXPECT_TRUE( is_ok( result1.error ) );
+    EXPECT_TRUE( is_ok( result2.error ) );
 }
