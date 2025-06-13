@@ -10,8 +10,8 @@ namespace big_number {
     typedef __uint128_t mul_chunk;
     typedef uint64_t chunk;
 
-    const int CHUNK_DIGITS = 18;
-    const chunk CHUNK_BASE = static_cast<chunk>( std::pow( 10, CHUNK_DIGITS ) );
+    const int BASE = 18;
+    const chunk MAX_CHUNK = static_cast<chunk>( std::pow( 10, BASE ) );
     const int32_t ONE_INT = 1;
     const int32_t ZERO_INT = 0;
 
