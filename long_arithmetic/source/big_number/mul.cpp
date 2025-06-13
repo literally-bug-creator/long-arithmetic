@@ -28,8 +28,8 @@ namespace big_number {
                     static_cast<mul_chunk>( get_chunk_direct( multiplier, j ) );
                 mul_chunk product = l_chunk * r_chunk + chunks[i + j] + carry;
 
-                carry = product / CHUNK_BASE;
-                chunks[i + j] = product % CHUNK_BASE;
+                carry = product / MAX_CHUNK;
+                chunks[i + j] = product % MAX_CHUNK;
             }
             chunks[i + get_size( multiplier )] = carry;
         }

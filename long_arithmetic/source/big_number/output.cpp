@@ -18,7 +18,7 @@ namespace big_number {
 
         if ( !should_filled ) { return chunk_str; }
 
-        return std::string( CHUNK_DIGITS - chunk_str.size(), ZERO_CHAR ) +
+        return std::string( BASE - chunk_str.size(), ZERO_CHAR ) +
                chunk_str;
     }
 
@@ -40,7 +40,7 @@ namespace big_number {
 
         if ( exp == ZERO_INT ) return EMPTY_STR;
 
-        return EXPONENT_CHAR + std::to_string( exp * CHUNK_DIGITS );
+        return EXPONENT_CHAR + std::to_string( exp * BASE );
     }
 
     std::string to_string( const BigNumber& number ) {
