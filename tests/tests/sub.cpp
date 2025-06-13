@@ -101,7 +101,7 @@ TEST_F( BigNumberSubTest, LargeNumbers ) {
 TEST_F( BigNumberSubTest, WithExponents ) {
     BigNumber a = make_big_number( { 1, 5 }, 3 );
     BigNumber b = make_big_number( { 5 }, 2 );
-    BigNumber expected = make_big_number( { 1, 5, 5 }, 2 );
+    BigNumber expected = make_big_number( { 1, 4, 5 }, 2 );
 
     BigNumber result = sub( a, b );
 
