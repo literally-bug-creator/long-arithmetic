@@ -13,10 +13,8 @@ TEST_F( BigNumberAddTest, PositiveNumbersBasic ) {
 
     BigNumber result = add( a, b );
 
-    EXPECT_EQ( result.chunks, expected.chunks );
-    EXPECT_EQ( result.exponent, expected.exponent );
-    EXPECT_EQ( result.is_negative, expected.is_negative );
-    EXPECT_TRUE( is_ok( result.error ) );
+    EXPECT_TRUE( is_equal( result, expected ) );
+    EXPECT_TRUE( is_ok( get_error( result ) ) );
 }
 
 TEST_F( BigNumberAddTest, WithCarry ) {
@@ -26,10 +24,8 @@ TEST_F( BigNumberAddTest, WithCarry ) {
 
     BigNumber result = add( a, b );
 
-    EXPECT_EQ( result.chunks, expected.chunks );
-    EXPECT_EQ( result.exponent, expected.exponent );
-    EXPECT_EQ( result.is_negative, expected.is_negative );
-    EXPECT_TRUE( is_ok( result.error ) );
+    EXPECT_TRUE( is_equal( result, expected ) );
+    EXPECT_TRUE( is_ok( get_error( result ) ) );
 }
 
 TEST_F( BigNumberAddTest, AddWithZero ) {
@@ -38,10 +34,8 @@ TEST_F( BigNumberAddTest, AddWithZero ) {
 
     BigNumber result = add( a, zero );
 
-    EXPECT_EQ( result.chunks, a.chunks );
-    EXPECT_EQ( result.exponent, a.exponent );
-    EXPECT_EQ( result.is_negative, a.is_negative );
-    EXPECT_TRUE( is_ok( result.error ) );
+    EXPECT_TRUE( is_equal( result, a ) );
+    EXPECT_TRUE( is_ok( get_error( result ) ) );
 }
 
 TEST_F( BigNumberAddTest, NegativeNumbers ) {
@@ -51,10 +45,8 @@ TEST_F( BigNumberAddTest, NegativeNumbers ) {
 
     BigNumber result = add( a, b );
 
-    EXPECT_EQ( result.chunks, expected.chunks );
-    EXPECT_EQ( result.exponent, expected.exponent );
-    EXPECT_EQ( result.is_negative, expected.is_negative );
-    EXPECT_TRUE( is_ok( result.error ) );
+    EXPECT_TRUE( is_equal( result, expected ) );
+    EXPECT_TRUE( is_ok( get_error( result ) ) );
 }
 
 TEST_F( BigNumberAddTest, DifferentSignsPositiveResult ) {
@@ -64,10 +56,8 @@ TEST_F( BigNumberAddTest, DifferentSignsPositiveResult ) {
 
     BigNumber result = add( a, b );
 
-    EXPECT_EQ( result.chunks, expected.chunks );
-    EXPECT_EQ( result.exponent, expected.exponent );
-    EXPECT_EQ( result.is_negative, expected.is_negative );
-    EXPECT_TRUE( is_ok( result.error ) );
+    EXPECT_TRUE( is_equal( result, expected ) );
+    EXPECT_TRUE( is_ok( get_error( result ) ) );
 }
 
 TEST_F( BigNumberAddTest, DifferentSignsNegativeResult ) {
@@ -77,10 +67,8 @@ TEST_F( BigNumberAddTest, DifferentSignsNegativeResult ) {
 
     BigNumber result = add( a, b );
 
-    EXPECT_EQ( result.chunks, expected.chunks );
-    EXPECT_EQ( result.exponent, expected.exponent );
-    EXPECT_EQ( result.is_negative, expected.is_negative );
-    EXPECT_TRUE( is_ok( result.error ) );
+    EXPECT_TRUE( is_equal( result, expected ) );
+    EXPECT_TRUE( is_ok( get_error( result ) ) );
 }
 
 TEST_F( BigNumberAddTest, DifferentSignsZeroResult ) {
@@ -90,10 +78,8 @@ TEST_F( BigNumberAddTest, DifferentSignsZeroResult ) {
 
     BigNumber result = add( a, b );
 
-    EXPECT_EQ( result.chunks, expected.chunks );
-    EXPECT_EQ( result.exponent, expected.exponent );
-    EXPECT_EQ( result.is_negative, expected.is_negative );
-    EXPECT_TRUE( is_ok( result.error ) );
+    EXPECT_TRUE( is_equal( result, expected ) );
+    EXPECT_TRUE( is_ok( get_error( result ) ) );
 }
 
 TEST_F( BigNumberAddTest, DifferentExponents ) {
@@ -103,10 +89,8 @@ TEST_F( BigNumberAddTest, DifferentExponents ) {
 
     BigNumber result = add( a, b );
 
-    EXPECT_EQ( result.chunks, expected.chunks );
-    EXPECT_EQ( result.exponent, expected.exponent );
-    EXPECT_EQ( result.is_negative, expected.is_negative );
-    EXPECT_TRUE( is_ok( result.error ) );
+    EXPECT_TRUE( is_equal( result, expected ) );
+    EXPECT_TRUE( is_ok( get_error( result ) ) );
 }
 
 TEST_F( BigNumberAddTest, DifferentLengths ) {
@@ -116,10 +100,8 @@ TEST_F( BigNumberAddTest, DifferentLengths ) {
 
     BigNumber result = add( a, b );
 
-    EXPECT_EQ( result.chunks, expected.chunks );
-    EXPECT_EQ( result.exponent, expected.exponent );
-    EXPECT_EQ( result.is_negative, expected.is_negative );
-    EXPECT_TRUE( is_ok( result.error ) );
+    EXPECT_TRUE( is_equal( result, expected ) );
+    EXPECT_TRUE( is_ok( get_error( result ) ) );
 }
 
 TEST_F( BigNumberAddTest, VeryLargeNumbers ) {
@@ -131,12 +113,14 @@ TEST_F( BigNumberAddTest, VeryLargeNumbers ) {
                                      1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
                                      1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 },
                                    0 );
+    BigNumber zero = make_big_number( { 0 }, 0 );
 
     BigNumber result = add( a, b );
 
-    EXPECT_TRUE( is_ok( result.error ) );
-    EXPECT_FALSE( result.is_negative );
-    EXPECT_EQ( result.chunks.size(), 3 );
+    EXPECT_TRUE( is_ok( get_error( result ) ) );
+    EXPECT_FALSE( is_equal( result, zero ) );
+    EXPECT_FALSE( is_lower_than( result, a ) );
+    EXPECT_FALSE( is_lower_than( result, b ) );
 }
 
 TEST_F( BigNumberAddTest, MaxChunkValues ) {
@@ -144,12 +128,14 @@ TEST_F( BigNumberAddTest, MaxChunkValues ) {
         { 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9 }, 0 );
     BigNumber b = make_big_number(
         { 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9 }, 0 );
+    BigNumber zero = make_big_number( { 0 }, 0 );
 
     BigNumber result = add( a, b );
 
-    EXPECT_TRUE( is_ok( result.error ) );
-    EXPECT_FALSE( result.is_negative );
-    EXPECT_GE( result.chunks.size(), 1u );
+    EXPECT_TRUE( is_ok( get_error( result ) ) );
+    EXPECT_FALSE( is_equal( result, zero ) );
+    EXPECT_FALSE( is_lower_than( result, a ) );
+    EXPECT_FALSE( is_lower_than( result, b ) );
 }
 
 TEST_F( BigNumberAddTest, BorrowingRequired ) {
@@ -159,10 +145,8 @@ TEST_F( BigNumberAddTest, BorrowingRequired ) {
 
     BigNumber result = add( a, b );
 
-    EXPECT_EQ( result.chunks, expected.chunks );
-    EXPECT_EQ( result.exponent, expected.exponent );
-    EXPECT_EQ( result.is_negative, expected.is_negative );
-    EXPECT_TRUE( is_ok( result.error ) );
+    EXPECT_TRUE( is_equal( result, expected ) );
+    EXPECT_TRUE( is_ok( get_error( result ) ) );
 }
 
 TEST_F( BigNumberAddTest, FractionalNumbers ) {
@@ -172,20 +156,19 @@ TEST_F( BigNumberAddTest, FractionalNumbers ) {
 
     BigNumber result = add( a, b );
 
-    EXPECT_EQ( result.chunks, expected.chunks );
-    EXPECT_EQ( result.exponent, expected.exponent );
-    EXPECT_EQ( result.is_negative, expected.is_negative );
-    EXPECT_TRUE( is_ok( result.error ) );
+    EXPECT_TRUE( is_equal( result, expected ) );
+    EXPECT_TRUE( is_ok( get_error( result ) ) );
 }
 
 TEST_F( BigNumberAddTest, ResultNormalization ) {
     BigNumber a = make_big_number( { 9, 9, 9 }, 0 );
     BigNumber b = make_big_number( { 1 }, 0 );
+    BigNumber expected = make_big_number( { 1, 0, 0, 0 }, 0 );
 
     BigNumber result = add( a, b );
 
-    EXPECT_TRUE( is_ok( result.error ) );
-    if ( !result.chunks.empty() ) { EXPECT_NE( result.chunks.back(), 0u ); }
+    EXPECT_TRUE( is_ok( get_error( result ) ) );
+    EXPECT_TRUE( is_equal( result, expected ) );
 }
 
 TEST_F( BigNumberAddTest, Commutativity ) {
@@ -195,9 +178,7 @@ TEST_F( BigNumberAddTest, Commutativity ) {
     BigNumber result1 = add( a, b );
     BigNumber result2 = add( b, a );
 
-    EXPECT_EQ( result1.chunks, result2.chunks );
-    EXPECT_EQ( result1.exponent, result2.exponent );
-    EXPECT_EQ( result1.is_negative, result2.is_negative );
-    EXPECT_TRUE( is_ok( result1.error ) );
-    EXPECT_TRUE( is_ok( result2.error ) );
+    EXPECT_TRUE( is_equal( result1, result2 ) );
+    EXPECT_TRUE( is_ok( get_error( result1 ) ) );
+    EXPECT_TRUE( is_ok( get_error( result2 ) ) );
 }
