@@ -4,14 +4,14 @@
 
 namespace big_number {
     BigNumber abs( const BigNumber& operand ) {
-        return make_big_number( get_chunks( operand ),
+        return internal_make_big_number( get_chunks( operand ),
                                 get_exponent( operand ),
                                 false,
                                 get_error( operand ) );
     }
 
     BigNumber neg( const BigNumber& operand ) {
-        return make_big_number( get_chunks( operand ),
+        return internal_make_big_number( get_chunks( operand ),
                                 get_exponent( operand ),
                                 !is_negative( operand ),
                                 get_error( operand ) );
@@ -89,7 +89,7 @@ namespace big_number {
             sum_chunks[index] = sum_chunk % CHUNK_BASE;
         }
 
-        return make_big_number( sum_chunks,
+        return internal_make_big_number( sum_chunks,
                                 min_exp,
                                 is_negative( augend ),
                                 collect_error( augend, addend ) );
@@ -127,7 +127,7 @@ namespace big_number {
             sub_chunks[index] = diff;
         }
 
-        return make_big_number( sub_chunks,
+        return internal_make_big_number( sub_chunks,
                                 min_exp,
                                 is_negative( minuend ),
                                 collect_error( minuend, subtrahend ) );

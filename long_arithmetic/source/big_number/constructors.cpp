@@ -31,7 +31,7 @@ namespace big_number {
         return BigNumber( {}, ZERO_INT, false, error );
     }
 
-    BigNumber make_big_number( std::vector<chunk> chunks,
+    BigNumber internal_make_big_number( std::vector<chunk> chunks,
                                int32_t exponent,
                                bool is_negative,
                                const Error& error ) {
