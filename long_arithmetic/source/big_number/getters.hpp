@@ -5,7 +5,7 @@
 namespace big_number {
     const Error& get_error( const BigNumber& number );
 
-    int32_t get_exponent( const BigNumber& number );
+    int32_t get_shift( const BigNumber& number );
 
     size_t get_size( const BigNumber& number );
 

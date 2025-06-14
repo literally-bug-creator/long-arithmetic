@@ -7,7 +7,7 @@ namespace big_number {
 
     const Error& get_error( const BigNumber& number ) { return number.error; }
 
-    int32_t get_exponent( const BigNumber& number ) { return number.exponent; }
+    int32_t get_shift( const BigNumber& number ) { return number.shift; }
 
     const std::vector<chunk>& get_chunks( const BigNumber& number ) {
         return number.chunks;
@@ -18,7 +18,7 @@ namespace big_number {
     }
 
     chunk get_chunk( const BigNumber& number, int32_t index ) {
-        int32_t chunk_index = index - get_exponent( number );
+        int32_t chunk_index = index - get_shift( number );
 
         if ( chunk_index < ZERO || chunk_index >= get_size( number ) )
             return ZERO;

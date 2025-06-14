@@ -2,6 +2,7 @@
 
 #include <cmath>
 #include <inttypes.h>
+#include <string>
 #include <vector>
 
 #include "error.hpp"
@@ -17,15 +18,15 @@ namespace big_number {
 
     struct BigNumber {
         std::vector<chunk> chunks;
-        int32_t exponent;
-        bool is_negative;
         Error error;
+        int32_t shift;
+        bool is_negative;
     };
 
-    BigNumber make_big_number( std::vector<int> digits = {},
-                               int32_t exponent = 0,
-                               bool is_negative = false,
-                               const Error& error = get_default_error() );
+    BigNumber make_big_number( const std::vector<int>& digits,
+                               int32_t exponent,
+                               bool is_negative,
+                               const Error& error );
 
     const Error& get_error( const BigNumber& number );
 
