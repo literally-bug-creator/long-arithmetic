@@ -82,9 +82,8 @@ namespace big_number {
             carry = sum_chunk / CHUNK_BASE;
             sum_chunks[index] = sum_chunk % CHUNK_BASE;
         }
-        // TODO: strip zeros)))
 
-        Error error = make_error( OK, "" ); // TODO: add error collection
+        Error error = make_error( OK, "" ); 
         return from_scratch(
             sum_chunks, min_exp, is_negative( augend ), error );
     }

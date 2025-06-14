@@ -6,7 +6,7 @@
 #include "error.hpp"
 
 namespace big_number {
-    void strip_zeros( BigNumber& num ) { // TODO: reimplement
+    void strip_zeros( BigNumber& num ) {
         size_t pref_zeros = 0;
         size_t suff_zeros = 0;
         size_t sz = num.chunks.size();
@@ -36,7 +36,7 @@ namespace big_number {
     }
 
     BigNumber
-    make_big_number( const std::string& number ) { // TODO: reimplement
+    make_big_number( const std::string& number ) {
         BigNumber res;
         res.chunks.clear();
         res.exponent = 0;
@@ -121,7 +121,7 @@ namespace big_number {
         }
         if ( new_size > 0 ) { chunks = std::vector<chunk>( begin, end ); }
         return from_scratch(
-            chunks, exponent, false, make_error( OK, "" ) ); // TODO: Fix
+            chunks, exponent, false, make_error( OK, "" ) );
     }
 
     BigNumber make_zero( Error error ) {

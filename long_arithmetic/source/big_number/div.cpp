@@ -38,6 +38,7 @@ namespace big_number {
         mul_chunk b0 = get_chunks( b ).back();
 
         for ( int32_t i = 0; i <= max_chunks; ++i ) {
+            // if (result_chunks.size()>=5556) break;
             if ( is_equal( a, ZERO ) ) break;
 
             carry = carry * CHUNK_BASE + get_chunk( a, current_exp );
@@ -95,22 +96,16 @@ namespace big_number {
         if (is_equal(y, ONE)) return x;
         if (is_equal(x, y)) return ONE;
 
-        // Calculate required exponent shift
         int32_t exp_x = get_exponent(x) + get_size(x);
         int32_t exp_y = get_exponent(y) + get_size(y);
         int32_t scale = std::max(0, exp_y - exp_x);
-        
-        // Scale numerator to align exponents
         BigNumber scaled_x = shift(x, scale);
-        
-        // Compute reciprocal using existing div_old
+
         BigNumber one = from_long_long(1);
         BigNumber invY = div_old(one, y, precision + 10);
-        
-        // Multiply scaled numerator by reciprocal
+
         BigNumber quotient = mul(scaled_x, invY);
-        
-        // Adjust exponent for scaling
+
         quotient.exponent -= scale;
         
         // Remove trailing zeros

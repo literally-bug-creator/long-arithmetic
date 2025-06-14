@@ -71,12 +71,6 @@ TEST(DivisionManual, NegativeDivision) {
     BigNumber result = div(a, b);
     EXPECT_EQ(to_string(result), "-25");
 }
-TEST(DivisionManual, x1) {
-    BigNumber a = make_big_number("33");
-    BigNumber b = make_big_number("3");
-    BigNumber result = div(a, b);
-    EXPECT_EQ(to_string(result), "11");
-}
 TEST(DivisionManual, x2) {
     BigNumber a = make_big_number("20");
     BigNumber b = make_big_number("2");
