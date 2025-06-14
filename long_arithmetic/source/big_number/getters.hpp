@@ -11,9 +11,7 @@ namespace big_number {
 
     const std::vector<chunk>& get_chunks( const BigNumber& number );
 
-    chunk get_chunk( const BigNumber& number, int32_t index );
-
-    chunk get_chunk_direct( const BigNumber& number, int32_t index );
+    chunk get_chunk( const BigNumber& number, int32_t shift );
 
     bool is_negative( const BigNumber& number );
 

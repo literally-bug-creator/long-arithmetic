@@ -3,7 +3,7 @@
 #include "big_number.hpp"
 
 namespace big_number {
-    const int32_t ZERO = 0;
+    const int32_t ZERO_INT = 0;
 
     const Error& get_error( const BigNumber& number ) { return number.error; }
 
@@ -20,21 +20,16 @@ namespace big_number {
     chunk get_chunk( const BigNumber& number, int32_t index ) {
         int32_t chunk_index = index - get_shift( number );
 
-        if ( chunk_index < ZERO || chunk_index >= get_size( number ) )
-            return ZERO;
+        if ( chunk_index < ZERO_INT || chunk_index >= get_size( number ) )
+            return ZERO_INT;
 
         return get_chunks( number )[chunk_index];
-    }
-
-    chunk get_chunk_direct( const BigNumber& number, int32_t index ) {
-        return get_chunks( number )[index];
     }
 
     bool is_negative( const BigNumber& number ) { return number.is_negative; }
 
     bool is_zero( const BigNumber& number ) {
-        return get_size( number ) == ZERO ||
-               get_chunk_direct( number, ZERO_INT ) == ZERO_INT;
+        return get_size( number ) == ZERO_INT;
     }
 
 }
