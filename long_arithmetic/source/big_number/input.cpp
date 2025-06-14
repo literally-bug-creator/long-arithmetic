@@ -4,14 +4,38 @@
 #include "constructors.hpp"
 
 namespace big_number {
-    int32_t compute_offset( int32_t exp ) {
+    int32_t compute_offset( int32_t exp ) noexcept {
         return ( ( exp % BASE ) + BASE ) % BASE;
     }
 
-    int32_t compute_shift( int32_t exp ) {
+    int32_t compute_shift( int32_t exp ) noexcept {
         const int32_t offset = compute_offset( exp );
         const int32_t shift = std::abs( exp - offset ) / BASE;
         return ( exp < 0 ) ? -shift : shift;
+    }
+
+    void fill_chunks( const std::vector<int>& digits,
+                      std::vector<chunk>& chunks,
+                      int32_t offset ) {
+        size_t pos = digits.size();
+
+        while ( pos > 0 || offset > 0 ) {
+            chunk value = 0;
+            chunk factor = 1;
+
+            for ( int i = 0; i < BASE; ++i ) {
+                if ( offset > 0 ) {
+                    --offset;
+                } else if ( pos > 0 ) {
+                    --pos;
+                    value += static_cast<chunk>( digits[pos] ) * factor;
+                }
+
+                factor *= 10;
+            }
+
+            chunks.push_back( value );
+        }
     }
 
     std::vector<chunk> convert_to_chunks( const std::vector<int>& digits,
@@ -23,26 +47,7 @@ namespace big_number {
         std::vector<chunk> chunks;
         chunks.reserve( ( total_len + BASE - 1 ) / BASE );
 
-        size_t pos = digits.size();
-        int32_t curr_offset = offset;
-
-        while ( pos > 0 || curr_offset > 0 ) {
-            chunk value = 0;
-            chunk factor = 1;
-
-            for ( int i = 0; i < BASE; ++i ) {
-                if ( curr_offset > 0 ) {
-                    --curr_offset;
-                } else if ( pos > 0 ) {
-                    --pos;
-                    value += static_cast<chunk>( digits[pos] ) * factor;
-                }
-
-                factor *= 10;
-            }
-
-            chunks.push_back( value );
-        }
+        fill_chunks( digits, chunks, offset );
 
         return chunks;
     }
