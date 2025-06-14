@@ -1,8 +1,3 @@
-# library name: LongArithmetic
-# author: Ivan Deyna, Evgeniy Sysoev, Vadim Khramtsov
-# date: 2025
-# description: library for long arithmetic
-
 add_subdirectory(extern/googletest)
 
 include(GoogleTest)
