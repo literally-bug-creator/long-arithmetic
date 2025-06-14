@@ -74,6 +74,17 @@ namespace big_number {
         return chunks;
     }
 
+    int32_t count_exponent_shift( const std::vector<chunk>& chunks ) {
+        int32_t count = 0;
+
+        for ( size_t i = 0; i < chunks.size(); ++i ) {
+            if ( chunks[i] != 0 ) break;
+            count++;
+        }
+
+        return count;
+    }
+
     BigNumber make_big_number( std::vector<int> digits,
                                int32_t exponent,
                                bool is_negative,
@@ -96,6 +107,7 @@ namespace big_number {
                                         int32_t exponent,
                                         bool is_negative,
                                         const Error& error ) {
+        exponent += count_exponent_shift( chunks );
         std::vector<chunk> trimmed_chunks = trim_zeros( chunks );
         if ( trimmed_chunks.empty() ) { return make_zero(); }
 
