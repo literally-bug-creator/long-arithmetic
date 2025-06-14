@@ -13,12 +13,17 @@ namespace big_number {
         return is_negative( number ) ? MINUS_STR : EMPTY_STR;
     }
 
-    std::string to_string_chunk( chunk value, bool should_filled ) {
-        std::string chunk_str = std::to_string( value );
+    std::string to_string_chunk( chunk value, bool should_strip ) {
+        std::string str = std::to_string( value );
 
-        if ( !should_filled ) { return chunk_str; }
+        str = std::string( BASE - str.size(), ZERO_CHAR ) + str;
+        if ( !should_strip ) { return str; }
+        size_t last_zero = str.find_last_not_of( '0' );
 
-        return std::string( BASE - chunk_str.size(), ZERO_CHAR ) + chunk_str;
+        if ( last_zero == std::string::npos ) { return str; }
+
+        str.erase( last_zero + 1 );
+        return str;
     }
 
     uint count_trailing_zeros( chunk value ) {
@@ -69,19 +74,18 @@ namespace big_number {
         if ( get_size( number ) <= ONE_INT )
             last_chunk = remove_trailing_zeros_fast( last_chunk );
 
-        std::string str = to_string_chunk( last_chunk, false );
+        std::string str = std::to_string( last_chunk );
 
         for ( int32_t index = last_chunk_index - ONE_INT; index > ZERO_INT;
               --index ) {
             chunk value = get_chunk_direct( number, index );
-            str += to_string_chunk( value, true );
+            str += to_string_chunk( value, false );
         }
 
         if ( get_size( number ) <= ONE_INT ) return str;
 
         chunk first_chunk = get_chunk_direct( number, ZERO_INT );
-        chunk stripped_chunk = remove_trailing_zeros_fast( first_chunk );
-        str += std::to_string( stripped_chunk );
+        str += to_string_chunk( first_chunk, true );
 
         return str;
     }
