@@ -180,7 +180,7 @@ TEST_F( InputTest, ZeroWithPositiveShift ) {
 
 TEST_F( InputTest, ZeroWithNegativeShift ) {
     chunks expected_chunks = {};
-    int32_t expected_exp = -1;
+    int32_t expected_exp = 0;
     bool expected_sign = false;
 
     BigNumber a = make_big_number( { 0 }, -2, false, get_default_error() );
