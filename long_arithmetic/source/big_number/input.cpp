@@ -1,27 +1,17 @@
-#include <array>
 #include <cstdlib>
 
 #include "big_number.hpp"
 #include "constructors.hpp"
 
 namespace big_number {
-    constexpr std::array<chunk, BASE> POWERS_OF_10 = []() {
-        std::array<chunk, BASE> res{};
-        res[0] = 1;
-        for ( int i = 1; i < BASE; ++i ) {
-            res[i] = res[i - 1] * 10;
-        }
-        return res;
-    }();
-
-    constexpr int32_t compute_offset( int32_t exp ) noexcept {
+    int32_t compute_offset( int32_t exp ) {
         return ( ( exp % BASE ) + BASE ) % BASE;
     }
 
-    constexpr int32_t compute_shift( int32_t exp ) noexcept {
+    int32_t compute_shift( int32_t exp ) {
         const int32_t offset = compute_offset( exp );
-        const int32_t unsigned_shift = std::abs( exp - offset ) / BASE;
-        return unsigned_shift * ( exp < 0 ? -1 : 1 );
+        const int32_t shift = std::abs( exp - offset ) / BASE;
+        return ( exp < 0 ) ? -shift : shift;
     }
 
     std::vector<chunk> convert_to_chunks( const std::vector<int>& digits,
@@ -29,28 +19,29 @@ namespace big_number {
         if ( digits.empty() ) { return {}; }
 
         const int32_t offset = compute_offset( exp );
-
-        const size_t total_length = digits.size() + offset;
+        const size_t total_len = digits.size() + offset;
         std::vector<chunk> chunks;
-        chunks.reserve( ( total_length + BASE - 1 ) / BASE );
+        chunks.reserve( ( total_len + BASE - 1 ) / BASE );
 
-        size_t digit_pos = digits.size();
+        size_t pos = digits.size();
         int32_t curr_offset = offset;
 
-        while ( digit_pos > 0 || curr_offset > 0 ) {
-            chunk current_chunk = 0;
+        while ( pos > 0 || curr_offset > 0 ) {
+            chunk value = 0;
+            chunk factor = 1;
 
             for ( int i = 0; i < BASE; ++i ) {
                 if ( curr_offset > 0 ) {
                     --curr_offset;
-                } else if ( digit_pos > 0 ) {
-                    --digit_pos;
-                    current_chunk += static_cast<chunk>( digits[digit_pos] ) *
-                                     POWERS_OF_10[i];
+                } else if ( pos > 0 ) {
+                    --pos;
+                    value += static_cast<chunk>( digits[pos] ) * factor;
                 }
+
+                factor *= 10;
             }
 
-            chunks.push_back( current_chunk );
+            chunks.push_back( value );
         }
 
         return chunks;
@@ -63,8 +54,7 @@ namespace big_number {
         const auto chunks = convert_to_chunks( digits, exponent );
         const int32_t shift = compute_shift( exponent );
 
-        if ( chunks.empty() ) { return make_zero( error ); }
-
-        return BigNumber{ chunks, error, shift, is_negative };
+        return chunks.empty() ? make_zero( error )
+                              : BigNumber{ chunks, error, shift, is_negative };
     }
 }
