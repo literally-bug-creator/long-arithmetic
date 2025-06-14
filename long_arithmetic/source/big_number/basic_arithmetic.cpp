@@ -1,26 +1,27 @@
 #include "big_number.hpp"
 #include "constructors.hpp"
+#include "error.hpp"
 #include "getters.hpp"
 
 namespace big_number {
     BigNumber abs( const BigNumber& operand ) {
         return internal_make_big_number( get_chunks( operand ),
-                                get_exponent( operand ),
-                                false,
-                                get_error( operand ) );
+                                         get_shift( operand ),
+                                         false,
+                                         get_error( operand ) );
     }
 
     BigNumber neg( const BigNumber& operand ) {
         return internal_make_big_number( get_chunks( operand ),
-                                get_exponent( operand ),
-                                !is_negative( operand ),
-                                get_error( operand ) );
+                                         get_shift( operand ),
+                                         !is_negative( operand ),
+                                         get_error( operand ) );
     }
 
     bool is_equal( const BigNumber& left, const BigNumber& right ) {
         if ( is_negative( left ) != is_negative( right ) ) return false;
         if ( get_size( left ) != get_size( right ) ) return false;
-        if ( get_exponent( left ) != get_exponent( right ) ) return false;
+        if ( get_shift( left ) != get_shift( right ) ) return false;
 
         for ( size_t index = 0; index < get_size( left ); index++ ) {
             int32_t left_chunk = get_chunk_direct( left, index );
@@ -33,21 +34,21 @@ namespace big_number {
     }
 
     int32_t choose_max_exp( const BigNumber& a, const BigNumber& b ) {
-        int32_t a_exp = get_exponent( a ) + get_size( a );
-        int32_t b_exp = get_exponent( b ) + get_size( b );
+        int32_t a_exp = get_shift( a ) + get_size( a );
+        int32_t b_exp = get_shift( b ) + get_size( b );
         return std::max( a_exp, b_exp );
     }
 
     int32_t choose_min_exp( const BigNumber& a, const BigNumber& b ) {
-        return std::min( get_exponent( a ), get_exponent( b ) );
+        return std::min( get_shift( a ), get_shift( b ) );
     }
 
     bool is_lower_than( const BigNumber& left, const BigNumber& right ) {
         if ( is_negative( left ) != is_negative( right ) )
             return is_negative( left ) > is_negative( right );
 
-        int32_t left_max_exp = get_exponent( left ) + get_size( left );
-        int32_t right_max_exp = get_exponent( right ) + get_size( right );
+        int32_t left_max_exp = get_shift( left ) + get_size( left );
+        int32_t right_max_exp = get_shift( right ) + get_size( right );
 
         if ( left_max_exp < right_max_exp ) return !is_negative( left );
         if ( left_max_exp > right_max_exp ) return is_negative( left );
@@ -90,13 +91,14 @@ namespace big_number {
         }
 
         return internal_make_big_number( sum_chunks,
-                                min_exp,
-                                is_negative( augend ),
-                                collect_error( augend, addend ) );
+                                         min_exp,
+                                         is_negative( augend ),
+                                         collect_error( augend, addend ) );
     }
 
     BigNumber add( const BigNumber& augend, const BigNumber& addend ) {
-        if ( is_zero( augend ) && is_zero( addend ) ) return make_zero();
+        if ( is_zero( augend ) && is_zero( addend ) )
+            return make_zero( get_default_error() );
         if ( is_zero( augend ) ) return addend;
         if ( is_zero( addend ) ) return augend;
 
@@ -128,13 +130,14 @@ namespace big_number {
         }
 
         return internal_make_big_number( sub_chunks,
-                                min_exp,
-                                is_negative( minuend ),
-                                collect_error( minuend, subtrahend ) );
+                                         min_exp,
+                                         is_negative( minuend ),
+                                         collect_error( minuend, subtrahend ) );
     }
 
     BigNumber sub( const BigNumber& minuend, const BigNumber& subtrahend ) {
-        if ( is_zero( minuend ) && is_zero( subtrahend ) ) return make_zero();
+        if ( is_zero( minuend ) && is_zero( subtrahend ) )
+            return make_zero( get_default_error() );
         if ( is_zero( minuend ) ) return neg( subtrahend );
         if ( is_zero( subtrahend ) ) return minuend;
 

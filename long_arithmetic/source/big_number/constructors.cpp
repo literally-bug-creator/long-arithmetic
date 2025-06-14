@@ -6,7 +6,7 @@ namespace big_number {
     chunk ZERO_CHUNK = ZERO_INT;
 
     BigNumber make_zero( const Error& error ) {
-        return BigNumber( {}, ZERO_INT, false, error );
+        return BigNumber( {}, error, ZERO_INT, false );
     }
 
     std::vector<chunk> trim_zeros( std::vector<chunk>& chunks ) {
@@ -90,7 +90,7 @@ namespace big_number {
                                bool is_negative,
                                const Error& error ) {
         if ( ( digits.size() == 0 ) || ( digits[0] == 0 ) ) {
-            return make_zero();
+            return make_zero( error );
         }
 
         std::vector<int> normalized_digits =
@@ -109,8 +109,8 @@ namespace big_number {
                                         const Error& error ) {
         exponent += count_exponent_shift( chunks );
         std::vector<chunk> trimmed_chunks = trim_zeros( chunks );
-        if ( trimmed_chunks.empty() ) { return make_zero(); }
+        if ( trimmed_chunks.empty() ) { return make_zero( error ); }
 
-        return BigNumber( trimmed_chunks, exponent, is_negative, error );
+        return BigNumber( trimmed_chunks, error, exponent, is_negative );
     }
 }

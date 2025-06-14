@@ -1,5 +1,6 @@
 #include "big_number.hpp"
 #include "constructors.hpp"
+#include "error.hpp"
 #include "getters.hpp"
 
 static const uint32_t MOD1 = 998244353;
@@ -13,7 +14,7 @@ namespace big_number {
     BigNumber simple_mul( const BigNumber& multiplicand,
                           const BigNumber& multiplier ) {
         if ( is_zero( multiplicand ) || is_zero( multiplier ) )
-            return make_zero();
+            return make_zero( get_default_error() );
 
         std::vector<chunk> chunks(
             get_size( multiplicand ) + get_size( multiplier ), 0 );
@@ -36,7 +37,7 @@ namespace big_number {
 
         return internal_make_big_number(
             chunks,
-            get_exponent( multiplicand ) + get_exponent( multiplier ),
+            get_shift( multiplicand ) + get_shift( multiplier ),
             is_negative( multiplicand ) != is_negative( multiplier ),
             get_error( multiplicand ) );
     }
@@ -148,7 +149,7 @@ namespace big_number {
     }
 
     BigNumber ntt_mul( const BigNumber& A, const BigNumber& B ) {
-        if ( is_zero( A ) || is_zero( B ) ) return make_zero();
+        if ( is_zero( A ) || is_zero( B ) ) return make_zero(get_default_error());
 
         std::vector<uint32_t> a = to_base1e9( get_chunks( A ) );
         std::vector<uint32_t> b = to_base1e9( get_chunks( B ) );
@@ -185,14 +186,14 @@ namespace big_number {
         ntt_mod( a3, true, MOD3 );
 
         std::vector<chunk> chunks = from_ntt_crt3( a1, a2, a3 );
-        int32_t exp = get_exponent( A ) + get_exponent( B );
+        int32_t exp = get_shift( A ) + get_shift( B );
         bool sign = is_negative( A ) != is_negative( B );
 
         return internal_make_big_number( chunks, exp, sign, get_error( A ) );
     }
 
     BigNumber mul( const BigNumber& A, const BigNumber& B ) {
-        if ( is_zero( A ) || is_zero( B ) ) return make_zero();
+        if ( is_zero( A ) || is_zero( B ) ) return make_zero(get_default_error());
 
         if ( static_cast<int>( get_size( A ) ) <= MULTIPLY_THRESHOLD ||
              static_cast<int>( get_size( B ) ) <= MULTIPLY_THRESHOLD ) {

@@ -96,7 +96,7 @@ namespace big_number {
     }
 
     std::string to_string_exp( const BigNumber& number ) {
-        int32_t exp = get_exponent( number ) * BASE;
+        int32_t exp = get_shift( number ) * BASE;
         exp += compute_exponent_shift( number );
 
         if ( exp == ZERO_INT ) return EMPTY_STR;
