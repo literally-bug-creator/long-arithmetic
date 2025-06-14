@@ -2,8 +2,6 @@
 Language: Cpp
 Standard: c++20
 
-# Note that we cannot use IncludeIsMainRegex functionality, because it
-# does not support includes in angle brackets (<>)
 SortIncludes: true
 IncludeBlocks: Regroup
 IncludeCategories:
