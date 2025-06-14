@@ -28,13 +28,13 @@ namespace big_number {
                     static_cast<mul_chunk>( get_chunk_direct( multiplier, j ) );
                 mul_chunk product = l_chunk * r_chunk + chunks[i + j] + carry;
 
-                carry = product / CHUNK_BASE;
-                chunks[i + j] = product % CHUNK_BASE;
+                carry = product / MAX_CHUNK;
+                chunks[i + j] = product % MAX_CHUNK;
             }
             chunks[i + get_size( multiplier )] = carry;
         }
 
-        return make_big_number(
+        return internal_make_big_number(
             chunks,
             get_exponent( multiplicand ) + get_exponent( multiplier ),
             is_negative( multiplicand ) != is_negative( multiplier ),
@@ -188,7 +188,7 @@ namespace big_number {
         int32_t exp = get_exponent( A ) + get_exponent( B );
         bool sign = is_negative( A ) != is_negative( B );
 
-        return make_big_number( chunks, exp, sign, get_error( A ) );
+        return internal_make_big_number( chunks, exp, sign, get_error( A ) );
     }
 
     BigNumber mul( const BigNumber& A, const BigNumber& B ) {

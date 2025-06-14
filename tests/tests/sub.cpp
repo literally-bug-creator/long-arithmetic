@@ -6,113 +6,104 @@ using namespace big_number;
 
 class BigNumberSubTest : public ::testing::Test {};
 
-TEST_F( BigNumberSubTest, SubtractZeroFromNumber ) {
-    BigNumber number = make_big_number( { 123 }, 2, false );
-    BigNumber zero = make_big_number( { 0 }, 0, false );
-    BigNumber expected_result = make_big_number( { 123 }, 2, false );
+TEST_F( BigNumberSubTest, SamePositiveNumbers ) {
+    BigNumber a = make_big_number( { 1, 2, 3 }, 0 );
+    BigNumber b = make_big_number( { 1, 2, 3 }, 0 );
+    BigNumber expected = make_big_number( { 0 }, 0 );
 
-    BigNumber result = sub( number, zero );
+    BigNumber result = sub( a, b );
 
-    EXPECT_TRUE( is_equal( result, expected_result ) );
+    EXPECT_TRUE( is_equal( result, expected ) );
 }
 
-TEST_F( BigNumberSubTest, SubtractNumberFromZero ) {
-    BigNumber zero = make_big_number( { 0 }, 0, false );
-    BigNumber number = make_big_number( { 456 }, 3, false );
-    BigNumber expected_result = make_big_number( { 456 }, 3, true );
+TEST_F( BigNumberSubTest, PositiveMinusSmaller ) {
+    BigNumber a = make_big_number( { 1, 0, 0 }, 0 );
+    BigNumber b = make_big_number( { 2, 5 }, 0 );
+    BigNumber expected = make_big_number( { 7, 5 }, 0 );
 
-    BigNumber result = sub( zero, number );
+    BigNumber result = sub( a, b );
 
-    EXPECT_TRUE( is_equal( result, expected_result ) );
+    EXPECT_TRUE( is_equal( result, expected ) );
 }
 
-TEST_F( BigNumberSubTest, SubtractNegativeNumberFromZero ) {
-    BigNumber zero = make_big_number( { 0 }, 0, false );
-    BigNumber negative = make_big_number( { 789 }, 1, true );
-    BigNumber expected_result = make_big_number( { 789 }, 1, false );
+TEST_F( BigNumberSubTest, PositiveMinusLarger ) {
+    BigNumber a = make_big_number( { 2, 5 }, 0 );
+    BigNumber b = make_big_number( { 1, 0, 0 }, 0 );
+    BigNumber expected = make_big_number( { 7, 5 }, 0, true );
 
-    BigNumber result = sub( zero, negative );
+    BigNumber result = sub( a, b );
 
-    EXPECT_TRUE( is_equal( result, expected_result ) );
+    EXPECT_TRUE( is_equal( result, expected ) );
 }
 
-TEST_F( BigNumberSubTest, SubtractPositiveNumbers ) {
-    BigNumber num1 = make_big_number( { 500 }, 0, false );
-    BigNumber num2 = make_big_number( { 300 }, 0, false );
-    BigNumber expected_result = make_big_number( { 200 }, 0, false );
+TEST_F( BigNumberSubTest, PositiveMinusNegative ) {
+    BigNumber a = make_big_number( { 5, 0 }, 0 );
+    BigNumber b = make_big_number( { 3, 0 }, 0, true );
+    BigNumber expected = make_big_number( { 8, 0 }, 0 );
 
-    BigNumber result = sub( num1, num2 );
+    BigNumber result = sub( a, b );
 
-    EXPECT_TRUE( is_equal( result, expected_result ) );
+    EXPECT_TRUE( is_equal( result, expected ) );
 }
 
-TEST_F( BigNumberSubTest, SubtractNegativeNumbers ) {
-    BigNumber num1 = make_big_number( { 200 }, 0, true );
-    BigNumber num2 = make_big_number( { 100 }, 0, true );
-    BigNumber expected_result = make_big_number( { 100 }, 0, true );
+TEST_F( BigNumberSubTest, NegativeMinusPositive ) {
+    BigNumber a = make_big_number( { 4, 0 }, 0, true );
+    BigNumber b = make_big_number( { 2, 0 }, 0 );
+    BigNumber expected = make_big_number( { 6, 0 }, 0, true );
 
-    BigNumber result = sub( num1, num2 );
+    BigNumber result = sub( a, b );
 
-    EXPECT_TRUE( is_equal( result, expected_result ) );
+    EXPECT_TRUE( is_equal( result, expected ) );
 }
 
-TEST_F( BigNumberSubTest, SubtractNegativeFromPositive ) {
-    BigNumber positive = make_big_number( { 100 }, 1, false );
-    BigNumber negative = make_big_number( { 50 }, 1, true );
-    BigNumber expected_result = make_big_number( { 150 }, 1, false );
+TEST_F( BigNumberSubTest, NegativeMinusNegative ) {
+    BigNumber a = make_big_number( { 3, 0 }, 0, true );
+    BigNumber b = make_big_number( { 1, 0 }, 0, true );
+    BigNumber expected = make_big_number( { 2, 0 }, 0, true );
 
-    BigNumber result = sub( positive, negative );
+    BigNumber result = sub( a, b );
 
-    EXPECT_TRUE( is_equal( result, expected_result ) );
+    EXPECT_TRUE( is_equal( result, expected ) );
 }
 
-TEST_F( BigNumberSubTest, SubtractPositiveFromNegative ) {
-    BigNumber negative = make_big_number( { 100 }, 1, true );
-    BigNumber positive = make_big_number( { 50 }, 1, false );
-    BigNumber expected_result = make_big_number( { 150 }, 1, true );
+TEST_F( BigNumberSubTest, SubtractFromZero ) {
+    BigNumber a = make_big_number( { 0 }, 0 );
+    BigNumber b = make_big_number( { 4, 2 }, 0 );
+    BigNumber expected = make_big_number( { 4, 2 }, 0, true );
 
-    BigNumber result = sub( negative, positive );
+    BigNumber result = sub( a, b );
 
-    EXPECT_TRUE( is_equal( result, expected_result ) );
+    EXPECT_TRUE( is_equal( result, expected ) );
 }
 
-TEST_F( BigNumberSubTest, SubtractSameNumber ) {
-    BigNumber number = make_big_number( { 123, 456 }, 2, false );
-    BigNumber expected_result = make_big_number( {}, 0, false );
+TEST_F( BigNumberSubTest, SubtractZero ) {
+    BigNumber a = make_big_number( { 1, 2, 3 }, 0 );
+    BigNumber b = make_big_number( { 0 }, 0 );
+    BigNumber expected = make_big_number( { 1, 2, 3 }, 0 );
 
-    BigNumber result = sub( number, number );
+    BigNumber result = sub( a, b );
 
-    EXPECT_TRUE( is_equal( result, expected_result ) );
+    EXPECT_TRUE( is_equal( result, expected ) );
 }
 
-TEST_F( BigNumberSubTest, SubtractSameNegativeNumber ) {
-    BigNumber number = make_big_number( { 789 }, 1, true );
-    BigNumber expected_result = make_big_number( {}, 0, false );
+TEST_F( BigNumberSubTest, LargeNumbers ) {
+    BigNumber a = make_big_number(
+        { 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9 }, 0 );
+    BigNumber b = make_big_number( { 1 }, 0 );
+    BigNumber expected = make_big_number(
+        { 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 8 }, 0 );
 
-    BigNumber result = sub( number, number );
+    BigNumber result = sub( a, b );
 
-    EXPECT_TRUE( is_equal( result, expected_result ) );
+    EXPECT_TRUE( is_equal( result, expected ) );
 }
 
-TEST_F( BigNumberSubTest, SubtractZeros ) {
-    BigNumber zero1 = make_big_number( { 0 }, 0, false );
-    BigNumber zero2 = make_big_number( { 0 }, 0, true );
-    BigNumber expected_result = make_big_number( {}, 0, false );
+TEST_F( BigNumberSubTest, WithExponents ) {
+    BigNumber a = make_big_number( { 1, 5 }, 3 );
+    BigNumber b = make_big_number( { 5 }, 2 );
+    BigNumber expected = make_big_number( { 1, 4, 5 }, 2 );
 
-    BigNumber result = sub( zero1, zero2 );
+    BigNumber result = sub( a, b );
 
-    EXPECT_TRUE( is_equal( result, expected_result ) );
-}
-
-TEST_F( BigNumberSubTest, SubtractAnticommutative ) {
-    BigNumber num1 = make_big_number( { 100 }, 1, false );
-    BigNumber num2 = make_big_number( { 200 }, 1, false );
-    BigNumber expected_result_1 = make_big_number( { 100 }, 1, true );
-    BigNumber expected_result_2 = make_big_number( { 100 }, 1, false );
-
-    BigNumber result1 = sub( num1, num2 );
-    BigNumber result2 = sub( num2, num1 );
-
-    EXPECT_TRUE( is_equal( result1, expected_result_1 ) );
-    EXPECT_TRUE( is_equal( result2, expected_result_2 ) );
+    EXPECT_TRUE( is_equal( result, expected ) );
 }
