@@ -1,65 +1,65 @@
+#include <algorithm>
+#include <cstddef>
 #include <cstdint>
+#include <sys/types.h>
 
 #include "big_number.hpp"
 #include "constructors.hpp"
-#include "raw_number.hpp"
 
 namespace big_number {
-    int32_t count_signitificant_digits( RawNumber raw ) noexcept {
-        int32_t zeros = get_leading_zeros( raw ) + get_trailing_zeros( raw );
-        int32_t size = get_size( raw );
+    size_t count_chunks( const std::vector<uint8_t>& digits, uint8_t offset ) {
+        if ( digits.size() == 0 ) return 0;
+        if ( digits[0] == 0 ) return 0;
+        size_t amount = ( digits.size() + static_cast<size_t>( offset ) +
+                          static_cast<size_t>( BASE ) - 1 ) /
+                        BASE;
 
-        return ( zeros >= size ) ? 0 : size - zeros;
+        return ( amount > static_cast<size_t>( MAX_CHUNK_AMOUNT ) ) ? 0
+                                                                    : amount;
     }
 
-    int32_t count_chunks( int32_t significant_digits, int32_t offset ) {
-        return ( significant_digits + offset + BASE - 1 ) / BASE;
+    uint8_t get_digit( const std::vector<uint8_t>& digits, size_t index ) {
+        if ( index >= digits.size() ) return 0;
+        return digits[index];
     }
 
-    std::vector<chunk> compute_chunks( const RawNumber& raw_number ) {
-        int32_t significant_digits = count_signitificant_digits( raw_number );
+    int32_t compute_shift( int32_t exp, uint8_t offset ) {
+        return ( exp - static_cast<int32_t>( offset ) ) /
+               static_cast<int32_t>( BASE );
+    }
 
-        if ( significant_digits == 0 ) return {};
+    std::vector<chunk> convert_to_chunks( const std::vector<uint8_t>& digits,
+                                          uint8_t offset ) {
+        std::vector<chunk> chunks( count_chunks( digits, offset ) );
+        int32_t index = static_cast<int32_t>( digits.size() ) +
+                        static_cast<int32_t>( offset ) - 1;
 
-        std::vector<chunk> chunks;
-        int32_t offset = get_offset( raw_number );
-        chunks.reserve( count_chunks( significant_digits, offset ) );
-        int32_t leading_zeros = get_leading_zeros( raw_number );
-        size_t pos = significant_digits + leading_zeros + offset;
-
-        while ( pos > leading_zeros ) {
-            chunk value = 0;
+        for ( chunk& value : chunks ) {
+            int32_t to = std::max( -1, index - BASE );
             chunk factor = 1;
 
-            for ( int i = 0; i < BASE; ++i ) {
-                if ( pos > leading_zeros ) {
-                    --pos;
-                    int32_t digit = get_digit( raw_number, pos );
-                    value += static_cast<chunk>( digit ) * factor;
-                }
-
+            for ( int32_t i = index; i > to; i-- ) {
+                int32_t digit = get_digit( digits, i );
+                value += static_cast<chunk>( digit ) * factor;
                 factor *= 10;
             }
-
-            chunks.push_back( value );
+            index = to;
         }
-
         return chunks;
     }
 
-    int32_t compute_shift( const RawNumber& raw_number ) noexcept {
-        return ( get_exp( raw_number ) - get_offset( raw_number ) ) / BASE;
+    uint8_t compute_offset( int32_t exp ) {
+        int8_t remainder = static_cast<uint8_t>( exp % BASE );
+        return ( remainder < 0 ) ? remainder + BASE : remainder;
     }
 
-    BigNumber make_big_number( const std::vector<int>& digits,
+    BigNumber make_big_number( const std::vector<uint8_t>& digits,
                                int32_t exp,
                                bool is_negative,
                                const Error& error ) {
-        const RawNumber raw =
-            make_raw_number( digits, exp, is_negative, error );
-
-        const std::vector<chunk> chunks = compute_chunks( raw );
-        const int32_t shift = compute_shift( raw );
+        uint8_t offset = compute_offset( exp );
+        std::vector<chunk> chunks = convert_to_chunks( digits, offset );
+        int32_t shift = compute_shift( exp, offset );
 
         return chunks.empty() ? make_zero( error )
                               : BigNumber{ chunks, error, shift, is_negative };
