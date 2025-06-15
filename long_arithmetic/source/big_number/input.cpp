@@ -1,33 +1,41 @@
+#include <cstdint>
+
 #include "big_number.hpp"
 #include "constructors.hpp"
+#include "raw_number.hpp"
 
 namespace big_number {
-    size_t count_leading_zeros( const std::vector<int>& digits ) noexcept {
-        size_t count = 0;
-        for ( auto it = digits.begin(); it != digits.end(); ++it ) {
-            if ( *it != 0 ) break;
-            ++count;
-        }
-        return count;
+    int32_t count_signitificant_digits( RawNumber raw ) noexcept {
+        int32_t zeros = get_leading_zeros( raw ) + get_trailing_zeros( raw );
+        int32_t size = get_size( raw );
+
+        return ( zeros >= size ) ? 0 : size - zeros;
     }
 
-    void fill_chunks( const std::vector<int>& digits,
-                      std::vector<chunk>& chunks,
-                      int32_t offset,
-                      size_t leading_zeros,
-                      size_t trailing_zeros ) {
-        size_t pos = digits.size() - trailing_zeros;
+    int32_t count_chunks( int32_t significant_digits, int32_t offset ) {
+        return ( significant_digits + offset + BASE - 1 ) / BASE;
+    }
 
-        while ( pos > leading_zeros && ( pos > 0 || offset > 0 ) ) {
+    std::vector<chunk> compute_chunks( const RawNumber& raw_number ) {
+        int32_t significant_digits = count_signitificant_digits( raw_number );
+
+        if ( significant_digits == 0 ) return {};
+
+        std::vector<chunk> chunks;
+        int32_t offset = get_offset( raw_number );
+        chunks.reserve( count_chunks( significant_digits, offset ) );
+        int32_t leading_zeros = get_leading_zeros( raw_number );
+        size_t pos = significant_digits + leading_zeros + offset;
+
+        while ( pos > leading_zeros ) {
             chunk value = 0;
             chunk factor = 1;
 
             for ( int i = 0; i < BASE; ++i ) {
-                if ( offset > 0 ) {
-                    --offset;
-                } else if ( pos > 0 ) {
+                if ( pos > leading_zeros ) {
                     --pos;
-                    value += static_cast<chunk>( digits[pos] ) * factor;
+                    int32_t digit = get_digit( raw_number, pos );
+                    value += static_cast<chunk>( digit ) * factor;
                 }
 
                 factor *= 10;
@@ -35,52 +43,23 @@ namespace big_number {
 
             chunks.push_back( value );
         }
-    }
-
-    int32_t compute_offset( int32_t exp ) noexcept {
-        int32_t remainder = exp % BASE;
-        return ( remainder < 0 ) ? remainder + BASE : remainder;
-    }
-
-    int32_t compute_shift( int32_t exp ) noexcept {
-        const int32_t offset = compute_offset( exp );
-        return ( exp - offset ) / BASE;
-    }
-
-    std::vector<chunk> convert_to_chunks( const std::vector<int>& digits,
-                                          int32_t exp,
-                                          size_t trailing_zeros ) {
-        if ( digits.empty() ) { return {}; }
-
-        const int32_t leading_zeros = count_leading_zeros( digits );
-        const int32_t offset = compute_offset( exp );
-        const size_t total_len =
-            digits.size() + offset - trailing_zeros - leading_zeros;
-        std::vector<chunk> chunks;
-        chunks.reserve( ( total_len + BASE - 1 ) / BASE );
-
-        fill_chunks( digits, chunks, offset, leading_zeros, trailing_zeros );
 
         return chunks;
     }
 
-    size_t count_trailing_zeros( const std::vector<int>& digits ) noexcept {
-        size_t count = 0;
-        for ( auto it = digits.rbegin(); it != digits.rend(); ++it ) {
-            if ( *it != 0 ) break;
-            ++count;
-        }
-        return count;
+    int32_t compute_shift( const RawNumber& raw_number ) noexcept {
+        return ( get_exp( raw_number ) - get_offset( raw_number ) ) / BASE;
     }
 
     BigNumber make_big_number( const std::vector<int>& digits,
-                               int32_t exponent,
+                               int32_t exp,
                                bool is_negative,
                                const Error& error ) {
-        const size_t trailing_zeros = count_trailing_zeros( digits );
-        const std::vector<chunk> chunks =
-            convert_to_chunks( digits, exponent, trailing_zeros );
-        const int32_t shift = compute_shift( exponent + trailing_zeros );
+        const RawNumber raw =
+            make_raw_number( digits, exp, is_negative, error );
+
+        const std::vector<chunk> chunks = compute_chunks( raw );
+        const int32_t shift = compute_shift( raw );
 
         return chunks.empty() ? make_zero( error )
                               : BigNumber{ chunks, error, shift, is_negative };
