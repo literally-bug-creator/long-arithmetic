@@ -1,38 +1,27 @@
-#include <algorithm>
-#include <cstddef>
 #include <cstdint>
-#include <sys/types.h>
 
 #include "big_number.hpp"
 #include "constructors.hpp"
 
 namespace big_number {
-    size_t count_chunks( const std::vector<uint8_t>& digits, uint8_t offset ) {
-        if ( digits.size() == 0 ) return 0;
-        if ( digits[0] == 0 ) return 0;
-        size_t amount = ( digits.size() + static_cast<size_t>( offset ) +
-                          static_cast<size_t>( BASE ) - 1 ) /
-                        BASE;
-
-        return ( amount > static_cast<size_t>( MAX_CHUNK_AMOUNT ) ) ? 0
-                                                                    : amount;
+    size_t count_chunks( const digits& digits, digit offset ) noexcept {
+        if ( ( digits.size() == 0 ) && ( digits[0] == 0 ) ) return 0;
+        size_t amount = ( ( digits.size() + offset ) + BASE - 1 ) / BASE;
+        return ( amount > MAX_CHUNK_AMOUNT ) ? 0 : amount;
     }
 
-    uint8_t get_digit( const std::vector<uint8_t>& digits, size_t index ) {
-        if ( index >= digits.size() ) return 0;
-        return digits[index];
+    digit get_digit( const digits& digits, size_t index ) noexcept {
+        return ( index >= digits.size() ) ? 0 : digits[index];
     }
 
-    int32_t compute_shift( int32_t exp, uint8_t offset ) {
-        return ( exp - static_cast<int32_t>( offset ) ) /
-               static_cast<int32_t>( BASE );
+    int32_t compute_shift( int32_t exp, digit offset ) noexcept {
+        return ( exp - offset ) / BASE;
     }
 
-    std::vector<chunk> convert_to_chunks( const std::vector<uint8_t>& digits,
-                                          uint8_t offset ) {
+    std::vector<chunk> convert_to_chunks( const digits& digits,
+                                          digit offset ) noexcept {
         std::vector<chunk> chunks( count_chunks( digits, offset ) );
-        int32_t index = static_cast<int32_t>( digits.size() ) +
-                        static_cast<int32_t>( offset ) - 1;
+        int32_t index = static_cast<int32_t>( digits.size() ) + offset - 1;
 
         for ( chunk& value : chunks ) {
             int32_t to = std::max( -1, index - BASE );
@@ -48,16 +37,16 @@ namespace big_number {
         return chunks;
     }
 
-    uint8_t compute_offset( int32_t exp ) {
-        int8_t remainder = static_cast<uint8_t>( exp % BASE );
+    digit compute_offset( int32_t exp ) noexcept {
+        int8_t remainder = static_cast<int8_t>( exp % BASE );
         return ( remainder < 0 ) ? remainder + BASE : remainder;
     }
 
-    BigNumber make_big_number( const std::vector<uint8_t>& digits,
+    BigNumber make_big_number( const digits& digits,
                                int32_t exp,
                                bool is_negative,
-                               const Error& error ) {
-        uint8_t offset = compute_offset( exp );
+                               const Error& error ) noexcept {
+        digit offset = compute_offset( exp );
         std::vector<chunk> chunks = convert_to_chunks( digits, offset );
         int32_t shift = compute_shift( exp, offset );
 

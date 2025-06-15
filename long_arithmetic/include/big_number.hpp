@@ -7,6 +7,8 @@
 #include "error.hpp"
 
 namespace big_number {
+    typedef std::vector<uint8_t> digits;
+    typedef uint8_t digit;
     typedef __uint128_t mul_chunk;
     typedef uint64_t chunk;
 
@@ -24,7 +26,7 @@ namespace big_number {
     BigNumber make_big_number( const std::vector<uint8_t>& digits,
                                int32_t exponent,
                                bool is_negative,
-                               const Error& error );
+                               const Error& error ) noexcept;
 
     const Error& get_error( const BigNumber& number );
 }
