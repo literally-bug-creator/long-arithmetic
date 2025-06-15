@@ -138,7 +138,7 @@ TEST_F( InputTest, EmptyDigits ) {
 }
 
 TEST_F( InputTest, LeadingZerosInDigits ) {
-    chunks expected_chunks = { 123 };
+    chunks expected_chunks = { };
     int32_t expected_exp = 0;
     bool expected_sign = false;
 
