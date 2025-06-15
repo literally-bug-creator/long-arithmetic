@@ -1,5 +1,6 @@
 #pragma once
 
+#include <cstdint>
 #include <inttypes.h>
 #include <vector>
 
@@ -9,8 +10,9 @@ namespace big_number {
     typedef __uint128_t mul_chunk;
     typedef uint64_t chunk;
 
-    const int BASE = 18;
+    const uint8_t BASE = 18;
     const chunk MAX_CHUNK = 1000000000000000000;
+    const int16_t MAX_CHUNK_AMOUNT = 100000 / static_cast<int16_t>( BASE ) + 1;
 
     struct BigNumber {
         std::vector<chunk> chunks;
@@ -19,7 +21,7 @@ namespace big_number {
         bool is_negative;
     };
 
-    BigNumber make_big_number( const std::vector<int>& digits,
+    BigNumber make_big_number( const std::vector<uint8_t>& digits,
                                int32_t exponent,
                                bool is_negative,
                                const Error& error );
