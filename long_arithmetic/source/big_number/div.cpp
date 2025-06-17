@@ -20,7 +20,7 @@ namespace big_number {
         if ( is_equal( y, ZERO ) ) { return make_zero( DIVISION_BY_ZERO ); }
         if ( is_equal( y, ONE ) ) { return x; }
         if ( is_equal( x, y ) ) { return ONE; }
-
+        if (get_size(x) + get_size(y)>=DIV_PRECISION) precision = 1;
         BigNumber b = from_scratch(
             get_chunks( y ),
             get_exponent( y ) + ( compute_max_exp( x ) - compute_max_exp( y ) ),

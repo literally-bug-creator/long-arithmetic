@@ -13,7 +13,7 @@ namespace big_number {
     const int CHUNK_DIGITS = 18;
     const chunk CHUNK_BASE = static_cast<chunk>( std::pow( 10, CHUNK_DIGITS ) );
     const chunk MAX_CHUNK = CHUNK_BASE - 1;
-    const int32_t DIV_PRECISION = 500;
+    const int32_t DIV_PRECISION = 5555;
 
     struct BigNumber {
         std::vector<chunk> chunks;
