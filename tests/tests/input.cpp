@@ -16,7 +16,7 @@ TEST_F( InputTest, SingleDigit ) {
 
     BigNumber a = make_big_number( { 3 }, -18, false, get_default_error() );
 
-    EXPECT_EQ( a.chunks, expected_chunks );
+    EXPECT_EQ( a.mantissa, expected_chunks );
     EXPECT_EQ( a.shift, expected_exp );
     EXPECT_EQ( a.is_negative, expected_sign );
     EXPECT_TRUE( is_ok( a.error ) );
@@ -29,7 +29,7 @@ TEST_F( InputTest, NegativeNumber ) {
 
     BigNumber a = make_big_number( { 1, 2, 3 }, 0, true, get_default_error() );
 
-    EXPECT_EQ( a.chunks, expected_chunks );
+    EXPECT_EQ( a.mantissa, expected_chunks );
     EXPECT_EQ( a.shift, expected_exp );
     EXPECT_EQ( a.is_negative, expected_sign );
     EXPECT_TRUE( is_ok( a.error ) );
@@ -46,7 +46,7 @@ TEST_F( InputTest, OneFullChunk ) {
         false,
         get_default_error() );
 
-    EXPECT_EQ( a.chunks, expected_chunks );
+    EXPECT_EQ( a.mantissa, expected_chunks );
     EXPECT_EQ( a.shift, expected_exp );
     EXPECT_EQ( a.is_negative, expected_sign );
     EXPECT_TRUE( is_ok( a.error ) );
@@ -63,7 +63,7 @@ TEST_F( InputTest, TwoChunks ) {
         false,
         get_default_error() );
 
-    EXPECT_EQ( a.chunks, expected_chunks );
+    EXPECT_EQ( a.mantissa, expected_chunks );
     EXPECT_EQ( a.shift, expected_exp );
     EXPECT_EQ( a.is_negative, expected_sign );
     EXPECT_TRUE( is_ok( a.error ) );
@@ -76,7 +76,7 @@ TEST_F( InputTest, Zero ) {
 
     BigNumber a = make_big_number( { 0 }, 0, false, get_default_error() );
 
-    EXPECT_EQ( a.chunks, expected_chunks );
+    EXPECT_EQ( a.mantissa, expected_chunks );
     EXPECT_EQ( a.shift, expected_exp );
     EXPECT_EQ( a.is_negative, expected_sign );
     EXPECT_TRUE( is_ok( a.error ) );
@@ -90,7 +90,7 @@ TEST_F( InputTest, NonDivisibleShift ) {
     BigNumber a =
         make_big_number( { 1, 2, 3 }, -5, false, get_default_error() );
 
-    EXPECT_EQ( a.chunks, expected_chunks );
+    EXPECT_EQ( a.mantissa, expected_chunks );
     EXPECT_EQ( a.shift, expected_exp );
     EXPECT_EQ( a.is_negative, expected_sign );
     EXPECT_TRUE( is_ok( a.error ) );
@@ -104,7 +104,7 @@ TEST_F( InputTest, LargePositiveshift ) {
     BigNumber a =
         make_big_number( { 1, 2, 3 }, 36, false, get_default_error() );
 
-    EXPECT_EQ( a.chunks, expected_chunks );
+    EXPECT_EQ( a.mantissa, expected_chunks );
     EXPECT_EQ( a.shift, expected_exp );
     EXPECT_EQ( a.is_negative, expected_sign );
     EXPECT_TRUE( is_ok( a.error ) );
@@ -118,7 +118,7 @@ TEST_F( InputTest, LargeNegativeshift ) {
     BigNumber a =
         make_big_number( { 1, 2, 3 }, -36, false, get_default_error() );
 
-    EXPECT_EQ( a.chunks, expected_chunks );
+    EXPECT_EQ( a.mantissa, expected_chunks );
     EXPECT_EQ( a.shift, expected_exp );
     EXPECT_EQ( a.is_negative, expected_sign );
     EXPECT_TRUE( is_ok( a.error ) );
@@ -131,21 +131,21 @@ TEST_F( InputTest, EmptyDigits ) {
 
     BigNumber a = make_big_number( {}, 0, false, get_default_error() );
 
-    EXPECT_EQ( a.chunks, expected_chunks );
+    EXPECT_EQ( a.mantissa, expected_chunks );
     EXPECT_EQ( a.shift, expected_exp );
     EXPECT_EQ( a.is_negative, expected_sign );
     EXPECT_TRUE( is_ok( a.error ) );
 }
 
 TEST_F( InputTest, LeadingZerosInDigits ) {
-    chunks expected_chunks = { };
+    chunks expected_chunks = {};
     int32_t expected_exp = 0;
     bool expected_sign = false;
 
     BigNumber a =
         make_big_number( { 0, 0, 1, 2, 3 }, 0, false, get_default_error() );
 
-    EXPECT_EQ( a.chunks, expected_chunks );
+    EXPECT_EQ( a.mantissa, expected_chunks );
     EXPECT_EQ( a.shift, expected_exp );
     EXPECT_EQ( a.is_negative, expected_sign );
     EXPECT_TRUE( is_ok( a.error ) );
@@ -159,7 +159,7 @@ TEST_F( InputTest, TrailingZerosInDigits ) {
     BigNumber a = make_big_number(
         { 1, 2, 3, 4, 5, 6, 0, 0, 0 }, 0, false, get_default_error() );
 
-    EXPECT_NE( a.chunks, expected_chunks );
+    EXPECT_NE( a.mantissa, expected_chunks );
     EXPECT_EQ( a.shift, expected_exp );
     EXPECT_EQ( a.is_negative, expected_sign );
     EXPECT_TRUE( is_ok( a.error ) );
@@ -172,7 +172,7 @@ TEST_F( InputTest, ZeroWithPositiveShift ) {
 
     BigNumber a = make_big_number( { 0 }, 3, false, get_default_error() );
 
-    EXPECT_EQ( a.chunks, expected_chunks );
+    EXPECT_EQ( a.mantissa, expected_chunks );
     EXPECT_EQ( a.shift, expected_exp );
     EXPECT_EQ( a.is_negative, expected_sign );
     EXPECT_TRUE( is_ok( a.error ) );
@@ -185,7 +185,7 @@ TEST_F( InputTest, ZeroWithNegativeShift ) {
 
     BigNumber a = make_big_number( { 0 }, -2, false, get_default_error() );
 
-    EXPECT_EQ( a.chunks, expected_chunks );
+    EXPECT_EQ( a.mantissa, expected_chunks );
     EXPECT_EQ( a.shift, expected_exp );
     EXPECT_EQ( a.is_negative, expected_sign );
     EXPECT_TRUE( is_ok( a.error ) );
@@ -199,7 +199,7 @@ TEST_F( InputTest, NegativeExponentNoPadding ) {
     BigNumber a =
         make_big_number( { 1, 2, 3 }, -1, false, get_default_error() );
 
-    EXPECT_EQ( a.chunks, expected_chunks );
+    EXPECT_EQ( a.mantissa, expected_chunks );
     EXPECT_EQ( a.shift, expected_exp );
     EXPECT_EQ( a.is_negative, expected_sign );
     EXPECT_TRUE( is_ok( a.error ) );
@@ -213,7 +213,7 @@ TEST_F( InputTest, NegativeExponentWithPadding ) {
     BigNumber a =
         make_big_number( { 1, 2, 3 }, -17, false, get_default_error() );
 
-    EXPECT_EQ( a.chunks, expected_chunks );
+    EXPECT_EQ( a.mantissa, expected_chunks );
     EXPECT_EQ( a.shift, expected_exp );
     EXPECT_EQ( a.is_negative, expected_sign );
     EXPECT_TRUE( is_ok( a.error ) );
