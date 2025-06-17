@@ -9,7 +9,7 @@ include(GoogleTest)
 
 file(GLOB_RECURSE TESTS_SRC_FILES ./tests/*.cpp)
 add_executable(run_tests ${TESTS_SRC_FILES})
-target_link_libraries(run_tests gtest gtest_main long_arithmetic gmp gmpxx)
+target_link_libraries(run_tests gtest gtest_main long_arithmetic gmp gmpxx flint)
 include_directories(include)
 
 enable_testing()

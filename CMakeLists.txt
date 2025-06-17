@@ -10,6 +10,8 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 add_subdirectory(long_arithmetic)
+set(CMAKE_CXX_FLAGS_DEBUG "-Wall -g -O3 -march=native")
+set(CMAKE_CXX_FLAGS_RELEASE "-Wall -DNDEBUG -O3 -march=native -funroll-loops")
 
 if(PROJECT_NAME STREQUAL CMAKE_PROJECT_NAME)
     message(STATUS "Building ${PROJECT_NAME} as the main project")
@@ -24,6 +26,8 @@ if(PROJECT_NAME STREQUAL CMAKE_PROJECT_NAME)
     endif()
 
     if(BUILD_BENCHMARKS)
+        set(CMAKE_CXX_FLAGS_DEBUG "-Wall -g -O3 -march=native")
+        set(CMAKE_CXX_FLAGS_RELEASE "-Wall -DNDEBUG -O3 -march=native")
         add_subdirectory(benchmark)
     endif()
 
