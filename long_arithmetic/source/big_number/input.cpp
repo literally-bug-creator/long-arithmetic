@@ -1,13 +1,11 @@
-#include <cstdint>
-
 #include "big_number.hpp"
 #include "constructors.hpp"
 
 namespace big_number {
-    size_t count_chunks( const digits& digits, digit offset ) noexcept {
-        if ( ( digits.size() == 0 ) && ( digits[0] == 0 ) ) return 0;
-        size_t amount = ( ( digits.size() + offset ) + BASE - 1 ) / BASE;
-        return ( amount > MAX_CHUNK_AMOUNT ) ? 0 : amount;
+    size_t count_chunks( const digits& value, digit offset ) noexcept {
+        if ( ( value.empty() ) || ( value[0] == 0 ) ) return 0;
+        size_t amount = ( ( value.size() + offset ) + BASE - 1 ) / BASE;
+        return ( amount > MAX_INPUT_CHUNKS ) ? 0 : amount;
     }
 
     digit get_digit( const digits& digits, size_t index ) noexcept {
@@ -18,12 +16,11 @@ namespace big_number {
         return ( exp - offset ) / BASE;
     }
 
-    std::vector<chunk> convert_to_chunks( const digits& digits,
-                                          digit offset ) noexcept {
-        std::vector<chunk> chunks( count_chunks( digits, offset ) );
+    chunks convert_to_chunks( const digits& digits, digit offset ) noexcept {
+        chunks value( count_chunks( digits, offset ) );
         int32_t index = static_cast<int32_t>( digits.size() ) + offset - 1;
 
-        for ( chunk& value : chunks ) {
+        for ( chunk& value : value ) {
             int32_t to = std::max( -1, index - BASE );
             chunk factor = 1;
 
@@ -34,7 +31,7 @@ namespace big_number {
             }
             index = to;
         }
-        return chunks;
+        return value;
     }
 
     digit compute_offset( int32_t exp ) noexcept {
@@ -47,10 +44,10 @@ namespace big_number {
                                bool is_negative,
                                const Error& error ) noexcept {
         digit offset = compute_offset( exp );
-        std::vector<chunk> chunks = convert_to_chunks( digits, offset );
+        chunks mantissa = convert_to_chunks( digits, offset );
         int32_t shift = compute_shift( exp, offset );
+        BigNumberType type = BigNumberType::DEFAULT;
 
-        return chunks.empty() ? make_zero( error )
-                              : BigNumber{ chunks, error, shift, is_negative };
+        return make_big_number( mantissa, shift, type, error, is_negative );
     }
 }
