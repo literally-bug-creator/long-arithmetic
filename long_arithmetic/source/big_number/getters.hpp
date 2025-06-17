@@ -9,7 +9,7 @@ namespace big_number {
 
     size_t get_size( const BigNumber& number );
 
-    const std::vector<chunk>& get_chunks( const BigNumber& number );
+    const std::vector<chunk>& get_mantissa( const BigNumber& number );
 
     chunk get_chunk( const BigNumber& number, int32_t shift );
 
