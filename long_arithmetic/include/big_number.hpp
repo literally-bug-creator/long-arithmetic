@@ -16,7 +16,7 @@ namespace big_number {
     const digit BASE = 18;
     const chunk MAX_CHUNK = 1000000000000000000;
     const int16_t MAX_INPUT_CHUNKS = 100000 / static_cast<int16_t>( BASE ) + 1;
-    const int16_t MAX_CHUNKS = MAX_INPUT_CHUNKS + 1;
+    const int16_t MAX_CHUNKS = MAX_INPUT_CHUNKS;
     const int16_t MIN_CHUNKS = 1;
     const int32_t MAX_SHIFT = 9999;
 
