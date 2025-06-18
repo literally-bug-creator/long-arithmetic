@@ -65,13 +65,34 @@ namespace big_number {
     }
 
     chunks normalize( const chunks& raw_mantissa ) {
-        return raw_mantissa; // TODO: Implement
+        chunks value = raw_mantissa;
+        if ( raw_mantissa.size() <= MAX_CHUNKS ) return value;
+
+        chunk last_chunk = raw_mantissa[MAX_CHUNKS];
+        size_t counter = value.size() - MAX_CHUNKS;
+
+        if ( last_chunk >= HALF_CHUNK ) {
+            for ( size_t i = MAX_CHUNKS; i-- > ZERO_INT; ) {
+                chunk& curr_chunk = value[i];
+                if ( curr_chunk == ALMOST_MAX_CHUNK )
+                    counter++;
+                else {
+                    curr_chunk += 1;
+                    break;
+                }
+            }
+        }
+
+        value.resize( value.size() - counter );
+        return value;
     }
 
     int32_t normalize( int32_t raw_shift,
                        const chunks& raw_mantissa,
                        const chunks& norm_mantissa ) {
-        return raw_shift; // TODO: Implement
+        size_t delta = raw_mantissa.size() - norm_mantissa.size();
+        if ( delta >= MAX_SHIFT ) return MAX_SHIFT + 1;
+        return raw_shift + delta;
     }
 
     BigNumber normalize( const chunks& mantissa,
