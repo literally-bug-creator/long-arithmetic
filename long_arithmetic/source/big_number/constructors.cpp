@@ -1,31 +1,32 @@
 #include "constructors.hpp"
 
-#include <cstdlib>
-
 #include "big_number.hpp"
 #include "constants.hpp"
 
 namespace big_number {
-    BigNumber make_zero( const Error& error ) noexcept {
+    BigNumber make_zero( const Error& error ) {
         return { {}, ZERO_INT, BigNumberType::ZERO, error, false };
     }
 
-    BigNumber make_nan( const Error& error ) noexcept {
+    BigNumber make_nan( const Error& error ) {
         return { {}, ZERO_INT, BigNumberType::NAN, error, false };
     }
 
-    BigNumber make_inf( const Error& error, bool is_negative ) noexcept {
+    BigNumber make_inf( const Error& error, bool is_negative ) {
         return { {}, ZERO_INT, BigNumberType::INF, error, is_negative };
     }
 
-    bool is_overflow( int32_t value ) { return std::abs( value ) > MAX_SHIFT; }
+    bool is_overflow( int32_t value ) { return value > MAX_SHIFT; }
+
+    bool is_underflow( int32_t value ) { return ( value < -MAX_SHIFT ); }
 
     bool is_underflow( const chunks& value ) {
         return value.size() < MIN_CHUNKS;
     }
 
     bool is_out_of_bounds( const chunks& mantissa, int32_t shift ) {
-        return is_overflow( shift ) || is_underflow( mantissa );
+        return is_overflow( shift ) || is_underflow( mantissa ) ||
+               is_underflow( shift );
     }
 
     bool is_special( BigNumberType type ) {
@@ -59,6 +60,7 @@ namespace big_number {
             return make_special( type, error, is_negative );
 
         if ( is_underflow( mantissa ) ) return make_zero( error );
+        if ( is_underflow( shift ) ) return make_zero( error );
         if ( is_overflow( shift ) ) return make_inf( error, is_negative );
 
         return make_zero( make_error( ErrorCode::ERROR ) );
@@ -114,7 +116,7 @@ namespace big_number {
                                int32_t shift,
                                BigNumberType type,
                                const Error& error,
-                               bool is_negative ) noexcept {
+                               bool is_negative ) {
         if ( is_special( type ) )
             return make_special( mantissa, shift, type, error, is_negative );
 
