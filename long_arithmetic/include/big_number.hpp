@@ -7,11 +7,11 @@
 #include "error.hpp"
 
 namespace big_number {
-    typedef uint8_t digit;
-    typedef std::vector<uint8_t> digits;
-    typedef __uint128_t mul_chunk;
-    typedef uint64_t chunk;
-    typedef std::vector<chunk> chunks;
+    using digit = uint8_t;
+    using digits = std::vector<digit>;
+    using mul_chunk = __uint128_t;
+    using chunk = uint64_t;
+    using chunks = std::vector<chunk>;
 
     const int32_t BASE = 18;
     const size_t PRECISION = 100000;
