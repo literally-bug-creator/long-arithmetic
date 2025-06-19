@@ -303,7 +303,6 @@ TEST_F( InputTest, DigitsTruncationToMaxDigits ) {
 
 TEST_F( InputTest, TruncationWithExponentCompensation ) {
     Error error = get_default_error();
-    int32_t expected_shift = 1;
     BigNumberType expected_type = BigNumberType::DEFAULT;
     bool expected_sign = false;
     size_t oversized_digits = MAX_DIGITS + BASE;
