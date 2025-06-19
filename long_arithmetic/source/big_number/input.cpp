@@ -17,8 +17,9 @@ namespace big_number {
     }
 
     int32_t compute_shift( int32_t exp, digit offset ) {
-        return ( is_overflowed( exp ) ) ? ( MAX_SHIFT + ONE_INT )
-                                        : ( exp - offset ) / BASE;
+        // return ( is_overflowed( exp ) ) ? ( MAX_SHIFT + ONE_INT )
+        //                                 : ( exp - offset ) / BASE;
+        return ( exp - offset ) / BASE;
     }
 
     chunks convert_to_chunks( const digits& digits, digit offset ) {
