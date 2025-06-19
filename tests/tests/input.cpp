@@ -220,7 +220,6 @@ TEST_F( InputTest, NegativeExponentDivisibleByBase ) {
     EXPECT_TRUE( is_ok( a.error ) );
 }
 
-// Exponent handling - not divisible by base
 TEST_F( InputTest, NegativeExponentNotDivisibleByBase ) {
     chunks expected_chunks = { 1230000000000000 };
     int32_t expected_exp = -1;
