@@ -424,7 +424,7 @@ TEST_F( InputTest, OverflowDigitsWithNegativeMaxExponent ) {
     int32_t delta = BASE;
     int32_t expected_shift = -MAX_SHIFT + delta / BASE;
     bool expected_sign = false;
-    bool expected_type = BigNumberType::DEFAULT;
+    BigNumberType expected_type = BigNumberType::DEFAULT;
     digits digits( MAX_DIGITS + delta, 1 );
 
     BigNumber a = make_big_number( digits, -MAX_EXP, false, error );
