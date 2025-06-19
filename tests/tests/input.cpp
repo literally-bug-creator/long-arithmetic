@@ -1,13 +1,11 @@
 #include <gtest/gtest.h>
 
 #include "big_number.hpp"
+#include "error.hpp"
 
 using namespace big_number;
 
 class InputTest : public ::testing::Test {};
-
-typedef std::vector<chunk> chunks;
-typedef std::vector<int> digits;
 
 TEST_F( InputTest, SingleDigit ) {
     chunks expected_chunks = { 3 };
@@ -216,5 +214,72 @@ TEST_F( InputTest, NegativeExponentWithPadding ) {
     EXPECT_EQ( a.mantissa, expected_chunks );
     EXPECT_EQ( a.shift, expected_exp );
     EXPECT_EQ( a.is_negative, expected_sign );
+    EXPECT_TRUE( is_ok( a.error ) );
+}
+
+TEST_F( InputTest, NegativeShiftOverflow ) {
+    Error error = get_default_error();
+    BigNumber expected = make_zero( error );
+
+    BigNumber a =
+        make_big_number( { 1 }, -( 100000 + ( 2 * BASE ) ), false, error );
+
+    EXPECT_EQ( a.mantissa, expected.mantissa );
+    EXPECT_EQ( a.shift, expected.shift );
+    EXPECT_EQ( a.is_negative, expected.is_negative );
+    EXPECT_EQ( a.type, expected.type );
+    EXPECT_TRUE( is_ok( a.error ) );
+}
+
+TEST_F( InputTest, PositiveShiftOverflow ) {
+    Error error = get_default_error();
+    BigNumber expected = make_inf( error, false );
+
+    BigNumber a = make_big_number( { 1 }, 100000 + ( 2 * BASE ), false, error );
+
+    EXPECT_EQ( a.mantissa, expected.mantissa );
+    EXPECT_EQ( a.shift, expected.shift );
+    EXPECT_EQ( a.is_negative, expected.is_negative );
+    EXPECT_EQ( a.type, expected.type );
+    EXPECT_TRUE( is_ok( a.error ) );
+}
+
+TEST_F( InputTest, MantissaUnderflow ) {
+    Error error = get_default_error();
+    BigNumber expected = make_zero( error );
+
+    BigNumber a = make_big_number( { 0 }, 0, false, error );
+
+    EXPECT_EQ( a.mantissa, expected.mantissa );
+    EXPECT_EQ( a.shift, expected.shift );
+    EXPECT_EQ( a.is_negative, expected.is_negative );
+    EXPECT_EQ( a.type, expected.type );
+    EXPECT_TRUE( is_ok( a.error ) );
+}
+
+TEST_F( InputTest, OverflowByMantissa ) {
+    Error error = get_default_error();
+    BigNumber expected = make_inf( error, false );
+
+    digits value( 200019, 1 );
+    BigNumber a = make_big_number( value, 0, false, error );
+
+    EXPECT_EQ( a.mantissa, expected.mantissa );
+    EXPECT_EQ( a.shift, expected.shift );
+    EXPECT_EQ( a.is_negative, expected.is_negative );
+    EXPECT_EQ( a.type, expected.type );
+    EXPECT_TRUE( is_ok( a.error ) );
+}
+
+TEST_F( InputTest, OverflowByExp ) {
+    Error error = get_default_error();
+    BigNumber expected = make_inf( error, false );
+
+    BigNumber a = make_big_number( { 1 }, MAX_EXP + 1, false, error );
+
+    EXPECT_EQ( a.mantissa, expected.mantissa );
+    EXPECT_EQ( a.shift, expected.shift );
+    EXPECT_EQ( a.is_negative, expected.is_negative );
+    EXPECT_EQ( a.type, expected.type );
     EXPECT_TRUE( is_ok( a.error ) );
 }
