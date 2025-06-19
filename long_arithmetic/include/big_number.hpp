@@ -13,12 +13,18 @@ namespace big_number {
     typedef uint64_t chunk;
     typedef std::vector<chunk> chunks;
 
-    const digit BASE = 18;
+    const int32_t BASE = 18;
+
+    const size_t MAX_DIGITS = 100000;
+    const int32_t MAX_EXP = MAX_DIGITS;
+
+    const size_t MAX_CHUNKS = MAX_DIGITS / BASE + 1;
+    const size_t MIN_CHUNKS = 1;
+    const int32_t MAX_SHIFT = static_cast<int32_t>( MAX_CHUNKS );
+
     const chunk MAX_CHUNK = 1000000000000000000;
-    const int16_t MAX_INPUT_CHUNKS = 100000 / static_cast<int16_t>( BASE ) + 1;
-    const int16_t MAX_CHUNKS = MAX_INPUT_CHUNKS;
-    const int16_t MIN_CHUNKS = 1;
-    const int32_t MAX_SHIFT = 9999;
+    const chunk HALF_CHUNK = MAX_CHUNK / 2;
+    const chunk ALMOST_MAX_CHUNK = MAX_CHUNK - 1;
 
     enum BigNumberType {
         DEFAULT,
@@ -38,13 +44,13 @@ namespace big_number {
     BigNumber make_big_number( const digits& digits,
                                int32_t exponent,
                                bool is_negative,
-                               const Error& error ) noexcept;
+                               const Error& error );
 
-    BigNumber make_zero( const Error& error ) noexcept;
+    BigNumber make_zero( const Error& error );
 
-    BigNumber make_nan( const Error& error ) noexcept;
+    BigNumber make_nan( const Error& error );
 
-    BigNumber make_inf( const Error& error, bool is_negative ) noexcept;
+    BigNumber make_inf( const Error& error, bool is_negative );
 
     const Error& get_error( const BigNumber& number );
 }
