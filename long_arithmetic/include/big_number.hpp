@@ -31,7 +31,7 @@ namespace big_number {
         DEFAULT,
         ZERO,
         INF,
-        NAN,
+        NOT_A_NUMBER,
     };
 
     struct BigNumber {
