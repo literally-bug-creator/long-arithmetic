@@ -14,17 +14,18 @@ namespace big_number {
     typedef std::vector<chunk> chunks;
 
     const int32_t BASE = 18;
-
-    const size_t MAX_DIGITS = 100000;
-    const int32_t MAX_EXP = MAX_DIGITS;
-
-    const size_t MAX_CHUNKS = MAX_DIGITS / BASE + 1;
-    const size_t MIN_CHUNKS = 1;
-    const int32_t MAX_SHIFT = static_cast<int32_t>( MAX_CHUNKS );
+    const size_t PRECISION = 100000;
 
     const chunk MAX_CHUNK = 1000000000000000000;
     const chunk HALF_CHUNK = MAX_CHUNK / 2;
     const chunk ALMOST_MAX_CHUNK = MAX_CHUNK - 1;
+
+    const size_t MAX_CHUNKS = PRECISION / BASE + 1;
+    const size_t MIN_CHUNKS = 1;
+    const int32_t MAX_SHIFT = static_cast<int32_t>( MAX_CHUNKS );
+
+    const size_t MAX_DIGITS = MAX_CHUNKS * BASE;
+    const int32_t MAX_EXP = MAX_DIGITS;
 
     enum BigNumberType {
         DEFAULT,
