@@ -9,7 +9,7 @@ namespace big_number {
     }
 
     BigNumber make_nan( const Error& error ) {
-        return { {}, ZERO_INT, BigNumberType::NAN, error, false };
+        return { {}, ZERO_INT, BigNumberType::NOT_A_NUMBER, error, false };
     }
 
     BigNumber make_inf( const Error& error, bool is_negative ) {
@@ -39,7 +39,7 @@ namespace big_number {
         case BigNumberType::ZERO:
             return make_zero( error );
 
-        case BigNumberType::NAN:
+        case BigNumberType::NOT_A_NUMBER:
             return make_nan( error );
 
         case BigNumberType::INF:

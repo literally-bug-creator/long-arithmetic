@@ -34,7 +34,7 @@ namespace big_number {
     }
 
     bool is_nan( const BigNumber& number ) {
-        return get_type( number ) == BigNumberType::NAN;
+        return get_type( number ) == BigNumberType::NOT_A_NUMBER;
     }
 
     bool is_inf( const BigNumber& number ) {
