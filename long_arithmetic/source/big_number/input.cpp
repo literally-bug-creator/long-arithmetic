@@ -1,24 +1,30 @@
+#include <cstdlib>
+
 #include "big_number.hpp"
+#include "constants.hpp"
 #include "constructors.hpp"
 
 namespace big_number {
-    size_t count_chunks( const digits& value, digit offset ) noexcept {
+    size_t count_chunks( const digits& value, digit offset ) {
         if ( ( value.empty() ) || ( value[0] == 0 ) ) return 0;
-        size_t amount = ( ( value.size() + offset ) + BASE - 1 ) / BASE;
-        return ( amount > MAX_INPUT_CHUNKS ) ? 0 : amount;
+        return ( ( value.size() + offset ) + BASE - ONE_INT ) / BASE;
     }
 
-    digit get_digit( const digits& digits, size_t index ) noexcept {
-        return ( index >= digits.size() ) ? 0 : digits[index];
+    bool is_overflowed( int32_t exp ) { return abs( exp ) > MAX_EXP; }
+
+    digit get_digit( const digits& digits, size_t index ) {
+        return ( index >= digits.size() ) ? ZERO_INT : digits[index];
     }
 
-    int32_t compute_shift( int32_t exp, digit offset ) noexcept {
-        return ( exp - offset ) / BASE;
+    int32_t compute_shift( int32_t exp, digit offset ) {
+        return ( is_overflowed( exp ) ) ? ( MAX_SHIFT + ONE_INT )
+                                        : ( exp - offset ) / BASE;
     }
 
-    chunks convert_to_chunks( const digits& digits, digit offset ) noexcept {
+    chunks convert_to_chunks( const digits& digits, digit offset ) {
         chunks value( count_chunks( digits, offset ) );
-        int32_t index = static_cast<int32_t>( digits.size() ) + offset - 1;
+        int32_t index =
+            static_cast<int32_t>( digits.size() ) + offset - ONE_INT;
 
         for ( chunk& value : value ) {
             int32_t to = std::max( -1, index - BASE );
@@ -36,18 +42,35 @@ namespace big_number {
 
     digit compute_offset( int32_t exp ) noexcept {
         int8_t remainder = static_cast<int8_t>( exp % BASE );
-        return ( remainder < 0 ) ? remainder + BASE : remainder;
+        return ( remainder < ZERO_INT ) ? ( remainder + BASE ) : remainder;
     }
 
-    BigNumber make_big_number( const digits& digits,
-                               int32_t exp,
-                               bool is_negative,
-                               const Error& error ) noexcept {
-        digit offset = compute_offset( exp );
-        chunks mantissa = convert_to_chunks( digits, offset );
-        int32_t shift = compute_shift( exp, offset );
-        BigNumberType type = BigNumberType::DEFAULT;
+    digits normalize( const digits& value ) {
+        digits normalized = value;
+        if ( normalized.size() > MAX_DIGITS ) {
+            normalized.resize( MAX_DIGITS );
+        }
+        return normalized;
+    }
 
-        return make_big_number( mantissa, shift, type, error, is_negative );
+    int32_t
+    compensate_exp( int32_t exp, const digits& raw, const digits& normalized ) {
+        size_t delta = raw.size() - normalized.size();
+        return ( delta > MAX_EXP ) ? ( MAX_EXP + ONE_INT ) : ( exp + delta );
+    }
+
+    BigNumber make_big_number( const digits& raw_digits,
+                               int32_t raw_exp,
+                               bool is_negative,
+                               const Error& error ) {
+        digits digits = normalize( raw_digits );
+        int32_t exp = compensate_exp( raw_exp, raw_digits, digits );
+        digit offset = compute_offset( exp );
+
+        return make_big_number( convert_to_chunks( digits, offset ),
+                                compute_shift( exp, offset ),
+                                BigNumberType::DEFAULT,
+                                error,
+                                is_negative );
     }
 }
