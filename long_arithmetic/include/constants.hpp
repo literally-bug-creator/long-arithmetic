@@ -40,4 +40,12 @@ namespace big_number {
     static_assert( MAX_CHUNK > HALF_CHUNK, "MAX_CHUNK sanity check failed" );
     static_assert( ALMOST_MAX_CHUNK == MAX_CHUNK - 1,
                    "ALMOST_MAX_CHUNK calculation incorrect" );
+
+    static_assert( std::is_trivially_copyable_v<chunk>,
+                   "chunk must be trivially copyable" );
+    static_assert( std::is_unsigned_v<chunk>, "chunk must be unsigned" );
+    static_assert( sizeof( chunk ) == 8, "chunk must be 64-bit" );
+    static_assert( sizeof( mul_chunk ) == 16, "mul_chunk must be 128-bit" );
+    static_assert( std::is_same_v<digit, uint8_t>,
+                   "digit type consistency check" );
 }
