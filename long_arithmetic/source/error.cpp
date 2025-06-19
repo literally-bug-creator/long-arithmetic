@@ -10,5 +10,5 @@ namespace big_number {
         return code == ErrorCode::OK;
     }
 
-    Error get_default_error() { return Error{ OK }; }
+    Error get_default_error() { return Error{ ErrorCode::OK }; }
 }
