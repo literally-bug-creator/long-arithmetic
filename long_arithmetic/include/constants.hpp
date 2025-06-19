@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstdint>
+#include <limits>
 #include <vector>
 
 namespace big_number {
@@ -20,20 +21,23 @@ namespace big_number {
     constexpr chunk HALF_CHUNK = MAX_CHUNK / 2;
     constexpr chunk ALMOST_MAX_CHUNK = MAX_CHUNK - 1;
 
-    constexpr int32_t MAX_SHIFT = []() {
-        static_assert( MAX_CHUNKS <= INT32_MAX,
-                       "Conversion check of 'MAX_SHIFT'" );
-        return static_cast<int32_t>( MAX_CHUNKS );
-    }();
+    constexpr int32_t MAX_SHIFT = static_cast<int32_t>( MAX_CHUNKS );
 
-    constexpr size_t MAX_DIGITS = []() {
-        static_assert( MAX_CHUNKS <= SIZE_MAX / BASE,
-                       "Overflow check of 'MAX_DIGITS'" );
-        return MAX_CHUNKS * BASE;
-    }();
-    constexpr int32_t MAX_EXP = []() {
-        static_assert( MAX_DIGITS <= INT32_MAX,
-                       "Conversion check of 'MAX_EXP'" );
-        return static_cast<int32_t>( MAX_DIGITS );
-    }();
+    constexpr size_t MAX_DIGITS = MAX_CHUNKS * BASE;
+    constexpr int32_t MAX_EXP = static_cast<int32_t>( MAX_DIGITS );
+
+    static_assert( BASE > 0, "BASE must be positive" );
+    static_assert( PRECISION > 0, "PRECISION must be positive" );
+    static_assert( MAX_CHUNKS > MIN_CHUNKS, "MAX_CHUNKS must be > MIN_CHUNKS" );
+
+    static_assert( MAX_CHUNKS <= SIZE_MAX / BASE,
+                   "MAX_DIGITS calculation would overflow" );
+    static_assert( MAX_CHUNKS <= std::numeric_limits<int32_t>::max(),
+                   "MAX_SHIFT conversion unsafe" );
+    static_assert( MAX_DIGITS <= std::numeric_limits<int32_t>::max(),
+                   "MAX_EXP conversion unsafe" );
+
+    static_assert( MAX_CHUNK > HALF_CHUNK, "MAX_CHUNK sanity check failed" );
+    static_assert( ALMOST_MAX_CHUNK == MAX_CHUNK - 1,
+                   "ALMOST_MAX_CHUNK calculation incorrect" );
 }
