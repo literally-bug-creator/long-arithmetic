@@ -9,9 +9,9 @@ namespace big_number {
 
     size_t get_size( const BigNumber& number );
 
-    const std::vector<chunk>& get_mantissa( const BigNumber& number );
+    const chunks& get_mantissa( const BigNumber& number );
 
-    chunk get_chunk( const BigNumber& number, int32_t shift );
+    chunk get_chunk( const BigNumber& number, int32_t index );
 
     bool is_negative( const BigNumber& number );
 

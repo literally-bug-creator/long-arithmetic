@@ -40,4 +40,8 @@ namespace big_number {
     bool is_inf( const BigNumber& number ) {
         return get_type( number ) == BigNumberType::INF;
     }
+
+    bool is_special( const BigNumber& number ) {
+        return get_type( number ) != BigNumberType::DEFAULT;
+    }
 }

@@ -2,6 +2,7 @@
 
 #include "big_number.hpp"
 #include "constants.hpp"
+#include "error.hpp"
 
 namespace big_number {
     BigNumber make_zero( const Error& error ) {
