@@ -1,8 +1,3 @@
-# library name: LongArithmetic
-# author: Ivan Deyna, Evgeniy Sysoev, Vadim Khramtsov
-# date: 2025
-# description: library for long arithmetic
-
 cmake_minimum_required(VERSION 3.10)
 
 set(CMAKE_CXX_STANDARD 20)
