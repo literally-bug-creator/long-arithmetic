@@ -1,5 +1,7 @@
 #pragma once
 
+#include <string>
+
 #include "constants.hpp"
 #include "error.hpp"
 
@@ -31,4 +33,6 @@ namespace big_number {
     BigNumber make_inf( const Error& error, bool is_negative );
 
     const Error& get_error( const BigNumber& number );
+
+    std::string to_string( const BigNumber& number );
 }
