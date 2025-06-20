@@ -19,7 +19,7 @@ namespace big_number {
         bool is_negative;
     };
 
-    BigNumber make_big_number( const digits& digits,
+    BigNumber make_big_number( digits digits,
                                int32_t exponent,
                                bool is_negative,
                                const Error& error );
