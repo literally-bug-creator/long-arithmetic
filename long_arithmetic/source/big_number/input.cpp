@@ -1,65 +1,75 @@
+#include <cstdint>
 #include <cstdlib>
+#include <cstring>
 
 #include "big_number.hpp"
+#include "constants.hpp"
 #include "constructors.hpp"
 
 namespace big_number {
-    int32_t compute_offset( int32_t exp ) noexcept {
-        return ( ( exp % BASE ) + BASE ) % BASE;
+    size_t count_chunks( const digits& value, digit offset ) {
+        if ( value.empty() || value[0] == 0 ) return 0;
+        return ( value.size() + offset + BASE - ONE_INT ) / BASE;
     }
 
-    int32_t compute_shift( int32_t exp ) noexcept {
-        const int32_t offset = compute_offset( exp );
-        const int32_t shift = std::abs( exp - offset ) / BASE;
-        return ( exp < 0 ) ? -shift : shift;
+    bool is_overflowed( int32_t exp ) { return std::abs( exp ) > MAX_EXP; }
+
+    digit get_digit( const digits& digits, size_t index ) {
+        return ( index >= digits.size() ) ? ZERO_INT : digits[index];
     }
 
-    void fill_chunks( const std::vector<int>& digits,
-                      std::vector<chunk>& chunks,
-                      int32_t offset ) {
-        size_t pos = digits.size();
+    int32_t compute_shift( int32_t exp, digit offset ) {
+        return ( exp - offset ) / BASE;
+    }
 
-        while ( pos > 0 || offset > 0 ) {
-            chunk value = 0;
+    chunks convert_to_chunks( const digits& digits, digit offset ) {
+        chunks container( count_chunks( digits, offset ) );
+        int32_t index =
+            static_cast<int32_t>( digits.size() ) + offset - ONE_INT;
+
+        for ( chunk& value : container ) {
+            int32_t to = std::max( -1, index - BASE );
             chunk factor = 1;
 
-            for ( int i = 0; i < BASE; ++i ) {
-                if ( offset > 0 ) {
-                    --offset;
-                } else if ( pos > 0 ) {
-                    --pos;
-                    value += static_cast<chunk>( digits[pos] ) * factor;
-                }
-
+            for ( int32_t i = index; i > to; i-- ) {
+                int32_t digit = get_digit( digits, i );
+                value += static_cast<chunk>( digit ) * factor;
                 factor *= 10;
             }
-
-            chunks.push_back( value );
+            index = to;
         }
+        return container;
     }
 
-    std::vector<chunk> convert_to_chunks( const std::vector<int>& digits,
-                                          int32_t exp ) {
-        if ( digits.empty() ) { return {}; }
-
-        const int32_t offset = compute_offset( exp );
-        const size_t total_len = digits.size() + offset;
-        std::vector<chunk> chunks;
-        chunks.reserve( ( total_len + BASE - 1 ) / BASE );
-
-        fill_chunks( digits, chunks, offset );
-
-        return chunks;
+    digit compute_offset( int32_t exp ) {
+        int8_t remainder = static_cast<int8_t>( exp % BASE );
+        return ( remainder < ZERO_INT ) ? ( remainder + BASE ) : remainder;
     }
 
-    BigNumber make_big_number( const std::vector<int>& digits,
-                               int32_t exponent,
+    digits normalize( digits value ) {
+        if ( value.size() > MAX_DIGITS ) value.resize( MAX_DIGITS );
+        return value;
+    }
+
+    int32_t
+    compensate_exp( int32_t exp, size_t raw_size, size_t normalized_size ) {
+        size_t delta = raw_size - normalized_size;
+        return ( delta > MAX_EXP ) ? ( MAX_EXP + ONE_INT ) : ( exp + delta );
+    }
+
+    BigNumber make_big_number( digits raw_digits,
+                               int32_t raw_exp,
                                bool is_negative,
                                const Error& error ) {
-        const auto chunks = convert_to_chunks( digits, exponent );
-        const int32_t shift = compute_shift( exponent );
+        size_t raw_digits_size = raw_digits.size();
+        digits digits = normalize( std::move( raw_digits ) );
+        int32_t exp = compensate_exp( raw_exp, raw_digits_size, digits.size() );
+        digit offset = compute_offset( exp );
 
-        return chunks.empty() ? make_zero( error )
-                              : BigNumber{ chunks, error, shift, is_negative };
+        return make_big_number( convert_to_chunks( digits, offset ),
+                                compute_shift( exp, offset ),
+                                BigNumberType::DEFAULT,
+                                error,
+                                is_negative );
     }
 }

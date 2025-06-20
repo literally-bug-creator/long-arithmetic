@@ -1,7 +1,9 @@
 #pragma once
 
+#include <cstdint>
+
 namespace big_number {
-    enum ErrorCode {
+    enum class ErrorCode : uint8_t {
         OK,
         ERROR,
     };
