@@ -6,46 +6,13 @@
 #include <iostream>
 #include <cmath>
 #include <functional>
-#include <flint/fmpz.h>
+#include "core.hpp"
 
-#include <flint/flint.h>
 namespace big_number {
     const Error ROOT_FROM_NEG =
         make_error( CALCULATION_ERROR, "sqrt: negative number" );
 
-    const int PRECISION = 100000; // Number of decimal places to calculate
-
-    // Helper function to check if a number is a perfect square
-    bool is_perfect_square(const std::string& num_str) {
-        // Реализация без изменений
-        std::string clean_num = num_str;
-        size_t dot_pos = clean_num.find('.');
-        if (dot_pos != std::string::npos) {
-            size_t trailing_zeros = 0;
-            for (size_t i = clean_num.length() - 1; i > dot_pos; --i) {
-                if (clean_num[i] == '0') trailing_zeros++;
-                else break;
-            }
-            if (trailing_zeros % 2 != 0) return false;
-            clean_num = clean_num.substr(0, dot_pos) + 
-                       clean_num.substr(dot_pos + 1, clean_num.length() - dot_pos - trailing_zeros - 1);
-        }
-        clean_num.erase(0, clean_num.find_first_not_of('0'));
-        if (clean_num.empty()) return true;
-        return clean_num.length() % 2 == 0;
-    }
-
-    // Helper function to check if a number has only zeros after decimal point
-    bool has_only_zeros_after_decimal(const std::string& num_str) {
-        size_t dot_pos = num_str.find('.');
-        if (dot_pos == std::string::npos) return true;
-        return std::all_of(num_str.begin() + dot_pos + 1, num_str.end(), 
-                          [](char c) { return c == '0'; });
-    }
-
-    // Helper function to remove decimal point and trailing zeros
     std::string clean_number(const std::string& num_str) {
-        // Реализация без изменений
         std::string result = num_str;
         size_t dot_pos = result.find('.');
         
@@ -70,15 +37,13 @@ namespace big_number {
         return integer_part;
     }
 
- BigNumber sqrt(const BigNumber& number) {
+    BigNumber sqrt(const BigNumber& number) {
         if (is_lower_than(number, ZERO)) return make_zero(ROOT_FROM_NEG);
         if (is_equal(number, ZERO) || is_equal(number, ONE)) return number;
 
-        // Convert to string and strip sign
         std::string num_str = to_string(number);
         if (!num_str.empty() && num_str[0] == '-') num_str.erase(0, 1);
 
-        // Split into integer and fractional parts
         std::string integer_part, fractional_part;
         size_t dot_pos = num_str.find('.');
         if (dot_pos != std::string::npos) {
@@ -88,7 +53,6 @@ namespace big_number {
             integer_part = num_str;
         }
 
-        // Prepare digit pairs
         std::vector<int> digit_pairs;
         if (integer_part.size() % 2 != 0) {
             digit_pairs.push_back(integer_part[0] - '0');
@@ -105,116 +69,70 @@ namespace big_number {
             digit_pairs.push_back((fractional_part[i] - '0') * 10 + (fractional_part[i+1] - '0'));
         }
 
-        // FLINT raw variables for maximum performance
-        fmpz_t rem, divr, temp, test_val, M10, M100;
-        fmpz_init(rem); fmpz_zero(rem);
-        fmpz_init(divr); fmpz_zero(divr);
-        fmpz_init(temp);
-        fmpz_init(test_val);
-        fmpz_init(M10); fmpz_set_ui(M10, 10);
-        fmpz_init(M100); fmpz_set_ui(M100, 100);
+        apa::bint rem = 0;
+        apa::bint divr = 0;
+        apa::bint temp;
+        apa::bint test_val;
+        const apa::bint M10 = 10;
+        const apa::bint M100 = 100;
+        const apa::bint TWO = 2;
 
         std::vector<int> result;
-        result.reserve(digit_pairs.size() + PRECISION + 10);
+        result.reserve(digit_pairs.size() + 100000 + 10);
         bool is_exact = true;
-
-        // Precompute constants
-        fmpz_t const_2;
-        fmpz_init(const_2); fmpz_set_ui(const_2, 2);
-
-        // Main digit-by-digit extraction with binary search optimization
         for (int pair : digit_pairs) {
-            // rem = rem * 100 + pair
-            fmpz_mul(rem, rem, M100);
-            fmpz_add_ui(rem, rem, pair);
-            
-            // divr = divr * 10
-            fmpz_mul(divr, divr, M10);
+            rem = rem * M100 + pair;
+            divr = divr * M10;
 
-            // Binary search for x in [0, 9]
             int low = 0, high = 9;
             int x = 0;
             while (low <= high) {
                 int mid = (low + high) / 2;
-                
-                // test_val = (divr + mid) * mid
-                fmpz_set_ui(temp, mid);
-                fmpz_add(test_val, divr, temp);
-                fmpz_mul_ui(test_val, test_val, mid);
-                
-                if (fmpz_cmp(test_val, rem) <= 0) {
+                temp = mid;
+                test_val = (divr + temp) * mid;
+                if (test_val <= rem) {
                     x = mid;
                     low = mid + 1;
                 } else {
                     high = mid - 1;
                 }
             }
-            
-            // Compute final test value
-            fmpz_set_ui(temp, x);
-            fmpz_add(test_val, divr, temp);
-            fmpz_mul_ui(test_val, test_val, x);
-            
-            // Update remainder and divisor
-            fmpz_sub(rem, rem, test_val);
-            
-            // divr = divr + 2*x
-            fmpz_set_ui(temp, 2 * x);
-            fmpz_add(divr, divr, temp);
-            
+            temp = x;
+            test_val = (divr + temp) * x;
+            rem = rem - test_val;
+            divr = divr + TWO * x;
             result.push_back(x);
         }
-
-        // Handle fractional precision
-        if (!fmpz_is_zero(rem)) {
+        size_t PRECISION = std::max((size_t)1,100000 - result.size()); 
+        if (rem != 0) {
             is_exact = false;
             for (int i = 0; i < PRECISION; ++i) {
-                fmpz_mul(rem, rem, M100);
-                fmpz_mul(divr, divr, M10);
-                
-                // Binary search for x
+                rem = rem * M100;
+                divr = divr * M10;
                 int low = 0, high = 9;
                 int x = 0;
                 while (low <= high) {
                     int mid = (low + high) / 2;
-                    
-                    fmpz_set_ui(temp, mid);
-                    fmpz_add(test_val, divr, temp);
-                    fmpz_mul_ui(test_val, test_val, mid);
-                    
-                    if (fmpz_cmp(test_val, rem) <= 0) {
+                    temp = mid;
+                    test_val = (divr + temp) * mid;
+                    if (test_val <= rem) {
                         x = mid;
                         low = mid + 1;
                     } else {
                         high = mid - 1;
                     }
                 }
-                
-                fmpz_set_ui(temp, x);
-                fmpz_add(test_val, divr, temp);
-                fmpz_mul_ui(test_val, test_val, x);
-                fmpz_sub(rem, rem, test_val);
-                
-                fmpz_set_ui(temp, 2 * x);
-                fmpz_add(divr, divr, temp);
-                
+                temp = x;
+                test_val = (divr + temp) * x;
+                rem = rem - test_val;
+                divr = divr + TWO * x;
                 result.push_back(x);
             }
         }
 
-        // Clean up FLINT variables
-        fmpz_clear(rem);
-        fmpz_clear(divr);
-        fmpz_clear(temp);
-        fmpz_clear(test_val);
-        fmpz_clear(M10);
-        fmpz_clear(M100);
-        fmpz_clear(const_2);
-
-        // Build result string
         std::string result_str;
         size_t num_int_pairs = (integer_part.length() + 1) / 2;
-        result_str.reserve(result.size() + 2); // +2 for '.' and sign if needed
+        result_str.reserve(result.size() + 2);
 
         for (size_t i = 0; i < num_int_pairs; ++i)
             result_str += '0' + result[i];
