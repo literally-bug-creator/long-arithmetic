@@ -42,7 +42,6 @@ namespace big_number {
         std::string str;
 
         for ( size_t index = size - ONE_INT; index > ZERO_INT; --index ) {
-            std::cout << index << std::endl;
             chunk value = mantissa[index];
             str += to_string_chunk( value, first_chunk_idx == index );
         }
