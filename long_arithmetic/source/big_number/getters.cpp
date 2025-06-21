@@ -16,7 +16,7 @@ namespace big_number {
 
     bool is_negative( const BigNumber& number ) { return number.is_negative; }
 
-    chunk get_chunk( const BigNumber& number, int32_t index ) {
+    chunk get_shifted_chunk( const BigNumber& number, int32_t index ) {
         int32_t chunk_index = index - get_shift( number );
 
         if ( chunk_index < ZERO_INT || chunk_index >= get_size( number ) )
