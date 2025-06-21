@@ -1,79 +1,79 @@
-#include "big_number.hpp"
-#include "getters.hpp"
-#include <sstream>
-#include <iomanip>
+#include <cstdint>
+#include <iostream>
+#include <string>
 
-namespace big_number{
-    std::string to_string(const BigNumber& number){
-        // Handle special cases
-        if (is_nan(number)) {
-            return "NaN";
+#include "big_number.hpp"
+#include "constants.hpp"
+#include "getters.hpp"
+
+namespace big_number {
+    int32_t compute_exp( const BigNumber& number ) {
+        return get_shift( number ) * BASE;
+    }
+
+    std::string to_string_sign( bool is_negative ) {
+        return is_negative ? MINUS_STR : EMPTY_STR;
+    }
+
+    std::string to_string_exp( const BigNumber& number ) {
+        int32_t exp = compute_exp( number );
+        if ( exp == ZERO_INT ) return EMPTY_STR;
+
+        return EXP_STR + to_string_sign( exp < ZERO_INT ) +
+               std::to_string( exp );
+    }
+
+    std::string to_string_chunk( chunk value, bool is_first ) {
+        std::string str = std::to_string( value );
+        if ( is_first ) return str;
+
+        while ( str.length() < BASE ) {
+            str = ZERO_CHAR + str;
         }
-        
-        if (is_inf(number)) {
-            return is_negative(number) ? "-inf" : "inf";
+        return str;
+    }
+
+    std::string to_string_mantissa( const BigNumber& number ) {
+        size_t size = get_size( number );
+        if ( size == ZERO_INT ) return EMPTY_STR;
+
+        const chunks& mantissa = get_mantissa( number );
+        size_t first_chunk_idx = size - ONE_INT;
+        std::string str;
+
+        for ( size_t index = size - ONE_INT; index > ZERO_INT; --index ) {
+            std::cout << index << std::endl;
+            chunk value = mantissa[index];
+            str += to_string_chunk( value, first_chunk_idx == index );
         }
-        
-        if (is_zero(number)) {
-            return "0.0e+0";
+        str += to_string_chunk( mantissa[0], 0 == first_chunk_idx );
+
+        return str;
+    }
+
+    std::string to_string_special( const BigNumber& number ) {
+        switch ( get_type( number ) ) {
+        case BigNumberType::NOT_A_NUMBER:
+            return NAN_STR;
+
+        case BigNumberType::INF:
+            return to_string_sign( is_negative( number ) ) + INF_STR;
+
+        case BigNumberType::ZERO:
+            return ZERO_STR;
+
+        default:
+            return EMPTY_STR;
         }
-        
-        std::ostringstream result;
-        
-        // Add sign
-        if (is_negative(number)) {
-            result << "-";
-        }
-        
-        const chunks& mantissa = get_mantissa(number);
-        int32_t shift = get_shift(number);
-        
-        // Find the most significant chunk (mantissa is stored in reverse order)
-        int32_t most_significant_chunk_index = static_cast<int32_t>(mantissa.size()) - 1;
-        
-        // Convert the most significant chunk to string to find first significant digit
-        chunk most_significant_chunk = mantissa[most_significant_chunk_index];
-        std::string chunk_str = std::to_string(most_significant_chunk);
-        
-        // Calculate the actual exponent
-        // The position of the most significant chunk in the number
-        int32_t chunk_position = shift + most_significant_chunk_index;
-        // The position of the most significant digit
-        int32_t exponent = chunk_position * BASE + static_cast<int32_t>(chunk_str.length()) - 1;
-        
-        // Output the first significant digit
-        result << chunk_str[0] << ".";
-        
-        // Output remaining digits from the most significant chunk
-        for (size_t i = 1; i < chunk_str.length(); ++i) {
-            result << chunk_str[i];
-        }
-        
-        // Output digits from remaining chunks (going from high to low)
-        for (int32_t chunk_idx = most_significant_chunk_index - 1; chunk_idx >= 0; --chunk_idx) {
-            chunk current_chunk = mantissa[chunk_idx];
-            std::ostringstream chunk_stream;
-            chunk_stream << std::setfill('0') << std::setw(BASE) << current_chunk;
-            result << chunk_stream.str();
-        }
-        
-        // Remove trailing zeros from the fractional part
-        std::string temp_result = result.str();
-        size_t last_non_zero = temp_result.find_last_not_of('0');
-        if (last_non_zero != std::string::npos && temp_result[last_non_zero] == '.') {
-            temp_result = temp_result.substr(0, last_non_zero + 2); // Keep one zero after decimal point
-        } else if (last_non_zero != std::string::npos) {
-            temp_result = temp_result.substr(0, last_non_zero + 1);
-        }
-        
-        // Add exponent
-        std::ostringstream final_result;
-        final_result << temp_result << "e";
-        if (exponent >= 0) {
-            final_result << "+";
-        }
-        final_result << exponent;
-        
-        return final_result.str();
+    }
+
+    std::string to_string( const BigNumber& number ) {
+        if ( is_special( number ) ) return to_string_special( number );
+
+        std::string sign = to_string_sign( is_negative( number ) );
+        std::string mantissa = to_string_mantissa( number );
+        std::string exp = to_string_exp( number );
+
+        return sign + mantissa + exp;
     }
 }
