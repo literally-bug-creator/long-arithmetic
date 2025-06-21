@@ -26,4 +26,4 @@ static void Output( benchmark::State& state ) {
         to_string( number );
     }
 }
-BENCHMARK( Output )->Range( 1, 100000 );
+BENCHMARK( Output )->Range( 1, MAX_CHUNKS );
