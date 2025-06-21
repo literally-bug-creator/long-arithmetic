@@ -52,25 +52,7 @@ TEST_F( BigNumberToStringTest, ReturnsZeroString ) {
 
     std::string result = big_number::to_string( number );
 
-    EXPECT_EQ( result, "0" ); // Исправлено: ожидаем просто "0"
-}
-
-TEST_F( BigNumberToStringTest, FormatsThreeDigitPositiveNumber ) {
-    chunks chunks = { 123 };
-    auto number = createBigNumber( chunks, 0, false );
-
-    std::string result = big_number::to_string( number );
-
-    EXPECT_EQ( result, "123" );
-}
-
-TEST_F( BigNumberToStringTest, FormatsThreeDigitNegativeNumber ) {
-    chunks chunks = { 456 };
-    auto number = createBigNumber( chunks, 0, true );
-
-    std::string result = big_number::to_string( number );
-
-    EXPECT_EQ( result, "-456" ); // Исправлено: корректный формат
+    EXPECT_EQ( result, "0" );
 }
 
 TEST_F( BigNumberToStringTest, FormatsSingleDigitPositiveNumber ) {
@@ -79,7 +61,7 @@ TEST_F( BigNumberToStringTest, FormatsSingleDigitPositiveNumber ) {
 
     std::string result = big_number::to_string( number );
 
-    EXPECT_EQ( result, "7" ); // Исправлено: корректный формат
+    EXPECT_EQ( result, "7" );
 }
 
 TEST_F( BigNumberToStringTest, FormatsSingleDigitNegativeNumber ) {
@@ -88,21 +70,65 @@ TEST_F( BigNumberToStringTest, FormatsSingleDigitNegativeNumber ) {
 
     std::string result = big_number::to_string( number );
 
-    EXPECT_EQ( result, "-3" ); // Исправлено: корректный формат
+    EXPECT_EQ( result, "-3" );
 }
 
-TEST_F( BigNumberToStringTest, FormatsMultipleChunksCorrectly ) {
-    chunks chunks = { 789, 456, 123 }; // В обратном порядке: 123456789
+TEST_F( BigNumberToStringTest, FormatsMultiDigitPositiveNumber ) {
+    chunks chunks = { 123 };
     auto number = createBigNumber( chunks, 0, false );
-    std::string expected = "123" + std::string( BASE - 3, '0' ) + "456" +
-                           std::string( BASE - 3, '0' ) + "789";
 
     std::string result = big_number::to_string( number );
 
-    EXPECT_EQ( result, expected );
+    EXPECT_EQ( result, "123" );
 }
 
-TEST_F( BigNumberToStringTest, HandlesPositiveShiftCorrectly ) {
+TEST_F( BigNumberToStringTest, FormatsMultiDigitNegativeNumber ) {
+    chunks chunks = { 456 };
+    auto number = createBigNumber( chunks, 0, true );
+
+    std::string result = big_number::to_string( number );
+
+    EXPECT_EQ( result, "-456" );
+}
+
+TEST_F( BigNumberToStringTest, HandlesTrailingZerosInNumber ) {
+    chunks chunks = { 1200 };
+    auto number = createBigNumber( chunks, 0, false );
+
+    std::string result = big_number::to_string( number );
+
+    EXPECT_EQ( result, "1200" );
+}
+
+TEST_F( BigNumberToStringTest, HandlesNumberWithManyTrailingZeros ) {
+    chunks chunks = { 1230000 };
+    auto number = createBigNumber( chunks, 0, false );
+
+    std::string result = big_number::to_string( number );
+
+    EXPECT_EQ( result, "1230000" );
+}
+
+TEST_F( BigNumberToStringTest, HandlesMinimumChunkValue ) {
+    chunks chunks = { 1 };
+    auto number = createBigNumber( chunks, 0, false );
+
+    std::string result = big_number::to_string( number );
+
+    EXPECT_EQ( result, "1" );
+}
+
+TEST_F( BigNumberToStringTest, HandlesMaximumChunkValue ) {
+    chunks chunks = { 999999999 };
+    auto number = createBigNumber( chunks, 0, false );
+
+    std::string result = big_number::to_string( number );
+
+    EXPECT_TRUE( result.find( "999999999" ) != std::string::npos );
+    EXPECT_TRUE( result.find( "e" ) == std::string::npos );
+}
+
+TEST_F( BigNumberToStringTest, HandlesSmallPositiveShift ) {
     chunks chunks = { 123 };
     auto number = createBigNumber( chunks, 2, false );
 
@@ -110,13 +136,12 @@ TEST_F( BigNumberToStringTest, HandlesPositiveShiftCorrectly ) {
 
     EXPECT_TRUE( result.find( "123" ) != std::string::npos );
     EXPECT_TRUE( result.find( "e" ) != std::string::npos );
-    // Проверяем, что экспонента увеличилась
     std::string exp_part = result.substr( result.find( "e" ) + 2 );
     int exp = std::stoi( exp_part );
     EXPECT_GT( exp, 0 );
 }
 
-TEST_F( BigNumberToStringTest, HandlesNegativeShiftCorrectly ) {
+TEST_F( BigNumberToStringTest, HandlesSmallNegativeShift ) {
     chunks chunks = { 123 };
     auto number = createBigNumber( chunks, -1, false );
 
@@ -126,23 +151,15 @@ TEST_F( BigNumberToStringTest, HandlesNegativeShiftCorrectly ) {
     EXPECT_TRUE( result.find( "e-" ) != std::string::npos );
 }
 
-TEST_F( BigNumberToStringTest, RemovesTrailingZerosFromFraction ) {
-    chunks chunks = { 1200 };
+TEST_F( BigNumberToStringTest, FormatsMultipleChunksNumber ) {
+    chunks chunks = { 789, 456, 123 };
     auto number = createBigNumber( chunks, 0, false );
+    std::string expected = "123" + std::string( BASE - 3, '0' ) + "456" +
+                           std::string( BASE - 3, '0' ) + "789";
 
     std::string result = big_number::to_string( number );
 
-    EXPECT_EQ( result,
-               "1200" ); // Исправлено: trailing zeros не удаляются в мантиссе
-}
-
-TEST_F( BigNumberToStringTest, FormatsNumberWithAllZerosAfterFirstDigit ) {
-    chunks chunks = { 1000 };
-    auto number = createBigNumber( chunks, 0, false );
-
-    std::string result = big_number::to_string( number );
-
-    EXPECT_EQ( result, "1000" ); // Исправлено: корректный формат
+    EXPECT_EQ( result, expected );
 }
 
 TEST_F( BigNumberToStringTest, HandlesLargePositiveShift ) {
@@ -169,38 +186,20 @@ TEST_F( BigNumberToStringTest, HandlesLargeNegativeShift ) {
     EXPECT_EQ( exponent, -1000 * BASE );
 }
 
-TEST_F( BigNumberToStringTest, HandlesMaximumChunkValue ) {
-    chunks chunks = { 999999999 };
-    auto number = createBigNumber( chunks, 0, false );
-
-    std::string result = big_number::to_string( number );
-
-    EXPECT_TRUE( result.find( "999999999" ) != std::string::npos );
-    EXPECT_TRUE( result.find( "e" ) == std::string::npos );
-}
-
-TEST_F( BigNumberToStringTest, HandlesMinimumChunkValue ) {
-    chunks chunks = { 1 };
-    auto number = createBigNumber( chunks, 0, false );
-
-    std::string result = big_number::to_string( number );
-
-    EXPECT_EQ( result, "1" ); // Исправлено: корректный формат
-}
-
-TEST_F( BigNumberToStringTest, FormatsComplexPositiveMultiChunkNumber ) {
+TEST_F( BigNumberToStringTest,
+        FormatsComplexPositiveMultiChunkNumberWithShift ) {
     chunks chunks = { 987654321, 123456789, 555 };
     auto number = createBigNumber( chunks, 5, false );
 
     std::string result = big_number::to_string( number );
-    std::cout << result << std::endl;
 
-    EXPECT_TRUE( result.find( "555" ) != std::string::npos ); // Первый chunk
+    EXPECT_TRUE( result.find( "555" ) != std::string::npos );
     EXPECT_TRUE( result.find( "e" ) != std::string::npos );
     EXPECT_FALSE( result.empty() );
 }
 
-TEST_F( BigNumberToStringTest, FormatsComplexNegativeMultiChunkNumber ) {
+TEST_F( BigNumberToStringTest,
+        FormatsComplexNegativeMultiChunkNumberWithShift ) {
     chunks chunks = { 111222333, 444555666, 777 };
     auto number = createBigNumber( chunks, -3, true );
 
@@ -209,42 +208,4 @@ TEST_F( BigNumberToStringTest, FormatsComplexNegativeMultiChunkNumber ) {
     EXPECT_TRUE( result[0] == '-' );
     EXPECT_TRUE( result.find( "777" ) != std::string::npos );
     EXPECT_TRUE( result.find( "e" ) != std::string::npos );
-}
-
-TEST_F( BigNumberToStringTest, RemovesAllTrailingZerosFromSingleDigit ) {
-    chunks chunks = { 5 };
-    auto number = createBigNumber( chunks, 0, false );
-
-    std::string result = big_number::to_string( number );
-
-    EXPECT_EQ( result, "5" ); // Исправлено: корректный формат
-}
-
-TEST_F( BigNumberToStringTest, RemovesMultipleTrailingZeros ) {
-    chunks chunks = { 1230000 };
-    auto number = createBigNumber( chunks, 0, false );
-
-    std::string result = big_number::to_string( number );
-
-    EXPECT_EQ( result,
-               "1230000" ); // Исправлено: trailing zeros не удаляются
-}
-
-TEST_F( BigNumberToStringTest, RemovesTrailingZerosButKeepsSignificantDigits ) {
-    chunks chunks = { 1500 };
-    auto number = createBigNumber( chunks, 0, false );
-
-    std::string result = big_number::to_string( number );
-
-    EXPECT_EQ( result, "1500" ); // Исправлено: trailing zeros не удаляются
-}
-
-TEST_F( BigNumberToStringTest, FormatsSmallNegativeExponentOrPositive ) {
-    chunks chunks = { 1 };
-    auto number = createBigNumber( chunks, -1, false );
-
-    std::string result = big_number::to_string( number );
-
-    EXPECT_TRUE( result.find( "e-" ) !=
-                 std::string::npos );
 }
