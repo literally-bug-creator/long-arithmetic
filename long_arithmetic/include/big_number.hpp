@@ -34,5 +34,7 @@ namespace big_number {
 
     const Error& get_error( const BigNumber& number );
 
+    BigNumber abs( const BigNumber& number );
+
     std::string to_string( const BigNumber& number );
 }
