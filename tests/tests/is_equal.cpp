@@ -2,25 +2,11 @@
 
 #include "big_number.hpp"
 #include "constants.hpp"
-#include "error.hpp"
+#include "tools.hpp"
 
 using namespace big_number;
 
-class BigNumberIsEqualTest : public ::testing::Test {
-protected:
-    BigNumber create_big_number( const chunks& chunks,
-                                 int32_t shift,
-                                 bool is_negative = false,
-                                 BigNumberType type = BigNumberType::DEFAULT ) {
-        BigNumber number;
-        number.mantissa = chunks;
-        number.shift = shift;
-        number.is_negative = is_negative;
-        number.type = type;
-        number.error = Error{};
-        return number;
-    }
-};
+class BigNumberIsEqualTest : public ::testing::Test {};
 
 TEST_F( BigNumberIsEqualTest, EqualNanAndNan ) {
     auto number1 = make_nan( get_default_error() );

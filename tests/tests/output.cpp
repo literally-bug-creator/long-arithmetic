@@ -2,26 +2,11 @@
 
 #include "big_number.hpp"
 #include "constants.hpp"
-#include "error.hpp"
+#include "tools.hpp"
 
 using namespace big_number;
 
-class BigNumberToStringTest : public ::testing::Test {
-protected:
-    big_number::BigNumber createBigNumber(
-        const chunks& chunks,
-        int32_t shift,
-        bool is_negative = false,
-        big_number::BigNumberType type = big_number::BigNumberType::DEFAULT ) {
-        big_number::BigNumber number;
-        number.mantissa = chunks;
-        number.shift = shift;
-        number.is_negative = is_negative;
-        number.type = type;
-        number.error = big_number::Error{};
-        return number;
-    }
-};
+class BigNumberToStringTest : public ::testing::Test {};
 
 TEST_F( BigNumberToStringTest, ReturnsNaNString ) {
     auto number = big_number::make_nan( big_number::Error{} );
@@ -57,7 +42,7 @@ TEST_F( BigNumberToStringTest, ReturnsZeroString ) {
 
 TEST_F( BigNumberToStringTest, FormatsSingleDigitPositiveNumber ) {
     chunks chunks = { 7 };
-    auto number = createBigNumber( chunks, 0, false );
+    auto number = create_big_number( chunks, 0, false );
 
     std::string result = big_number::to_string( number );
 
@@ -66,7 +51,7 @@ TEST_F( BigNumberToStringTest, FormatsSingleDigitPositiveNumber ) {
 
 TEST_F( BigNumberToStringTest, FormatsSingleDigitNegativeNumber ) {
     chunks chunks = { 3 };
-    auto number = createBigNumber( chunks, 0, true );
+    auto number = create_big_number( chunks, 0, true );
 
     std::string result = big_number::to_string( number );
 
@@ -75,7 +60,7 @@ TEST_F( BigNumberToStringTest, FormatsSingleDigitNegativeNumber ) {
 
 TEST_F( BigNumberToStringTest, FormatsMultiDigitPositiveNumber ) {
     chunks chunks = { 123 };
-    auto number = createBigNumber( chunks, 0, false );
+    auto number = create_big_number( chunks, 0, false );
 
     std::string result = big_number::to_string( number );
 
@@ -84,7 +69,7 @@ TEST_F( BigNumberToStringTest, FormatsMultiDigitPositiveNumber ) {
 
 TEST_F( BigNumberToStringTest, FormatsMultiDigitNegativeNumber ) {
     chunks chunks = { 456 };
-    auto number = createBigNumber( chunks, 0, true );
+    auto number = create_big_number( chunks, 0, true );
 
     std::string result = big_number::to_string( number );
 
@@ -93,7 +78,7 @@ TEST_F( BigNumberToStringTest, FormatsMultiDigitNegativeNumber ) {
 
 TEST_F( BigNumberToStringTest, HandlesTrailingZerosInNumber ) {
     chunks chunks = { 1200 };
-    auto number = createBigNumber( chunks, 0, false );
+    auto number = create_big_number( chunks, 0, false );
 
     std::string result = big_number::to_string( number );
 
@@ -102,7 +87,7 @@ TEST_F( BigNumberToStringTest, HandlesTrailingZerosInNumber ) {
 
 TEST_F( BigNumberToStringTest, HandlesNumberWithManyTrailingZeros ) {
     chunks chunks = { 1230000 };
-    auto number = createBigNumber( chunks, 0, false );
+    auto number = create_big_number( chunks, 0, false );
 
     std::string result = big_number::to_string( number );
 
@@ -111,7 +96,7 @@ TEST_F( BigNumberToStringTest, HandlesNumberWithManyTrailingZeros ) {
 
 TEST_F( BigNumberToStringTest, HandlesMinimumChunkValue ) {
     chunks chunks = { 1 };
-    auto number = createBigNumber( chunks, 0, false );
+    auto number = create_big_number( chunks, 0, false );
 
     std::string result = big_number::to_string( number );
 
@@ -120,7 +105,7 @@ TEST_F( BigNumberToStringTest, HandlesMinimumChunkValue ) {
 
 TEST_F( BigNumberToStringTest, HandlesMaximumChunkValue ) {
     chunks chunks = { 999999999 };
-    auto number = createBigNumber( chunks, 0, false );
+    auto number = create_big_number( chunks, 0, false );
 
     std::string result = big_number::to_string( number );
 
@@ -130,7 +115,7 @@ TEST_F( BigNumberToStringTest, HandlesMaximumChunkValue ) {
 
 TEST_F( BigNumberToStringTest, HandlesSmallPositiveShift ) {
     chunks chunks = { 123 };
-    auto number = createBigNumber( chunks, 2, false );
+    auto number = create_big_number( chunks, 2, false );
 
     std::string result = big_number::to_string( number );
 
@@ -143,7 +128,7 @@ TEST_F( BigNumberToStringTest, HandlesSmallPositiveShift ) {
 
 TEST_F( BigNumberToStringTest, HandlesSmallNegativeShift ) {
     chunks chunks = { 123 };
-    auto number = createBigNumber( chunks, -1, false );
+    auto number = create_big_number( chunks, -1, false );
 
     std::string result = big_number::to_string( number );
 
@@ -153,7 +138,7 @@ TEST_F( BigNumberToStringTest, HandlesSmallNegativeShift ) {
 
 TEST_F( BigNumberToStringTest, FormatsMultipleChunksNumber ) {
     chunks chunks = { 789, 456, 123 };
-    auto number = createBigNumber( chunks, 0, false );
+    auto number = create_big_number( chunks, 0, false );
     std::string expected = "123" + std::string( BASE - 3, '0' ) + "456" +
                            std::string( BASE - 3, '0' ) + "789";
 
@@ -164,7 +149,7 @@ TEST_F( BigNumberToStringTest, FormatsMultipleChunksNumber ) {
 
 TEST_F( BigNumberToStringTest, HandlesLargePositiveShift ) {
     chunks chunks = { 123 };
-    auto number = createBigNumber( chunks, 1000, false );
+    auto number = create_big_number( chunks, 1000, false );
 
     std::string result = big_number::to_string( number );
 
@@ -176,7 +161,7 @@ TEST_F( BigNumberToStringTest, HandlesLargePositiveShift ) {
 
 TEST_F( BigNumberToStringTest, HandlesLargeNegativeShift ) {
     chunks chunks = { 123 };
-    auto number = createBigNumber( chunks, -1000, false );
+    auto number = create_big_number( chunks, -1000, false );
 
     std::string result = big_number::to_string( number );
 
@@ -189,7 +174,7 @@ TEST_F( BigNumberToStringTest, HandlesLargeNegativeShift ) {
 TEST_F( BigNumberToStringTest,
         FormatsComplexPositiveMultiChunkNumberWithShift ) {
     chunks chunks = { 987654321, 123456789, 555 };
-    auto number = createBigNumber( chunks, 5, false );
+    auto number = create_big_number( chunks, 5, false );
 
     std::string result = big_number::to_string( number );
 
@@ -201,7 +186,7 @@ TEST_F( BigNumberToStringTest,
 TEST_F( BigNumberToStringTest,
         FormatsComplexNegativeMultiChunkNumberWithShift ) {
     chunks chunks = { 111222333, 444555666, 777 };
-    auto number = createBigNumber( chunks, -3, true );
+    auto number = create_big_number( chunks, -3, true );
 
     std::string result = big_number::to_string( number );
 
