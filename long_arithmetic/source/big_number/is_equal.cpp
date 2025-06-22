@@ -12,7 +12,7 @@ namespace big_number {
 
     bool has_equal_mantissa( const BigNumber& lhs, const BigNumber& rhs ) {
         const chunks& lhs_mantissa = get_mantissa( lhs );
-        const chunks& rhs_mantissa = get_mantissa( lhs );
+        const chunks& rhs_mantissa = get_mantissa( rhs );
 
         return ( lhs_mantissa.size() != rhs_mantissa.size() )
                    ? false
