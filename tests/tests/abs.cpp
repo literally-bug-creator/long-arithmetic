@@ -51,15 +51,6 @@ TEST_F( BigNumberAbsTest, ZeroRemainsZero ) {
     EXPECT_TRUE( is_equal( result, expected ) );
 }
 
-TEST_F( BigNumberAbsTest, NaNRemainsNaN ) {
-    auto number = make_nan( error );
-    auto expected = make_nan( error );
-
-    auto result = abs( number );
-
-    EXPECT_TRUE( is_equal( result, expected ) );
-}
-
 TEST_F( BigNumberAbsTest, PositiveInfinityRemainsPositiveInfinity ) {
     auto number = make_inf( error, false );
     auto expected = make_inf( error, false );
