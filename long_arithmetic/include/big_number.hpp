@@ -36,5 +36,7 @@ namespace big_number {
 
     BigNumber abs( const BigNumber& number );
 
+    BigNumber neg( const BigNumber& number );
+
     std::string to_string( const BigNumber& number );
 }
