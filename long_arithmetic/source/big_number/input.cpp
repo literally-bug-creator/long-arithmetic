@@ -12,8 +12,6 @@ namespace big_number {
         return ( value.size() + offset + BASE - ONE_INT ) / BASE;
     }
 
-    bool is_overflowed( int32_t exp ) { return std::abs( exp ) > MAX_EXP; }
-
     digit get_digit( const digits& digits, size_t index ) {
         return ( index >= digits.size() ) ? ZERO_INT : digits[index];
     }
@@ -46,28 +44,22 @@ namespace big_number {
         return ( remainder < ZERO_INT ) ? ( remainder + BASE ) : remainder;
     }
 
-    digits normalize( digits value ) {
-        if ( value.size() > MAX_DIGITS ) value.resize( MAX_DIGITS );
-        return value;
-    }
-
-    int32_t
-    compensate_exp( int32_t exp, size_t raw_size, size_t normalized_size ) {
-        size_t delta = raw_size - normalized_size;
-        return ( delta > MAX_EXP ) ? ( MAX_EXP + ONE_INT ) : ( exp + delta );
+    bool is_overflow( digits value, digit offset ) {
+        if ( value.size() > MAX_DIGITS ) return true;
+        if ( ( value.size() == MAX_DIGITS ) && ( offset > 0 ) ) return true;
+        return false;
     }
 
     BigNumber make_big_number( digits raw_digits,
                                int32_t raw_exp,
                                bool is_negative,
                                const Error& error ) {
-        size_t raw_digits_size = raw_digits.size();
-        digits digits = normalize( std::move( raw_digits ) );
-        int32_t exp = compensate_exp( raw_exp, raw_digits_size, digits.size() );
-        digit offset = compute_offset( exp );
+        digit offset = compute_offset( raw_exp );
+        if ( is_overflow( raw_digits, offset ) )
+            return make_inf( error, is_negative );
 
-        return make_big_number( convert_to_chunks( digits, offset ),
-                                compute_shift( exp, offset ),
+        return make_big_number( convert_to_chunks( raw_digits, offset ),
+                                compute_shift( raw_exp, offset ),
                                 BigNumberType::DEFAULT,
                                 error,
                                 is_negative );
