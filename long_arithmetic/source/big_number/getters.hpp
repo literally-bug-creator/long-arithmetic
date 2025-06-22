@@ -1,5 +1,7 @@
 #pragma once
 
+#include <cstdint>
+
 #include "big_number.hpp"
 
 namespace big_number {
@@ -14,6 +16,8 @@ namespace big_number {
     const chunks& get_mantissa( const BigNumber& number );
 
     chunk get_shifted_chunk( const BigNumber& number, int32_t index );
+
+    int32_t count_power( const BigNumber& number );
 
     bool is_negative( const BigNumber& number );
 

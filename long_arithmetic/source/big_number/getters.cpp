@@ -1,5 +1,7 @@
 #include "getters.hpp"
 
+#include <cstdint>
+
 #include "big_number.hpp"
 #include "constants.hpp"
 
@@ -15,6 +17,10 @@ namespace big_number {
     const Error& get_error( const BigNumber& number ) { return number.error; }
 
     bool is_negative( const BigNumber& number ) { return number.is_negative; }
+
+    int32_t count_power( const BigNumber& number ) {
+        return static_cast<int32_t>( get_size( number ) ) + get_shift( number );
+    }
 
     chunk get_shifted_chunk( const BigNumber& number, int32_t index ) {
         int32_t chunk_index = index - get_shift( number );
