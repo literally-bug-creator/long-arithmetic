@@ -38,5 +38,7 @@ namespace big_number {
 
     BigNumber neg( const BigNumber& number );
 
+    bool is_equal( const BigNumber& left, const BigNumber& right );
+
     std::string to_string( const BigNumber& number );
 }
