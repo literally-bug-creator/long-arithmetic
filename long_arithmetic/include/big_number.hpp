@@ -26,9 +26,9 @@ namespace big_number {
                                bool is_negative,
                                const Error& error );
 
-    BigNumber make_zero( const Error& error );
+    BigNumber make_zero( const Error& error, bool is_negative = false );
 
-    BigNumber make_nan( const Error& error );
+    BigNumber make_nan( const Error& error, bool is_negative = false );
 
     BigNumber make_inf( const Error& error, bool is_negative );
 
