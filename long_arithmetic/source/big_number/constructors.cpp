@@ -5,12 +5,13 @@
 #include "error.hpp"
 
 namespace big_number {
-    BigNumber make_zero( const Error& error ) {
-        return { {}, ZERO_INT, BigNumberType::ZERO, error, false };
+    BigNumber make_zero( const Error& error, bool is_negative ) {
+        return { {}, ZERO_INT, BigNumberType::ZERO, error, is_negative };
     }
 
-    BigNumber make_nan( const Error& error ) {
-        return { {}, ZERO_INT, BigNumberType::NOT_A_NUMBER, error, false };
+    BigNumber make_nan( const Error& error, bool is_negative ) {
+        return {
+            {}, ZERO_INT, BigNumberType::NOT_A_NUMBER, error, is_negative };
     }
 
     BigNumber make_inf( const Error& error, bool is_negative ) {
@@ -38,10 +39,10 @@ namespace big_number {
     make_special( BigNumberType type, const Error& error, bool is_negative ) {
         switch ( type ) {
         case BigNumberType::ZERO:
-            return make_zero( error );
+            return make_zero( error, is_negative );
 
         case BigNumberType::NOT_A_NUMBER:
-            return make_nan( error );
+            return make_nan( error, is_negative );
 
         case BigNumberType::INF:
             return make_inf( error, is_negative );
