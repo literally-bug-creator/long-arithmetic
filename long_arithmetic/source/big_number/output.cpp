@@ -51,11 +51,11 @@ namespace big_number {
     std::string get_special_string( const BigNumber& number ) {
         switch ( get_type( number ) ) {
         case BigNumberType::NOT_A_NUMBER:
-            return NAN_STR;
+            return get_sign_string( is_negative( number ) ) + NAN_STR;
         case BigNumberType::INF:
             return get_sign_string( is_negative( number ) ) + INF_STR;
         case BigNumberType::ZERO:
-            return ZERO_STR;
+            return get_sign_string( is_negative( number ) ) + ZERO_STR;
         default:
             return EMPTY_STR;
         }
