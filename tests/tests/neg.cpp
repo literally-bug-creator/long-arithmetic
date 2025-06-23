@@ -6,84 +6,73 @@
 
 using namespace big_number;
 
-class BigNumberNegTest : public ::testing::Test {};
+class BigNumberNegTest : public ::testing::Test {
+protected:
+    Error error = get_default_error();
+};
 
 TEST_F( BigNumberNegTest, PositiveNumberBecomesNegative ) {
     chunks chunks = { 123 };
     auto number = create_big_number( chunks, 0, false );
+    BigNumber expected = create_big_number( chunks, 0, true );
 
     auto result = neg( number );
 
-    EXPECT_EQ( result.mantissa, chunks );
-    EXPECT_EQ( result.shift, 0 );
-    EXPECT_TRUE( result.is_negative );
-    EXPECT_EQ( result.type, BigNumberType::DEFAULT );
+    EXPECT_TRUE( is_equal( result, expected ) );
 }
 
 TEST_F( BigNumberNegTest, NegativeNumberBecomesPositive ) {
     chunks chunks = { 456 };
     auto number = create_big_number( chunks, 0, true );
+    BigNumber expected = create_big_number( chunks, 0, false );
 
     auto result = neg( number );
 
-    EXPECT_EQ( result.mantissa, chunks );
-    EXPECT_EQ( result.shift, 0 );
-    EXPECT_FALSE( result.is_negative );
-    EXPECT_EQ( result.type, BigNumberType::DEFAULT );
+    EXPECT_TRUE( is_equal( result, expected ) );
 }
 
 TEST_F( BigNumberNegTest, ZeroRemainsZero ) {
-    auto number = make_zero( Error{} );
+    BigNumber number = make_zero( error, false );
+    BigNumber expected = make_zero( error, true );
 
-    auto result = neg( number );
+    BigNumber result = neg( number );
 
-    EXPECT_EQ( result.mantissa, number.mantissa );
-    EXPECT_EQ( result.shift, number.shift );
-    EXPECT_FALSE( result.is_negative );
-    EXPECT_EQ( result.type, BigNumberType::ZERO );
+    EXPECT_TRUE( is_equal( result, expected ) );
 }
 
 TEST_F( BigNumberNegTest, NaNRemainsNaN ) {
-    auto number = make_nan( Error{} );
+    auto number = make_nan( error );
+    BigNumber expected = make_nan( error, true );
 
     auto result = neg( number );
 
-    EXPECT_EQ( result.mantissa, number.mantissa );
-    EXPECT_EQ( result.shift, number.shift );
-    EXPECT_FALSE( result.is_negative );
-    EXPECT_EQ( result.type, BigNumberType::NOT_A_NUMBER );
+    EXPECT_FALSE( is_equal( result, expected ) );
 }
 
 TEST_F( BigNumberNegTest, PositiveInfinityRemainsPositiveInfinity ) {
-    auto number = make_inf( Error{}, false );
+    auto number = make_inf( error, false );
+    BigNumber expected = make_inf( error, true );
 
     auto result = neg( number );
 
-    EXPECT_EQ( result.mantissa, number.mantissa );
-    EXPECT_EQ( result.shift, number.shift );
-    EXPECT_TRUE( result.is_negative );
-    EXPECT_EQ( result.type, BigNumberType::INF );
+    EXPECT_TRUE( is_equal( result, expected ) );
 }
 
 TEST_F( BigNumberNegTest, NegativeInfinityBecomesPositiveInfinity ) {
-    auto number = make_inf( Error{}, true );
+    auto number = make_inf( error, true );
+    BigNumber expected = make_inf( error, false );
 
     auto result = neg( number );
 
-    EXPECT_EQ( result.mantissa, number.mantissa );
-    EXPECT_EQ( result.shift, number.shift );
-    EXPECT_FALSE( result.is_negative );
-    EXPECT_EQ( result.type, BigNumberType::INF );
+    EXPECT_TRUE( is_equal( result, expected ) );
 }
 
 TEST_F( BigNumberNegTest, NumberWithShiftRemainsUnchanged ) {
     chunks chunks = { 789 };
     auto number = create_big_number( chunks, 2, true );
+    BigNumber expected = create_big_number( chunks, 2, false );
 
     auto result = neg( number );
 
-    EXPECT_EQ( result.mantissa, chunks );
-    EXPECT_EQ( result.shift, 2 );
-    EXPECT_FALSE( result.is_negative );
-    EXPECT_EQ( result.type, BigNumberType::DEFAULT );
+    EXPECT_TRUE( is_equal( result, expected ) );
 }
