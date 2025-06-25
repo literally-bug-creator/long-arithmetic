@@ -26,8 +26,8 @@ BigNumberInput {
 
 - **Type**: dynamic array of `uint8_t`
 - **Content**: significant digits of the number
-- **Leading zeros**: allowed, will be normalized
-- **Trailing zeros**: allowed, will be normalized
+- **Leading zeros**: must be strictly avoided as they are retained during chunk formation and can cause computational errors
+- **Trailing zeros**: allowed, removed during chunk formation and accounted for in exponent normalization
 - **Size limit**: array length ≤ MAX_DIGITS before normalization
 
 ## Exponent
@@ -51,18 +51,6 @@ BigNumberInput {
 ---
 
 # Normalization Process
-
-## Leading Zeros
-
-- **Action**: remove from beginning of digits array
-- **Effect**: subtract count from exponent
-- **Formula**: `exponent -= leading_zeros_count`
-
-## Trailing Zeros
-
-- **Action**: remove from end of digits array
-- **Effect**: add count to exponent
-- **Formula**: `exponent += trailing_zeros_count`
 
 ## Validation Order
 
@@ -90,7 +78,6 @@ BigNumberInput {
 
 ## Normalization
 
-✓ Leading zeros properly removed and counted
-✓ Trailing zeros properly removed and counted
-✓ Exponent correctly adjusted
+✓ Exponent correctly adjusted, including adjustments for trailing zeros
+✓ Leading zeros must be strictly avoided to prevent computational errors during chunk formation
 ✓ Resulting number in canonical form
