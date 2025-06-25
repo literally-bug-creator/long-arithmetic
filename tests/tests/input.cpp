@@ -118,6 +118,23 @@ TEST_F( InputTest, LeadingZero ) {
     EXPECT_TRUE( is_equal( result, expected ) );
 }
 
+TEST_F( InputTest, RemoveTrailingZeros ) {
+    chunks expected_chunks = { 123456 };
+    BigNumber expected = create_big_number( expected_chunks, 1, false );
+
+    BigNumber result = make_big_number( { 1, 2, 3, 4, 5, 6, 0, 0, 0, 0, 0, 0,
+                                          0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+                                        0,
+                                        false,
+                                        error );
+
+    for ( chunk a : result.mantissa ) {
+        std::cout << a << std::endl;
+    }
+
+    EXPECT_TRUE( is_equal( result, expected ) );
+}
+
 TEST_F( InputTest, TrailingZeros ) {
     BigNumber expected = create_big_number( { 123456000 }, 0, false );
 

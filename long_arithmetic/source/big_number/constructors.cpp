@@ -68,8 +68,16 @@ namespace big_number {
         return make_zero( make_error( ErrorCode::ERROR ) );
     }
 
+    chunks remove_leading_zeros( const chunks& value ) {
+        auto first_non_zero =
+            std::ranges::find_if( value.begin(), value.end(), []( chunk c ) {
+                return c != ZERO_INT;
+            } );
+        return chunks( first_non_zero, value.end() );
+    }
+
     chunks normalize( const chunks& raw_mantissa ) {
-        chunks value = raw_mantissa;
+        chunks value = remove_leading_zeros( raw_mantissa );
         if ( raw_mantissa.size() <= MAX_CHUNKS ) return value;
 
         chunk last_chunk = raw_mantissa[MAX_CHUNKS];
