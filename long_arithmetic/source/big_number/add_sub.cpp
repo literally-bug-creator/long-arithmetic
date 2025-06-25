@@ -1,5 +1,6 @@
 #include "big_number.hpp"
 #include "constructors.hpp"
+#include "error.hpp"
 #include "getters.hpp"
 
 namespace big_number {
@@ -13,20 +14,17 @@ namespace big_number {
         return std::min( get_shift( a ), get_shift( b ) );
     }
 
-    Error collect_error( const BigNumber& left, const BigNumber& right ) {
-        const Error& left_error = get_error( left );
-        const Error& right_error = get_error( right );
-
-        if ( !is_ok( left_error ) ) return left_error;
-        if ( !is_ok( right_error ) ) return right_error;
-
-        return get_default_error();
+    const Error& collect_error( const BigNumber& left,
+                                const BigNumber& right ) {
+        const Error& lhs = get_error( left );
+        const Error& rhs = get_error( right );
+        return !is_ok( lhs ) ? lhs : rhs;
     }
 
     BigNumber compute_add( const BigNumber& lhs, const BigNumber& rhs ) {
         int32_t min_exp = choose_min_exp( lhs, rhs );
         int32_t sum_size = choose_max_exp( lhs, rhs ) - min_exp;
-        std::vector<chunk> sum_chunks( sum_size, 0 );
+        chunks sum_chunks( sum_size, 0 );
 
         chunk carry = 0;
 
@@ -46,11 +44,46 @@ namespace big_number {
                                 is_negative( lhs ) );
     }
 
+    BigNumber add_to_inf( const BigNumber& lhs, const BigNumber& rhs ) {
+        switch ( get_type( rhs ) ) {
+        case BigNumberType::DEFAULT:
+            return lhs;
+
+        case BigNumberType::ZERO:
+            return lhs;
+
+        case BigNumberType::NOT_A_NUMBER:
+            return make_nan( collect_error( lhs, rhs ) );
+
+        case BigNumberType::INF:
+            bool has_same_sign = is_negative( lhs ) == is_negative( rhs );
+            return has_same_sign ? lhs : make_nan( collect_error( lhs, rhs ) );
+        }
+    }
+
+    BigNumber add_special( const BigNumber& lhs, const BigNumber& rhs ) {
+        if ( !is_special( lhs ) && is_special( rhs ) ) {
+            return add_special( rhs, lhs );
+        }
+
+        switch ( get_type( lhs ) ) {
+        case BigNumberType::ZERO:
+            return rhs;
+
+        case BigNumberType::INF:
+            return add_to_inf( lhs, rhs );
+
+        case BigNumberType::NOT_A_NUMBER:
+            return make_nan( collect_error( lhs, rhs ) );
+
+        case BigNumberType::DEFAULT:
+            return compute_add( lhs, rhs );
+        }
+    }
+
     BigNumber add( const BigNumber& lhs, const BigNumber& rhs ) {
-        if ( is_zero( lhs ) && is_zero( rhs ) )
-            return make_zero( get_default_error() );
-        if ( is_zero( lhs ) ) return rhs;
-        if ( is_zero( rhs ) ) return lhs;
+        if ( is_special( lhs ) || is_special( rhs ) )
+            return add_special( lhs, rhs );
 
         if ( is_negative( lhs ) != is_negative( rhs ) )
             return sub( lhs, neg( rhs ) );
@@ -74,7 +107,7 @@ namespace big_number {
                 diff =
                     ( MAX_CHUNK + minuend_chunk ) - subtrahend_chunk - borrow;
 
-            borrow = ( minuend_chunk < ( subtrahend_chunk + borrow ) ); // 0 | 1
+            borrow = ( minuend_chunk < ( subtrahend_chunk + borrow ) );
             sub_chunks[index] = diff;
         }
 
