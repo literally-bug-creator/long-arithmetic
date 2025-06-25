@@ -60,7 +60,7 @@ namespace big_number {
 
     BigNumber compute_sub( const BigNumber& lhs, const BigNumber& rhs ) {
         int32_t min_exp = choose_min_exp( lhs, rhs );
-        int32_t sub_size = choose_max_exp( lhs, rhs ) - min_exp + 1;
+        int32_t sub_size = choose_max_exp( lhs, rhs ) - min_exp;
         std::vector<chunk> sub_chunks( sub_size, 0 );
 
         chunk borrow = 0;
