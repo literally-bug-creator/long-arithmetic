@@ -5,4 +5,5 @@
 	path = tests/extern/googletest
 	url = https://github.com/google/googletest.git
 [submodule "APA"]
+	path = long_arithmetic/APA
 	url = https://github.com/Pykislav/APA

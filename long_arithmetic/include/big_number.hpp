@@ -20,6 +20,19 @@ namespace big_number {
         int32_t exponent;
         bool is_negative;
         Error error;
+
+        // Move constructor
+        BigNumber(BigNumber&& other) noexcept;
+        // Move assignment
+        BigNumber& operator=(BigNumber&& other) noexcept;
+        // Copy constructor/assignment по умолчанию
+        BigNumber(const BigNumber&) = default;
+        BigNumber& operator=(const BigNumber&) = default;
+        // Default constructor
+        BigNumber() = default;
+        // Быстрый конструктор из int
+        BigNumber(int value);
+        ~BigNumber() = default;
     };
 
     const Error& get_error( const BigNumber& number );
@@ -50,4 +63,16 @@ namespace big_number {
 
     std::string to_string( const BigNumber& number );
 
+    // Арифметические операторы
+    BigNumber operator+(const BigNumber& a, const BigNumber& b);
+    BigNumber operator-(const BigNumber& a, const BigNumber& b);
+    BigNumber operator*(const BigNumber& a, const BigNumber& b);
+    BigNumber operator/(const BigNumber& a, const BigNumber& b);
+    // Операторы сравнения
+    bool operator==(const BigNumber& a, const BigNumber& b);
+    bool operator!=(const BigNumber& a, const BigNumber& b);
+    bool operator<(const BigNumber& a, const BigNumber& b);
+    bool operator>(const BigNumber& a, const BigNumber& b);
+    bool operator<=(const BigNumber& a, const BigNumber& b);
+    bool operator>=(const BigNumber& a, const BigNumber& b);
 }
