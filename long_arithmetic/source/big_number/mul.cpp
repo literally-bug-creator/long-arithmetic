@@ -11,18 +11,16 @@ namespace big_number {
     constexpr uint32_t MOD3 = 469762049;
     constexpr uint32_t ROOT = 3;
 
-    static const Error& propagate_error( const BigNumber& a,
-                                         const BigNumber& b ) {
-        const Error& err_a = get_error( a );
-        const Error& err_b = get_error( b );
-        return !is_ok( err_a ) ? err_a : err_b;
+    chunks remove_trailing_zeros( const chunks& value ) {
+        auto last_non_zero =
+            std::ranges::find_if( value.rbegin(), value.rend(), []( chunk c ) {
+                return c != ZERO_INT;
+            } );
+
+        return chunks( value.begin(), last_non_zero.base() );
     }
 
-    static bool has_same_sign( const BigNumber& a, const BigNumber& b ) {
-        return is_negative( a ) == is_negative( b );
-    }
-
-    static uint32_t mod_pow( uint64_t a, uint64_t e, uint32_t mod ) {
+    uint32_t mod_pow( uint64_t a, uint64_t e, uint32_t mod ) {
         uint64_t res = 1, base = a % mod;
         while ( e ) {
             if ( e & 1 ) res = ( res * base ) % mod;
@@ -69,7 +67,7 @@ namespace big_number {
         }
     }
 
-    static std::vector<uint32_t> to_base1e9( const std::vector<chunk>& c ) {
+    std::vector<uint32_t> to_base1e9( const chunks& c ) {
         std::vector<uint32_t> d;
         d.reserve( c.size() * 2 );
         for ( size_t i = 0; i < c.size(); ++i ) {
@@ -79,9 +77,9 @@ namespace big_number {
         return d;
     }
 
-    static std::vector<chunk> from_ntt_crt3( const std::vector<uint32_t>& r1,
-                                             const std::vector<uint32_t>& r2,
-                                             const std::vector<uint32_t>& r3 ) {
+    chunks from_ntt_crt3( const std::vector<uint32_t>& r1,
+                          const std::vector<uint32_t>& r2,
+                          const std::vector<uint32_t>& r3 ) {
         size_t n = r1.size();
         const __int128 m1 = MOD1, m2 = MOD2, m3 = MOD3;
         const __int128 m12 = m1 * m2;
@@ -116,7 +114,8 @@ namespace big_number {
             carry /= 1000000000;
         }
 
-        std::vector<chunk> out;
+        chunks out;
+        out.reserve( digits.size() / 2 );
         for ( size_t i = 0; i < digits.size(); i += 2 ) {
             uint64_t low = digits[i];
             uint64_t high = ( i + 1 < digits.size() ) ? digits[i + 1] : 0;
@@ -126,15 +125,6 @@ namespace big_number {
         while ( !out.empty() && out.back() == 0 )
             out.pop_back();
         return out;
-    }
-
-    chunks remove_trailing_zeros( const chunks& value ) {
-        auto last_non_zero =
-            std::ranges::find_if( value.rbegin(), value.rend(), []( chunk c ) {
-                return c != ZERO_INT;
-            } );
-
-        return chunks( value.begin(), last_non_zero.base() );
     }
 
     BigNumber ntt_mul( const BigNumber& A, const BigNumber& B ) {
@@ -176,23 +166,20 @@ namespace big_number {
         ntt_mod( a2, true, MOD2 );
         ntt_mod( a3, true, MOD3 );
 
-        std::vector<chunk> chunks = from_ntt_crt3( a1, a2, a3 );
         int32_t exp = get_shift( A ) + get_shift( B );
         bool sign = !has_same_sign( A, B );
 
-        return make_big_number( std::move( remove_trailing_zeros( chunks ) ),
-                                exp,
-                                BigNumberType::DEFAULT,
-                                error,
-                                sign );
+        return make_big_number(
+            std::move( remove_trailing_zeros( from_ntt_crt3( a1, a2, a3 ) ) ),
+            exp,
+            BigNumberType::DEFAULT,
+            error,
+            sign );
     }
 
     BigNumber simple_mul( const BigNumber& multiplicand,
                           const BigNumber& multiplier ) {
         const Error error = propagate_error( multiplicand, multiplier );
-
-        if ( is_zero( multiplicand ) || is_zero( multiplier ) )
-            return make_zero( error );
 
         chunks chunks( get_size( multiplicand ) + get_size( multiplier ), 0 );
         chunk carry = 0;

@@ -30,4 +30,8 @@ namespace big_number {
     bool is_nan( const BigNumber& number );
 
     bool is_special( const BigNumber& number );
+
+    bool has_same_sign( const BigNumber& lhs, const BigNumber& rhs );
+
+    const Error& propagate_error( const BigNumber& lhs, const BigNumber& rhs );
 }

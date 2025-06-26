@@ -54,4 +54,14 @@ namespace big_number {
     bool is_special( const BigNumber& number ) {
         return get_type( number ) != BigNumberType::DEFAULT;
     }
+
+    bool has_same_sign( const BigNumber& lhs, const BigNumber& rhs ) {
+        return is_negative( lhs ) == is_negative( rhs );
+    }
+
+    const Error& propagate_error( const BigNumber& lhs, const BigNumber& rhs ) {
+        const Error& err_a = get_error( lhs );
+        const Error& err_b = get_error( rhs );
+        return !is_ok( err_a ) ? err_a : err_b;
+    }
 }
