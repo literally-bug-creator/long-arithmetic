@@ -15,6 +15,8 @@ namespace big_number {
 
     const chunks& get_mantissa( const BigNumber& number );
 
+    chunk get_chunk( const BigNumber& number, size_t index );
+
     chunk get_shifted_chunk( const BigNumber& number, int32_t index );
 
     int32_t count_power( const BigNumber& number );

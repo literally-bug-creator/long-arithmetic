@@ -22,6 +22,10 @@ namespace big_number {
         return static_cast<int32_t>( get_size( number ) ) + get_shift( number );
     }
 
+    chunk get_chunk( const BigNumber& number, size_t index ) {
+        return number.mantissa.at( index );
+    }
+
     chunk get_shifted_chunk( const BigNumber& number, int32_t index ) {
         int32_t chunk_index = index - get_shift( number );
 
