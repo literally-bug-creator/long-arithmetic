@@ -216,9 +216,55 @@ namespace big_number {
                                 !has_same_sign( multiplicand, multiplier ) );
     }
 
+    BigNumber
+    mul_zero( const BigNumber& lhs, const BigNumber& rhs, const Error& error ) {
+        switch ( get_type( rhs ) ) {
+        case BigNumberType::DEFAULT:
+            return make_zero( error );
+        case BigNumberType::ZERO:
+            return make_zero( error );
+        case BigNumberType::INF:
+            return make_nan( error );
+        case BigNumberType::NOT_A_NUMBER:
+            return make_nan( error );
+        }
+    }
+
+    BigNumber
+    mul_inf( const BigNumber& lhs, const BigNumber& rhs, const Error& error ) {
+        switch ( get_type( rhs ) ) {
+        case BigNumberType::DEFAULT:
+            return make_inf( error, !has_same_sign( lhs, rhs ) );
+        case BigNumberType::ZERO:
+            return make_nan( error );
+        case BigNumberType::INF:
+            return make_inf( error, !has_same_sign( lhs, rhs ) );
+        case BigNumberType::NOT_A_NUMBER:
+            return make_nan( error );
+        }
+    }
+
+    BigNumber mul_special( const BigNumber& lhs, const BigNumber& rhs ) {
+        if ( !is_special( lhs ) && is_special( rhs ) )
+            return mul_special( rhs, lhs );
+
+        const Error error = propagate_error( lhs, rhs );
+
+        switch ( get_type( lhs ) ) {
+        case BigNumberType::NOT_A_NUMBER:
+            return make_nan( error );
+        case BigNumberType::INF:
+            return mul_inf( lhs, rhs, error );
+        case BigNumberType::ZERO:
+            return mul_zero( lhs, rhs, error );
+        case BigNumberType::DEFAULT:
+            return ntt_mul( lhs, rhs );
+        }
+    }
+
     BigNumber mul( const BigNumber& lhs, const BigNumber& rhs ) {
-        if ( is_zero( lhs ) || is_zero( rhs ) )
-            return make_zero( propagate_error( lhs, rhs ) );
+        if ( is_special( lhs ) || is_special( rhs ) )
+            return mul_special( lhs, rhs );
 
         if ( static_cast<int>( get_size( lhs ) ) <= MULTIPLY_THRESHOLD ||
              static_cast<int>( get_size( rhs ) ) <= MULTIPLY_THRESHOLD ) {
