@@ -128,10 +128,6 @@ TEST_F( InputTest, RemoveTrailingZeros ) {
                                         false,
                                         error );
 
-    for ( chunk a : result.mantissa ) {
-        std::cout << a << std::endl;
-    }
-
     EXPECT_TRUE( is_equal( result, expected ) );
 }
 
