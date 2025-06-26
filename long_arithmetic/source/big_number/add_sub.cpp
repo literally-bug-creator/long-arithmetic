@@ -1,3 +1,5 @@
+#include <sys/stat.h>
+
 #include "big_number.hpp"
 #include "constructors.hpp"
 #include "error.hpp"
@@ -57,7 +59,9 @@ namespace big_number {
 
         case BigNumberType::INF:
             bool has_same_sign = is_negative( lhs ) == is_negative( rhs );
-            return has_same_sign ? lhs : make_nan( collect_error( lhs, rhs ) );
+            return has_same_sign ? make_inf( collect_error( lhs, rhs ),
+                                             is_negative( lhs ) )
+                                 : make_nan( collect_error( lhs, rhs ) );
         }
     }
 
@@ -94,7 +98,7 @@ namespace big_number {
     BigNumber compute_sub( const BigNumber& lhs, const BigNumber& rhs ) {
         int32_t min_exp = choose_min_exp( lhs, rhs );
         int32_t sub_size = choose_max_exp( lhs, rhs ) - min_exp;
-        std::vector<chunk> sub_chunks( sub_size, 0 );
+        chunks sub_chunks( sub_size, 0 );
 
         chunk borrow = 0;
 
@@ -118,11 +122,61 @@ namespace big_number {
                                 is_negative( lhs ) );
     }
 
+    BigNumber sub_from_inf( const BigNumber& lhs, const BigNumber& rhs ) {
+        switch ( get_type( rhs ) ) {
+        case BigNumberType::DEFAULT:
+            return make_inf( collect_error( lhs, rhs ), is_negative( lhs ) );
+
+        case BigNumberType::ZERO:
+            return make_inf( collect_error( lhs, rhs ), is_negative( lhs ) );
+
+        case BigNumberType::NOT_A_NUMBER:
+            return make_nan( collect_error( lhs, rhs ) );
+
+        case BigNumberType::INF:
+            bool has_diff_sign = is_negative( lhs ) != is_negative( rhs );
+            return has_diff_sign ? make_inf( collect_error( lhs, rhs ),
+                                             is_negative( lhs ) )
+                                 : make_nan( collect_error( lhs, rhs ) );
+        }
+    }
+
+    BigNumber sub_from_zero( const BigNumber& lhs, const BigNumber& rhs ) {
+        switch ( get_type( rhs ) ) {
+        case BigNumberType::ZERO:
+            return make_zero( collect_error( lhs, rhs ) );
+        case BigNumberType::NOT_A_NUMBER:
+            return make_nan( collect_error( lhs, rhs ) );
+        case BigNumberType::INF:
+            return make_inf( collect_error( lhs, rhs ), !is_negative( rhs ) );
+        case BigNumberType::DEFAULT:
+            return neg( rhs );
+        }
+    }
+
+    BigNumber sub_special( const BigNumber& lhs, const BigNumber& rhs ) {
+        if ( !is_special( lhs ) && is_special( rhs ) ) {
+            return neg( sub_special( rhs, lhs ) );
+        }
+
+        switch ( get_type( lhs ) ) {
+        case BigNumberType::ZERO:
+            return sub_from_zero( lhs, rhs );
+
+        case BigNumberType::INF:
+            return sub_from_inf( lhs, rhs );
+
+        case BigNumberType::NOT_A_NUMBER:
+            return make_nan( collect_error( lhs, rhs ) );
+
+        case BigNumberType::DEFAULT:
+            return compute_sub( lhs, rhs );
+        }
+    }
+
     BigNumber sub( const BigNumber& lhs, const BigNumber& rhs ) {
-        if ( is_zero( lhs ) && is_zero( rhs ) )
-            return make_zero( get_default_error() );
-        if ( is_zero( lhs ) ) return neg( rhs );
-        if ( is_zero( rhs ) ) return lhs;
+        if ( is_special( lhs ) || is_special( rhs ) )
+            return sub_special( lhs, rhs );
 
         if ( is_negative( lhs ) != is_negative( rhs ) )
             return add( lhs, neg( rhs ) );
