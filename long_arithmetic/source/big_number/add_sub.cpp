@@ -10,16 +10,6 @@
 namespace big_number {
     using range = std::pair<int32_t, size_t>;
 
-    const Error& propagate_error( const BigNumber& a, const BigNumber& b ) {
-        const Error& err_a = get_error( a );
-        const Error& err_b = get_error( b );
-        return !is_ok( err_a ) ? err_a : err_b;
-    }
-
-    bool has_same_sign( const BigNumber& a, const BigNumber& b ) {
-        return is_negative( a ) == is_negative( b );
-    }
-
     range calculate_range( const BigNumber& a, const BigNumber& b ) {
         int32_t min_exp = std::min( get_shift( a ), get_shift( b ) );
         int32_t max_exp =

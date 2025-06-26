@@ -15,6 +15,8 @@ namespace big_number {
 
     const chunks& get_mantissa( const BigNumber& number );
 
+    chunk get_chunk( const BigNumber& number, size_t index );
+
     chunk get_shifted_chunk( const BigNumber& number, int32_t index );
 
     int32_t count_power( const BigNumber& number );
@@ -28,4 +30,8 @@ namespace big_number {
     bool is_nan( const BigNumber& number );
 
     bool is_special( const BigNumber& number );
+
+    bool has_same_sign( const BigNumber& lhs, const BigNumber& rhs );
+
+    const Error& propagate_error( const BigNumber& lhs, const BigNumber& rhs );
 }

@@ -22,6 +22,10 @@ namespace big_number {
         return static_cast<int32_t>( get_size( number ) ) + get_shift( number );
     }
 
+    chunk get_chunk( const BigNumber& number, size_t index ) {
+        return number.mantissa.at( index );
+    }
+
     chunk get_shifted_chunk( const BigNumber& number, int32_t index ) {
         int32_t chunk_index = index - get_shift( number );
 
@@ -49,5 +53,15 @@ namespace big_number {
 
     bool is_special( const BigNumber& number ) {
         return get_type( number ) != BigNumberType::DEFAULT;
+    }
+
+    bool has_same_sign( const BigNumber& lhs, const BigNumber& rhs ) {
+        return is_negative( lhs ) == is_negative( rhs );
+    }
+
+    const Error& propagate_error( const BigNumber& lhs, const BigNumber& rhs ) {
+        const Error& err_a = get_error( lhs );
+        const Error& err_b = get_error( rhs );
+        return !is_ok( err_a ) ? err_a : err_b;
     }
 }

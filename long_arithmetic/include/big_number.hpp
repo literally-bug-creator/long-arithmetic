@@ -42,6 +42,8 @@ namespace big_number {
 
     BigNumber sub( const BigNumber& minuend, const BigNumber& subtrahend );
 
+    BigNumber mul( const BigNumber& multiplicand, const BigNumber& multiplier );
+
     bool is_equal( const BigNumber& left, const BigNumber& right );
 
     bool is_lower_than( const BigNumber& left, const BigNumber& right );
