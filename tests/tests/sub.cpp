@@ -186,11 +186,11 @@ TEST_F( BigNumberSubTest, SubtractTwoPositiveInfinities ) {
 TEST_F( BigNumberSubTest, SubtractNegativeInfinityFromPositiveInfinity ) {
     auto pos_inf = make_inf( Error{}, false );
     auto neg_inf = make_inf( Error{}, true );
+    BigNumber expected = make_inf( Error{}, false );
 
     auto result = sub( pos_inf, neg_inf );
 
-    EXPECT_FALSE( is_equal( result, pos_inf ) );
-    EXPECT_FALSE( is_equal( result, neg_inf ) );
+    EXPECT_TRUE( is_equal( result, expected ) );
 }
 
 TEST_F( BigNumberSubTest, SubtractPreservesErrorFromLeftOperand ) {
