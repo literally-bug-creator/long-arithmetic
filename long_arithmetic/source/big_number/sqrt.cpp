@@ -12,30 +12,30 @@ namespace big_number {
     const Error ROOT_FROM_NEG =
         make_error( CALCULATION_ERROR, "sqrt: negative number" );
 
-    std::string clean_number(const std::string& num_str) {
-        std::string result = num_str;
-        size_t dot_pos = result.find('.');
+    // std::string clean_number(const std::string& num_str) {
+    //     std::string result = num_str;
+    //     size_t dot_pos = result.find('.');
         
-        std::string integer_part = result.substr(0, dot_pos);
-        std::string fractional_part = (dot_pos != std::string::npos) ? result.substr(dot_pos + 1) : "";
+    //     std::string integer_part = result.substr(0, dot_pos);
+    //     std::string fractional_part = (dot_pos != std::string::npos) ? result.substr(dot_pos + 1) : "";
         
-        if (!integer_part.empty()) {
-            integer_part.erase(0, integer_part.find_first_not_of('0'));
-            if (integer_part.empty()) integer_part = "0";
-        }
+    //     if (!integer_part.empty()) {
+    //         integer_part.erase(0, integer_part.find_first_not_of('0'));
+    //         if (integer_part.empty()) integer_part = "0";
+    //     }
         
-        if (!fractional_part.empty()) {
-            fractional_part.erase(fractional_part.find_last_not_of('0') + 1);
-            if (fractional_part.empty() && !integer_part.empty()) {
-                return integer_part;
-            }
-        }
+    //     if (!fractional_part.empty()) {
+    //         fractional_part.erase(fractional_part.find_last_not_of('0') + 1);
+    //         if (fractional_part.empty() && !integer_part.empty()) {
+    //             return integer_part;
+    //         }
+    //     }
         
-        if (!fractional_part.empty()) {
-            return integer_part + "." + fractional_part;
-        }
-        return integer_part;
-    }
+    //     if (!fractional_part.empty()) {
+    //         return integer_part + "." + fractional_part;
+    //     }
+    //     return integer_part;
+    // }
 
     BigNumber sqrt(const BigNumber& number) {
         if (is_lower_than(number, ZERO)) return make_zero(ROOT_FROM_NEG);
@@ -54,6 +54,7 @@ namespace big_number {
         }
 
         std::vector<int> digit_pairs;
+        digit_pairs.reserve(integer_part.size() + fractional_part.size());
         if (integer_part.size() % 2 != 0) {
             digit_pairs.push_back(integer_part[0] - '0');
             for (size_t i = 1; i < integer_part.size(); i += 2) {
@@ -69,13 +70,13 @@ namespace big_number {
             digit_pairs.push_back((fractional_part[i] - '0') * 10 + (fractional_part[i+1] - '0'));
         }
 
-        apa::bint rem = 0;
-        apa::bint divr = 0;
-        apa::bint temp;
-        apa::bint test_val;
-        const apa::bint M10 = 10;
-        const apa::bint M100 = 100;
-        const apa::bint TWO = 2;
+        apa::integer rem = 0;
+        apa::integer divr = 0;
+        apa::integer temp;
+        apa::integer test_val;
+        const apa::integer M10 = 10;
+        const apa::integer M100 = 100;
+        const apa::integer TWO = 2;
 
         std::vector<int> result;
         result.reserve(digit_pairs.size() + 100000 + 10);
@@ -143,7 +144,7 @@ namespace big_number {
                 result_str += '0' + result[i];
         }
 
-        result_str = clean_number(result_str);
+        // result_str = clean_number(result_str);
         return make_big_number(result_str);
     }
 }
