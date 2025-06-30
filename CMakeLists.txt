@@ -59,8 +59,7 @@ if(PROJECT_NAME STREQUAL CMAKE_PROJECT_NAME)
     message(STATUS "Building ${PROJECT_NAME} as the main project")
 
     set(CMAKE_CXX_FLAGS_DEBUG "-Wall -Wextra -Wpedantic -g -O0")
-    # set(CMAKE_CXX_FLAGS_RELEASE "-Wall -Wextra -O3 -DNDEBUG -march=native -flto -funroll-loops")
-    set(CMAKE_CXX_FLAGS_RELEASE "-Wall -Wextra -O3 -DNDEBUG -march=native -flto -funroll-loops -fomit-frame-pointer -fstrict-aliasing -fvectorize -fslp-vectorize -fstrict-vtable-pointers -Wno-ignored-optimization-argument ")
+    set(CMAKE_CXX_FLAGS_RELEASE "-Wall -Wextra -O3 -DNDEBUG -march=native -flto -funroll-loops")
 
     add_subdirectory(tests)
     add_subdirectory(benchmark)

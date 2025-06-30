@@ -10,3 +10,13 @@ static void FromString(benchmark::State& state) {
     }
 }
 BENCHMARK(FromString)->Range(1, 1 << 20);
+
+// static void FromString_100000_Digits(benchmark::State& state) {
+//     std::string str(100000, '1');
+//     for (auto _ : state) {
+//         BigNumber number = make_big_number(str);
+//         // benchmark::DoNotOptimize(number);
+//     }
+// }
+
+// BENCHMARK(FromString_100000_Digits);

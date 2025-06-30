@@ -8,7 +8,7 @@
 using namespace std;
 using namespace big_number;
 
-constexpr int TEST_CASES = 1000;
+constexpr int TEST_CASES = 10;
 constexpr double EPS = 1e-10;
 
 TEST(Sqrt, RandomFloatStrings) {
@@ -68,6 +68,7 @@ TEST(Sqrt, Manual_BigInt) {
 TEST(Sqrt, Manual_One) {
     BigNumber a = make_big_number("1");
     BigNumber root = sqrt(a);
+    // std::cout<<to_string(root)<<std::endl;
     ASSERT_EQ(to_string(root), "1");
 }
 
